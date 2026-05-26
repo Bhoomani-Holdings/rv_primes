@@ -1,0 +1,114 @@
+[
+    {
+        "label": "FirstName",
+        "type": "text",
+        "placeholder": "First name as per ID proof",
+        "name": "firstname",
+        "notes":"As per ID proof",
+        "value": "",
+        "error": "",
+        "validationRules": [
+            "REQUIRED"
+        ]
+    },
+    {
+        "label":"LastName",
+        "type":"text",
+        "placeholder":"Enter your lastname",
+        "name":"lastname",
+        "value":"",
+        "error":"",
+        "validationRules":[
+            "REQUIRED"
+        ]
+    },
+    {
+        "label":"Mobile Number",
+        "type":"number",
+        "placeholder":"Enter your mobile number",
+        "name":"mobileNumber",
+         "notes":"OTP verification required",
+        "value":"",
+        "error":"",
+        "validationRules":[
+            "REQUIRED",
+            "MOBILE"
+        ]
+    },
+    {
+        "label":"Email Address",
+        "type":"email",
+        "placeholder":"Enter your email address",
+        "name":"email",
+        "notes":"Unique email required ",
+        "value":"",
+        "error":"",
+        "validationRules":[
+            "REQUIRED",
+            "EMAIL"
+        ]
+    },
+    {
+        "label":"Password",
+        "type":"password",
+        "placeholder":"Enter your asswrod",
+        "name":"password",
+        "notes":"Strong password validation ",
+        "value":"",
+        "error":"",
+        "validationRules":[
+            "REQUIRED",
+            "PASSWORD"
+        ]
+    },
+     {
+    "label": "Confirm Password",
+    "type": "password",
+    "name": "confirmpassword",
+    "placeholder": "Confirm your password",
+    "notes":"Must match password  ",
+    "value": "",
+    "error": "",
+    "validationRules": [
+        "REQUIRED",
+        "MATCH_PASSWORD"
+    ]
+},
+{
+        "label": "Date of Birth",
+        "type": "date",
+        "name": "dateofbirth",
+        "placeholder": "Select your date of birth",
+        "notes":"For KYC validation",
+        "value": "",
+        "error": "",
+        "validationRules": [
+            "REQUIRED",
+             "AGE_ABOVE_18"
+            
+        ]
+    },
+     {
+        "label": "Gender",
+        "tag": "select",
+        "name": "gender",
+        "options": [
+            "Male",
+            "Female",
+            "Others"
+        ],
+        "values": [
+            "M",
+            "F",
+            "Oth"
+        ],
+        "value": "",
+        "error": "",
+        "validationRules": [
+            
+        ]
+    }
+
+
+
+]

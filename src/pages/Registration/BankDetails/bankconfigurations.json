@@ -1,0 +1,74 @@
+[
+    {
+        "label": "Account Holder Name",
+        "type": "text",
+        "placeholder": "Enter account holder name",
+        "name": "accountholdername",
+        "value": "",
+        "error": "",
+        "validationRules": [
+            "REQUIRED",
+            "NAME"
+        ]
+    },
+
+    {
+        "label": "Bank Name",
+        "type": "text",
+        "placeholder": "Enter bank name",
+        "name": "bankname",
+        "value": "",
+        "error": "",
+        "validationRules": [
+            "REQUIRED",
+            "BANK_NAME"
+        ]
+    },
+
+    {
+        "label": "Account Number",
+        "type": "text",
+        "placeholder": "Enter account number",
+        "name": "accountnumber",
+        "value": "",
+        "error": "",
+        "validationRules": [
+            "REQUIRED",
+            "ACCOUNT_NUMBER"
+        ]
+    },
+
+    {
+        "label": "IFSC Code",
+        "type": "text",
+        "placeholder": "Enter IFSC code",
+        "name": "ifsccode",
+        "value": "",
+        "error": "",
+        "validationRules": [
+            "REQUIRED",
+            "IFSC"
+        ]
+    },
+
+    {
+        "label": "UPI ID",
+        "type": "text",
+        "placeholder": "Enter UPI ID",
+        "name": "upiid",
+        "value": "",
+        "error": "",
+        "validationRules": [
+            "UPI"
+        ]
+    },
+
+    {
+        "label": "Cancelled Cheque",
+        "type": "file",
+        "name": "cancelledcheque",
+        "value": null,
+        "error": "",
+        "validationRules": ["CANCELLED_CHEQUE"]
+    }
+]
