@@ -19,6 +19,7 @@ import AdminProjects from '../pages/admin/Projects';
 
 import BasicInfo from '../pages/Registration/BasicInfo/BasicInfo';
 import { BankDetails } from '../pages/Registration/BankDetails/BankDetails';
+import { KycDetails } from '../pages/Registration/KYCDetails/KycDetails';
 // import BankDetails from '../pages/Registration/BankDetails/BankDetails';
 
 function AppRoutes() {
@@ -42,6 +43,7 @@ function AppRoutes() {
         path="/bank_details"
         element={<BankDetails />}
       />
+      <Route path='/kyc_details' element={<KycDetails/>}/>
      
 
       {/* Public Routes */}
