@@ -21,6 +21,9 @@ import BasicInfo from '../pages/Registration/BasicInfo/BasicInfo';
 import { BankDetails } from '../pages/Registration/BankDetails/BankDetails';
 // import BankDetails from '../pages/Registration/BankDetails/BankDetails';
 
+import AddressInfo from '../pages/Registration/AddressInfo/AddressInfo';
+import EarningPreference from '../pages/Registration/EarningPreference/EarningPreference';
+
 function AppRoutes() {
   return (
     <Routes>
@@ -42,7 +45,8 @@ function AppRoutes() {
         path="/bank_details"
         element={<BankDetails />}
       />
-     
+     <Route path="/address_info" element={<AddressInfo/>}/>
+     <Route path="/earning_preferences" element={<EarningPreference/>}/>
 
       {/* Public Routes */}
       <Route path="/" element={<PublicLayout />}>

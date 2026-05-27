@@ -1,0 +1,58 @@
+[
+  {
+    "type": "textarea",
+    "label": "Address",
+    "name": "address",
+    "placeholder": "Enter Address",
+    "value": "",
+    "error": "",
+    "validationRules": ["REQUIRED"]
+  },
+  {
+    "type": "textarea",
+    "label": "Address1",
+    "name": "address1",
+    "placeholder": "Enter Address1",
+    "value": "",
+    "error": "",
+    "validationRules": ["REQUIRED"]
+  },
+  {
+    "type": "input",
+    "inputType": "text",
+    "label": "City",
+    "name": "city",
+    "placeholder": "Enter City",
+    "value": "",
+    "error": "",
+    "validationRules": ["REQUIRED"]
+  },
+  {
+    "type": "input",
+    "inputType": "text",
+    "label": "Pincode",
+    "name": "pincode",
+    "placeholder": "Enter Pincode",
+    "value": "",
+    "error": "",
+    "validationRules": ["REQUIRED", "PINCODE"]
+  },
+  {
+    "type": "select",
+    "label": "Country",
+    "name": "country",
+    "value": "",
+    "options": [],
+    "error": "",
+    "validationRules": ["REQUIRED"]
+  },
+  {
+    "type": "select",
+    "label": "State",
+    "name": "state",
+    "value": "",
+    "options": [],
+    "error": "",
+    "validationRules": ["REQUIRED"]
+  }
+]
