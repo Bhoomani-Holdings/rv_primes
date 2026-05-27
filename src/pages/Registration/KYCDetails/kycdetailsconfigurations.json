@@ -1,0 +1,58 @@
+[
+  {
+    "label": "PAN Card Number",
+    "name": "pancardnumber",
+    "type": "text",
+    "tag": "input",
+    "placeholder": "Enter PAN Card Number",
+    "value": "",
+    "error": "",
+    "validationRules": ["REQUIRED", "PAN"]
+  },
+  {
+    "label": "Aadhaar Number",
+    "name": "aadhaarnumber",
+    "type": "text",
+    "tag": "input",
+    "placeholder": "Enter Aadhaar Number",
+    "value": "",
+    "error": "",
+    "validationRules": ["REQUIRED", "AADHAAR"]
+  },
+  {
+    "label": "Upload PAN Card",
+    "name": "uploadpancard",
+    "type": "file",
+    "tag": "input",
+    "value": "",
+    "error": "",
+    "validationRules": ["REQUIRED",  "FILE_UPLOAD"]
+  },
+  {
+    "label": "Upload Aadhaar",
+    "name": "uploadaadhaar",
+    "type": "file",
+    "tag": "input",
+    "value": "",
+    "error": "",
+    "validationRules": ["REQUIRED",  "FILE_UPLOAD"]
+  },
+  {
+    "label": "Upload Address Proof",
+    "name": "uploadaddressproof",
+    "type": "file",
+    "tag": "input",
+    "value": "",
+    "error": "",
+    "validationRules": ["REQUIRED",  "FILE_UPLOAD"]
+  },
+  {
+    "label": "Selfie / Photo Upload",
+    "name": "selfiephoto",
+    "type": "file",
+    "tag": "input",
+    "value": "",
+    "error": "",
+    "validationRules": ["REQUIRED",  "FILE_UPLOAD"]
+  }
+]

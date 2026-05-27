@@ -57,7 +57,7 @@ export const BankDetails = () => {
             console.log(finalData);
 
             //Api CAll
-            navigate("/");
+            navigate("/kyc_details");
         }
         catch (error) {
 
