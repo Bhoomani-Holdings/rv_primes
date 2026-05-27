@@ -1,0 +1,20 @@
+[
+  {
+    "label": "Earning Type",
+    "type": "select",
+    "name": "earningtype",
+    "value": "",
+    "error": "",
+    "validationRules": ["REQUIRED"],
+    "options": ["monthly", "quarterly", "halfyearly", "yearly"]
+  },
+  {
+    "label": "Wallet Preference",
+    "type": "radio",
+    "name": "wallet",
+    "value": "",
+    "error": "",
+    "validationRules": ["REQUIRED"],
+    "options": ["Auto Withdraw", "Hold Wallet"]
+  }
+]

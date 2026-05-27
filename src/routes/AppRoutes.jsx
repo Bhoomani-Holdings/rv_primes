@@ -22,6 +22,9 @@ import { BankDetails } from '../pages/Registration/BankDetails/BankDetails';
 import { KycDetails } from '../pages/Registration/KYCDetails/KycDetails';
 // import BankDetails from '../pages/Registration/BankDetails/BankDetails';
 
+import AddressInfo from '../pages/Registration/AddressInfo/AddressInfo';
+import EarningPreference from '../pages/Registration/EarningPreference/EarningPreference';
+
 function AppRoutes() {
   return (
     <Routes>
@@ -45,6 +48,8 @@ function AppRoutes() {
       />
       <Route path='/kyc_details' element={<KycDetails/>}/>
      
+     <Route path="/address_info" element={<AddressInfo/>}/>
+     <Route path="/earning_preferences" element={<EarningPreference/>}/>
 
       {/* Public Routes */}
       <Route path="/" element={<PublicLayout />}>
