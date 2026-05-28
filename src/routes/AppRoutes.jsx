@@ -24,6 +24,7 @@ import { KycDetails } from '../pages/Registration/KYCDetails/KycDetails';
 
 import AddressInfo from '../pages/Registration/AddressInfo/AddressInfo';
 import EarningPreference from '../pages/Registration/EarningPreference/EarningPreference';
+import NomineeInfo from '../pages/Registration/NomineeInfo/NomineeInfo';
 
 function AppRoutes() {
   return (
@@ -50,6 +51,8 @@ function AppRoutes() {
      
      <Route path="/address_info" element={<AddressInfo/>}/>
      <Route path="/earning_preferences" element={<EarningPreference/>}/>
+
+     <Route path="/nominee_info" element={<NomineeInfo/>}/>
 
       {/* Public Routes */}
       <Route path="/" element={<PublicLayout />}>
