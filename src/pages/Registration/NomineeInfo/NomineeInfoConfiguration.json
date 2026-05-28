@@ -1,0 +1,70 @@
+[
+  {
+    "label": "Nominee Name",
+    "type": "text",
+    "placeholder": "Enter Your Name",
+    "name": "UserName",
+    "value": "",
+    "error": "",
+    "validationRules": [
+      "REQUIRED",
+      "NAME"
+    ]
+  },
+
+  {
+    "label": "Mobile Number",
+    "type": "text",
+    "placeholder": "Enter your Mobile Number",
+    "name": "UserNumber",
+    "value": "",
+    "error": "",
+    "validationRules": [
+      "REQUIRED",
+      "NUMBER"
+    ]
+  },
+
+  {
+    "type": "select",
+    "label": "Relationship",
+    "name": "Relationship",
+    "value": "",
+    "options": [
+    "Father",
+    "Mother",
+    "Brother",
+    "Sister",
+    "Husband",
+    "Wife",
+    "Son",
+    "Daughter",
+    "Grandfather",
+    "Grandmother",
+    "Uncle",
+    "Aunt",
+    "Cousin",
+    "Nephew",
+    "Niece",
+    "Friend",
+    "Guardian",
+    "Relative",
+    "Fiance",
+    "Partner",
+    "Father-in-law",
+    "Mother-in-law",
+    "Brother-in-law",
+    "Sister-in-law",
+    "Step Father",
+    "Step Mother",
+    "Step Brother",
+    "Step Sister",
+    "Legal Guardian",
+    "Other"
+    ],
+    "error": "",
+    "validationRules": [
+      "REQUIRED"
+    ]
+  }
+]
