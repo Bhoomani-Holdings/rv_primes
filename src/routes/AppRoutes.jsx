@@ -5,7 +5,7 @@ import PublicLayout from '../layouts/PublicLayout';
 import InvestorLayout from '../layouts/InvestorLayout';
 import AdminLayout from '../layouts/AdminLayout';
 
-import Home from '../pages/public/Home';
+import Home from '../pages/public/home/Home'
 import Projects from '../pages/public/Projects';
 import Contact from '../pages/public/Contact';
 

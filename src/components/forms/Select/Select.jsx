@@ -5,7 +5,7 @@ export const Select = ({
     label, name, value, error, handleChange, options=[], values
 }) => {
     return (
-        <div>
+        <div className='select-group'>
             <label htmlFor={name} >{label}</label>
             <select onChange={handleChange} name={name} value={value}>
                 <option value="">Select</option>
@@ -15,7 +15,7 @@ export const Select = ({
                     })
                 }
             </select>
-            {error && <span style={{ color: 'red' }}>{error}</span>}
+            {error && <span style={{ color: 'red' }} className='select-error'>{error}</span>}
         </div>
     )
 }

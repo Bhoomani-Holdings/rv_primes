@@ -1,0 +1,48 @@
+/* Select Container */
+.select-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+/* Label */
+.select-group label {
+    font-size: 16px;
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 8px;
+}
+
+/* Select Box */
+.select-group select {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid #d9d9d9;
+    border-radius: 10px;
+    font-size: 15px;
+    background: #fff;
+    outline: none;
+    transition: 0.3s ease;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+/* Focus Effect */
+.select-group select:focus {
+    border-color: #0d347c;
+    box-shadow: 0 0 6px rgba(13, 52, 124, 0.15);
+}
+
+/* Default Option */
+.select-group select option {
+    color: #333;
+    background: #fff;
+}
+
+/* Error Message */
+.select-error {
+    color: red;
+    font-size: 13px;
+    margin-top: 6px;
+    font-weight: 500;
+}
