@@ -11,6 +11,7 @@ import {validateField} from '../BasicInfo/basicinfoValidateField.js'
 
 
 export default function BasicInfo() {
+    const isFirstPage = true;
     const navigate = useNavigate()
     const [formData, setFormData] = useState(config)
     // const [countryCodes, setCountryCodes] = useState([])
@@ -34,7 +35,9 @@ export default function BasicInfo() {
     // }, [])
 
 
-
+const handlePrev=()=>{
+    
+}
 
     const handleChange = (event) => {
         validateField(event, formData, setFormData)
@@ -47,7 +50,7 @@ export default function BasicInfo() {
             setFormData(updatedFormData)
             return
         }
-        navigate("/bank_details");
+        navigate("/address_info");
 
     }
     return (
@@ -67,7 +70,13 @@ export default function BasicInfo() {
                     }
                 })
             }
+            <div>
+                <button onClick={handlePrev}  disabled={isFirstPage}>
+                Previous
+            </button>
             <button onClick={handlesubmit}>Next</button>
+            </div>
+            
         </div>
     )
 }

@@ -33,11 +33,15 @@ function AddressForm() {
       return;
     }
 
-    navigate("/earning_preferences");
+    navigate("/kyc_details");
   };
 
+  const handlePrev = () => {
+    navigate("/basic_details");
+
+  }
   return (
-    <div>
+    <>
       <h1>ADDRESS INFORMATION</h1>
 
       {formData.map((item) => {
@@ -49,8 +53,8 @@ function AddressForm() {
             item.name === "country"
               ? countries
               : item.name === "state"
-              ? states
-              : item.options || [];
+                ? states
+                : item.options || [];
         }
 
         switch (item.type) {
@@ -83,10 +87,14 @@ function AddressForm() {
             );
         }
       })}
-
-      <button onClick={handleNext}>Next</button>
-    </div>
-  );
+      <div>
+        <button onClick={handlePrev}>
+          Previous
+        </button>
+        <button onClick={handleNext}>Next</button>
+      </div>
+      </>
+      );
 }
 
-export default AddressForm;
+      export default AddressForm;

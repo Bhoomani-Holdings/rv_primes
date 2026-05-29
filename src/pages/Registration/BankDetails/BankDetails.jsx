@@ -16,7 +16,7 @@ export const BankDetails = () => {
     }
 
     const handlePrev = () => {
-        navigate("/");
+        navigate("/nominee_info");
 
     }
     const handleSubmit = async () => {
@@ -57,7 +57,7 @@ export const BankDetails = () => {
             console.log(finalData);
 
             //Api CAll
-            navigate("/kyc_details");
+            navigate("/earning_preferences");
         }
         catch (error) {
 
@@ -79,7 +79,7 @@ export const BankDetails = () => {
             </button>
 
             <button onClick={handleSubmit}>
-                Submit
+                Next
             </button>
             <div>
                 {/* <img src='https://res.cloudinary.com/dkkk60cex/image/upload/v1779273103/fg7dlulrmiifjurcwzya.jpg' /> */}

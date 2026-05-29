@@ -17,10 +17,10 @@ function EarningPreference() {
       prev.map((item) =>
         item.name === name
           ? {
-              ...item,
-              value: value,
-              error: ""
-            }
+            ...item,
+            value: value,
+            error: ""
+          }
           : item
       )
     );
@@ -40,6 +40,9 @@ function EarningPreference() {
 
     navigate("/");
   };
+  const previousfn=()=>{
+    navigate('/bank_details')
+  }
 
   return (
     <div>
@@ -56,29 +59,33 @@ function EarningPreference() {
               />
             );
 
-         case "radio":
-  return (
-    <div key={item.name}>
-      <p>{item.label}</p>
+          case "radio":
+            return (
+              <div key={item.name}>
+                <p>{item.label}</p>
 
-      {item.options?.map((opt) => (
-        <ToggleField
-          key={opt}
-          label={opt}
-          name={item.name}
-          value={opt}
-          selectedValue={item.value}
-          handleChange={handleChange}
-        />
-      ))}
-    </div>
-  );
+                {item.options?.map((opt) => (
+                  <ToggleField
+                    key={opt}
+                    label={opt}
+                    name={item.name}
+                    value={opt}
+                    selectedValue={item.value}
+                    handleChange={handleChange}
+                  />
+                ))}
+              </div>
+            );
           default:
             return null;
         }
       })}
+      <div>
+        <button onClick={previousfn}>Previous</button>
+        <button onClick={handleSubmit}>Submit</button>
 
-      <button onClick={handleSubmit}>Next</button>
+      </div>
+
     </div>
   );
 }

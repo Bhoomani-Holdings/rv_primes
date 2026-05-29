@@ -2,7 +2,7 @@ import React, { useState } from "react"
 
 import { useNavigate } from "react-router-dom"
 import NomineeInfoConfiguration from "./NomineeInfoConfiguration.json"
-import {validateField} from './NomineeValidateField.js'
+import { validateField } from './NomineeValidateField.js'
 import { validateForm } from "../../Registration/formvalidation.js";
 import { Input } from "../../../components/forms/Input/Input"
 import { Select } from "../../../components/forms/Select/Select"
@@ -21,6 +21,10 @@ function NomineeInfo() {
             formData,
             setFormData
         )
+    }
+    const previousfn=()=>{
+        navigate('/kyc_details')
+
     }
 
     const handleSubmit = (e) => {
@@ -42,7 +46,7 @@ function NomineeInfo() {
         // alert("Submit Successfully")
 
         // Navigate to next page
-        navigate("/")
+        navigate("/bank_details")
     }
 
     return (
@@ -78,10 +82,15 @@ function NomineeInfo() {
                     }
                 })
             }
+            <div>
+                <button onClick={previousfn}>
+                    Previous
+                </button>
+                <button type="submit">
+                    Next
+                </button>
+            </div>
 
-            <button type="submit">
-                Submit
-            </button>
 
         </form>
     )

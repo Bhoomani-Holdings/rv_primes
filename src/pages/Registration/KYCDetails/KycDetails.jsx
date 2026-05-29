@@ -16,7 +16,7 @@ export const KycDetails = () => {
     }
 
     const handlePrev = () => {
-        navigate("/");
+        navigate("/address_info");
 
     }
     // const handleSubmit = async () => {
@@ -162,7 +162,7 @@ export const KycDetails = () => {
         );
 
         navigate(
-            "/"
+            "/nominee_info"
         );
 
     } catch (error) {
@@ -187,7 +187,7 @@ export const KycDetails = () => {
             </button>
 
             <button onClick={handleSubmit}>
-                Submit
+                Next
             </button>
             <div>
                 {/* <img src='https://res.cloudinary.com/dkkk60cex/image/upload/v1779273103/fg7dlulrmiifjurcwzya.jpg' /> */}
