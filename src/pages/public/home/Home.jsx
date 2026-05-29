@@ -3,6 +3,39 @@ import Header from '../../../components/header/Header';
 import Footer from '../../../components/footer/Footer';
 
 export default function Home() {
+  const assetCards = [
+    {
+      icon: "🏢",
+      title: "Real Estate",
+      desc: "Premium residential and commercial properties across major metros.",
+      link: "Learn More →",
+    },
+    {
+      icon: "⛽",
+      title: "Fuel & Energy",
+      desc: "Strategic investments in renewable and conventional energy.",
+      link: "Explore →",
+    },
+    {
+      icon: "🌾",
+      title: "Farmland",
+      desc: "Agricultural land with modern farming practices and sustainability.",
+      link: "Explore →",
+    },
+    {
+      icon: "🏛️",
+      title: "Commercial",
+      desc: "High-yield commercial spaces in prime business districts.",
+      link: "Explore →",
+    },
+    {
+      icon: "🚀",
+      title: "Future Ventures",
+      desc: "Exploring new-age businesses and emerging opportunities that will define tomorrow's economy.",
+      link: "Explore →",
+      fullWidth: true,
+    },
+  ];
   const projects = [
     {
       tag: "Real Estate",
@@ -43,8 +76,9 @@ export default function Home() {
   ];
 
 
-  return ( <div>
-    <Header />
+  return (
+    <>
+      <Header />
     <div className='relative min-h-screen h-auto bg-[#061428] overflow-x-hidden text-white'>
     
     {/* Grid Background */}
@@ -165,6 +199,7 @@ export default function Home() {
         </div>
         </div>
       </div>
+
       {/* ECOSYSTEM SECTION */}
       <section className="bg-[#f9f5ee] px-5 md:px-10 lg:px-20 py-20">
         <div className="grid lg:grid-cols-[35%_65%] gap-10 items-start">
@@ -344,8 +379,332 @@ export default function Home() {
  
       </div>
     </div>
+    {/* About Section */}  
 
-    <Footer />
+     <div>
+          <div className="bg-[#0B1526] px-10 py-20">
 
-    </div> );
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+
+        {/* ── Left Side ── */}
+        <div>
+
+          {/* Eyebrow */}
+          <div className="flex items-center gap-3 mb-5">
+            <div className="w-8 h-px bg-[#C9A84C]" />
+            <span 
+            className="text-[#C9A84C] text-xs tracking-[0.3em] uppercase"
+             style={{ fontFamily:"Georgia,serif"}}>
+              About Bhoomani Holdings
+            </span>
+          </div>
+
+          {/* White Title */}
+          <h2
+            className="text-white  font-light leading-tight mb-1"
+            style={{ fontFamily: "Georgia, serif", fontSize:"52px" }}>
+            Building Today.
+           </h2>
+             {/* GOLD ITALIC TITLE */}
+
+          <h2
+            className="text-[#C9A84C] font-light italic leading-tight mb-8"
+            style={{ fontFamily: "Georgia, serif", fontSize:"52px"}}
+          >
+            Shaping Tomorrow.
+          </h2>
+
+          {/* Description */}
+          <p className="text-white/50 text-base leading-relaxed mb-10 max-w-lg"
+          style={{ fontFamily:"Georgia,serif", fontSize:"15px", maxWidth:"520px"}}>
+            Bhoomani Holdings Private Limited is a forward-thinking investment
+            company committed to building a strong asset base across real estate,
+            infrastructure, agriculture, and future-ready sectors. Our mission is
+            to deliver sustainable value to our investors through innovation,
+            discipline, and long-term vision.
+          </p>
+
+          {/* Wide  Button */}
+          <button
+            className="bg-[#C9A84C] text-[#0B1526] font-semibold tracking-[0.25em] uppercase hover:bg-[#E8C97A] transition-colors duration-300 cursor-pointer"
+              style={{fontFamily: "Georgia, serif", fontSize: "12px", padding:"18px 0", width:"520px", maxWidth:"100%"}}
+        >
+            Read More About Us
+          </button>
+
+        </div>
+
+        {/* ── Right Side — Image Grid with Play Button ── */}
+         <div className="flex flex-col gap-3"> 
+        <div>
+      
+       {/* Top Row 1 — Two equal boxes  side by side*/}
+          <div className="grid grid-cols-2 gap-3 mb-3">
+            <div className="bg-[#1E2E4A]" style={{height: "160px"}} />
+            <div className="bg-[#1E2E4A] "  style={{height: "160px"}}/>
+          </div>
+            
+             {/* Row 2 — One full width box with centered play button */}
+          <div
+            className="bg-[#1E2E4A] w-full"
+            style={{ height: "160px", display:"flex", alignItems:"center",justifyContent:"center" }}
+          >
+          
+          <button
+  className="rounded-full border-2 border-[#C9A84C] hover:bg-[#C9A84C] transition-colors duration-300 group"
+  style={{
+    width: "64px",
+    height: "64px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center"
+  }}
+>
+  <span className="text-[#C9A84C] group-hover:text-[#0B1526] text-xl pl-1">
+    ▶
+  </span>
+</button>
+
+       </div>
+          </div>
+        </div>
+      </div>
+    </div> 
+</div>      
+
+            {/* WHY CHOOSE US SECTION */}
+      <section className="bg-[#ede8dc] px-5 md:px-10 lg:px-20 py-24">
+        <div className="grid lg:grid-cols-2 gap-20 items-center">
+
+          {/* LEFT SIDE */}
+          <div>
+            {/* Section Header */}
+            <div className="flex items-center gap-4 mb-5">
+              <div className="w-8 h-[1px] bg-[#c9a84c]" />
+              <span className="text-[10px] tracking-[0.3em] uppercase text-[#c9a84c] font-medium">
+                Why Choose Us?
+              </span>
+            </div>
+
+            {/* Title */}
+            <h2 className="font-serif text-[40px] md:text-[56px] font-light leading-[1.1] text-[#0b1526]">
+              Trusted, Transparency{" "}
+              <em className="italic text-[#c9a84c]">& Results</em>
+            </h2>
+
+            {/* Description */}
+            <p className="text-[15px] text-[#4a5568] leading-[1.9] mt-7 mb-10">
+              Over a decade of excellence in real estate investment. We combine
+              deep industry expertise with investor-centric approaches to
+              deliver consistent, measurable returns.
+            </p>
+
+            {/* Pillars */}
+            <div className="flex flex-col gap-6">
+
+              {/* Pillar 1 */}
+              <div className="flex gap-5 items-start">
+                <div className="font-serif text-[36px] text-[#c9a84c]/30 font-semibold min-w-[44px]">
+                  01
+                </div>
+
+                <div>
+                  <h4 className="font-serif text-[18px] font-semibold text-[#0b1526] mb-1">
+                    Expert Management
+                  </h4>
+
+                  <p className="text-[13px] text-[#4a5568] leading-[1.7]">
+                    Seasoned professionals with 25+ years of combined
+                    experience.
+                  </p>
+                </div>
+              </div>
+
+              {/* Pillar 2 */}
+              <div className="flex gap-5 items-start">
+                <div className="font-serif text-[36px] text-[#c9a84c]/30 font-semibold min-w-[44px]">
+                  02
+                </div>
+
+                <div>
+                  <h4 className="font-serif text-[18px] font-semibold text-[#0b1526] mb-1">
+                    Transparent Operations
+                  </h4>
+
+                  <p className="text-[13px] text-[#4a5568] leading-[1.7]">
+                    Real-time portfolio tracking and detailed quarterly reports.
+                  </p>
+                </div>
+              </div>
+
+              {/* Pillar 3 */}
+              <div className="flex gap-5 items-start">
+                <div className="font-serif text-[36px] text-[#c9a84c]/30 font-semibold min-w-[44px]">
+                  03
+                </div>
+
+                <div>
+                  <h4 className="font-serif text-[18px] font-semibold text-[#0b1526] mb-1">
+                    Consistent Returns
+                  </h4>
+
+                  <p className="text-[13px] text-[#4a5568] leading-[1.7]">
+                    Proven track record with 12–20% annual returns to investors.
+                  </p>
+                </div>
+              </div>
+
+              {/* Pillar 4 */}
+              <div className="flex gap-5 items-start">
+                <div className="font-serif text-[36px] text-[#c9a84c]/30 font-semibold min-w-[44px]">
+                  04
+                </div>
+
+                <div>
+                  <h4 className="font-serif text-[18px] font-semibold text-[#0b1526] mb-1">
+                    Investor First
+                  </h4>
+
+                  <p className="text-[13px] text-[#4a5568] leading-[1.7]">
+                    We grow when our investors grow — our success is measured
+                    by yours.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT SIDE - NUMBERS GRID */}
+          <div>
+            <div className="grid grid-cols-2 gap-[2px]">
+
+              {/* Card 1 */}
+              <div className="bg-[#0b1526] text-center px-8 py-12">
+                <div className="font-serif text-[48px] font-semibold text-[#e8c97a] leading-none">
+                  11+
+                </div>
+
+                <div className="text-[11px] tracking-[0.18em] uppercase text-white/40 mt-3">
+                  Years of Excellence
+                </div>
+              </div>
+
+              {/* Card 2 */}
+              <div className="bg-[#c9a84c] text-center px-8 py-12">
+                <div className="font-serif text-[48px] font-semibold text-[#0b1526] leading-none">
+                  ₹500Cr+
+                </div>
+
+                <div className="text-[11px] tracking-[0.18em] uppercase text-[#0b1526]/60 mt-3">
+                  Assets Managed
+                </div>
+              </div>
+
+              {/* Card 3 */}
+              <div className="bg-[#0b1526] text-center px-8 py-12">
+                <div className="font-serif text-[48px] font-semibold text-[#e8c97a] leading-none">
+                  2500+
+                </div>
+
+                <div className="text-[11px] tracking-[0.18em] uppercase text-white/40 mt-3">
+                  Satisfied Investors
+                </div>
+              </div>
+
+              {/* Card 4 */}
+              <div className="bg-[#0b1526] text-center px-8 py-12">
+                <div className="font-serif text-[48px] font-semibold text-[#e8c97a] leading-none">
+                  25+
+                </div>
+
+                <div className="text-[11px] tracking-[0.18em] uppercase text-white/40 mt-3">
+                  Active Projects
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+            {/* PRESS SECTION */}
+      <section className="bg-[#f9f5ee] px-5 md:px-10 lg:px-20 py-16">
+        <div className="text-center text-[10px] tracking-[0.3em] uppercase text-[#8a9ab5] mb-10">
+          As Featured In
+        </div>
+
+        <div className="flex flex-wrap justify-center items-center gap-10 lg:gap-16">
+          {[
+            "Economic Times",
+            "Moneycontrol",
+            "LiveMint",
+            "Business Today",
+            "Entrepreneur India",
+          ].map((logo, index) => (
+            <div
+              key={index}
+              className="font-serif text-[24px] font-semibold text-[#8a9ab5] opacity-50 hover:opacity-100 transition duration-300"
+            >
+              {logo}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* CTA BANNER */}
+      <div>
+      
+       <div className="bg-[#C9A84C] px-10 py-16">
+
+      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-10">
+
+        {/* ── Left Side — Text ── */}
+        <div>
+          {/* Title */}
+          <h2
+            className="text-[#0B1526] font-light leading-tight mb-3"
+            style={{ fontFamily: "Georgia, serif", fontSize: "48px" }}
+          >
+            Let's Build <br /> Wealth Together.
+          </h2>
+
+          {/* Subtitle */}
+          <p
+            className="text-[#0B1526]/70"
+            style={{ fontFamily: "Georgia, serif", fontSize: "14px" }}
+          >
+            Join thousands of investors who trust Bhoomani Holdings for smart and secure investments.
+          </p>
+
+        </div>
+
+        {/* ── Right Side — Buttons ── */}
+        <div className="flex flex-col sm:flex-row items-center gap-4 flex-shrink-0">
+
+          {/* Start Investing — Dark Filled */}
+          <button
+            className="bg-[#0B1526] text-[#C9A84C] tracking-[0.2em] uppercase hover:bg-[#152038] transition-colors duration-300"
+            style={{ fontFamily: "Georgia, serif", fontSize: "12px", padding: "18px 36px" }}
+          >
+            Start Investing
+          </button>
+
+          {/* Contact Us — Outline */}
+          <button
+            className="border border-[#0B1526] text-[#0B1526] tracking-[0.2em] uppercase hover:bg-[#0B1526] hover:text-[#C9A84C] transition-colors duration-300"
+            style={{ fontFamily: "Georgia, serif", fontSize: "12px", padding: "18px 36px" }}
+          >
+            Contact Us
+          </button>
+
+        </div>
+
+      </div>
+    </div>
+  
+
+    </div>
+
+      <Footer />  
+    </>
+  );
 }
