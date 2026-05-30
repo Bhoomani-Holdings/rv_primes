@@ -155,8 +155,8 @@ function Building({ className, windows }) {
 
 function AboutUs() {
   return (
-    <section className="w-full overflow-x-hidden bg-[#f9f5ee] font-['DM_Sans',Arial,sans-serif] leading-[1.6] text-[#0b1526]">
-      <div className="relative flex min-h-screen w-full flex-col justify-center overflow-hidden bg-[#0b1526] px-20 py-[72px] pr-[60px] text-white before:absolute before:inset-0 before:bg-[linear-gradient(rgba(201,168,76,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(201,168,76,0.04)_1px,transparent_1px)] before:bg-[length:72px_72px] after:pointer-events-none after:absolute after:bottom-0 after:right-0 after:top-[72px] after:z-10 after:w-1/2 after:bg-[linear-gradient(90deg,#0b1526_0%,rgba(11,21,38,0.22)_40%,rgba(11,21,38,0)_100%),radial-gradient(circle_at_58%_44%,rgba(201,168,76,0.08),transparent_42%)] max-[900px]:px-8 max-[900px]:pt-24 max-[900px]:after:inset-0 max-[900px]:after:w-full max-[680px]:min-h-0 max-[680px]:pb-[72px] max-[440px]:px-5">
+    <section className="w-full bg-[#0b1526] overflow-hidden">
+      <div className="relative mx-auto flex min-h-screen max-w-[1440px] w-full flex-col justify-center px-20 py-[72px] text-white">
         <div className="z-20 mb-[-11px] h-px w-9 bg-[#c9a84c] max-[680px]:hidden" />
         <p className="z-20 mb-7 ml-[50px] text-[10px] font-medium uppercase tracking-[0.32em] text-[#c9a84c] max-[680px]:ml-0">
           ABOUT BHOOMANI HOLDINGS
