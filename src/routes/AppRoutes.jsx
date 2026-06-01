@@ -5,7 +5,7 @@ import PublicLayout from '../layouts/PublicLayout';
 import InvestorLayout from '../layouts/InvestorLayout';
 import AdminLayout from '../layouts/AdminLayout';
 
-import Home from '../pages/public/Home';
+import Home from '../pages/public/home/Home'
 import Projects from '../pages/public/Projects';
 import Contact from '../pages/public/Contact';
 
@@ -42,17 +42,17 @@ function AppRoutes() {
         element={<BasicInfo />}
       />
 
-      
+
       <Route
         path="/bank_details"
         element={<BankDetails />}
       />
-      <Route path='/kyc_details' element={<KycDetails/>}/>
-     
-     <Route path="/address_info" element={<AddressInfo/>}/>
-     <Route path="/earning_preferences" element={<EarningPreference/>}/>
+      <Route path='/kyc_details' element={<KycDetails />} />
 
-     <Route path="/nominee_info" element={<NomineeInfo/>}/>
+      <Route path="/address_info" element={<AddressInfo />} />
+      <Route path="/earning_preferences" element={<EarningPreference />} />
+
+      <Route path="/nominee_info" element={<NomineeInfo />} />
 
       {/* Public Routes */}
       <Route path="/" element={<PublicLayout />}>

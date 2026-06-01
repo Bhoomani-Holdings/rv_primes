@@ -1,4 +1,8 @@
 import React from 'react';
+
+export default function Home() {
+  return <div>Home Page</div>;
+}
 import './Home.css';
 import Header from '../../../components/header/Header';
 import Footer from '../../../components/footer/Footer';

@@ -236,7 +236,7 @@ export const Input = ({
                 case "password":
 
                     return (
-                        <div className="password-container">
+                        <div className="password-container ">
 
                             <input
                                 type={
@@ -272,7 +272,7 @@ export const Input = ({
                 case "file":
 
                     return (
-                        <>
+                        < >
                             <input
                                 type="file"
                                 id={name}
@@ -284,7 +284,7 @@ export const Input = ({
                             {
                                 value &&
                                 !error && (
-                                    <div>
+                                    <div className="file-preview">
 
                                         <p>
                                             {value.name}
@@ -338,7 +338,7 @@ export const Input = ({
         ]);
 
     return (
-        <div>
+        <div className="input-group">
 
             <label htmlFor={name}>
                 {label}
@@ -358,7 +358,7 @@ export const Input = ({
 
             {
                 error &&
-                <span
+                <span className="error-text"
                     style={{
                         color: "red"
                     }}
