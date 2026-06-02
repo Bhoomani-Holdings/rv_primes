@@ -1,12 +1,3 @@
-import React from 'react'
-
-function AboutUs() {
-  return (
-    <div>AboutUs</div>
-  )
-}
-
-export default AboutUs
 const serif = "font-['Cormorant_Garamond',Georgia,serif]"
 
 const timeline = [

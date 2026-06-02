@@ -5,7 +5,7 @@ import { validateField } from './bankfieldvalidate'
 import { useNavigate } from 'react-router-dom'
 import { validateForm } from '../../Registration/formvalidation'
 import { uploadToCloudinary } from '../../../services/fileUploading/FileUpload'
-import './BankDetails.css'
+
 export const BankDetails = () => {
     const navigate = useNavigate()
     const [formData, setFormData] = useState(config)
@@ -16,7 +16,7 @@ export const BankDetails = () => {
     }
 
     const handlePrev = () => {
-        navigate("/nominee_info");
+        navigate("/");
 
     }
     const handleSubmit = async () => {
@@ -57,7 +57,7 @@ export const BankDetails = () => {
             console.log(finalData);
 
             //Api CAll
-            navigate("/earning_preferences");
+            navigate("/kyc_details");
         }
         catch (error) {
 
@@ -67,35 +67,20 @@ export const BankDetails = () => {
         }
     }
     return (
-        <div className='basic-container'>
-            <h2 className='basic-title'>Bank Details</h2>
-            <p className="basic-subtitle">
-                Enter your bank information
-            </p>
-
-            <div className="basic-section">
-
-                <div className="section-header">
-                    Bank Information
-                </div>
-
-                <div className="basic-grid">
+        <div>
+            <h2>Bank Details</h2>
             {
                 formData.map((item, index) => {
                     return <Input key={index} {...item} handleChange={handleChange} />
                 })
             }
-            </div>
-            </div>
-            <div className='button-container'>
-            <button onClick={handlePrev} className='prev-btn'>
+            <button onClick={handlePrev}>
                 Previous
             </button>
 
-            <button onClick={handleSubmit} className='next-btn'>
-                Next
+            <button onClick={handleSubmit}>
+                Submit
             </button>
-            </div>
             <div>
                 {/* <img src='https://res.cloudinary.com/dkkk60cex/image/upload/v1779273103/fg7dlulrmiifjurcwzya.jpg' /> */}
             </div>

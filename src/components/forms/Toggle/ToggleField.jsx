@@ -1,7 +1,6 @@
-import './ToggleField.css'
 function ToggleField({ label, name, value, selectedValue, handleChange }) {
   return (
-    <label style={{ marginRight: "10px" }} className='toggle-field'>
+    <label style={{ marginRight: "10px" }}>
       <input
         type="radio"
         name={name}
@@ -9,7 +8,7 @@ function ToggleField({ label, name, value, selectedValue, handleChange }) {
         checked={selectedValue === value}
         onChange={handleChange}
       />
-      <span className="toggle-label">{label}</span>
+      {label}
     </label>
   );
 }
