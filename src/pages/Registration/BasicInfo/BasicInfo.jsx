@@ -4,34 +4,21 @@ import config from './basicinfoconfigurations.json'
 import { validateForm } from '../../Registration/formvalidation.js'
 import { useNavigate } from 'react-router-dom'
 // import { getCountryCodes } from '../Services/MobileCountryCodes/CountryCodes'
-import { Input } from '../../../components/forms/Input/Input.jsx'
-import { Select } from '../../../components/forms/Select/Select.jsx'
-import { validateField } from '../BasicInfo/basicinfoValidateField.js'
-import { saveBasicInfo } from '../../../store/slices/RegistartionSlice.js'
-import { useSelector, useDispatch } from 'react-redux'
-import './BasicInfo.css'
+import {Input} from '../../../components/forms/Input/Input.jsx'
+import {Select} from '../../../components/forms/Select/Select.jsx'
+import {validateField} from '../BasicInfo/basicinfoValidateField.js'
 
 
 
 export default function BasicInfo() {
-    const isFirstPage = true;
     const navigate = useNavigate()
-    const dispatch = useDispatch()
-    // const [formData, setFormData] = useState(config)
+    const [formData, setFormData] = useState(config)
     // const [countryCodes, setCountryCodes] = useState([])
-    const savedData = useSelector(state => state.registration.basicInfo || {})
-
-    const [formData, setFormData] = useState(() => {
-        return config.map(field => ({
-            ...field,
-            value: savedData[field.name] || field.value || ""
-        }))
-    })
-
-
 
 
     //Api call
+    
+
     // useEffect(() => {
 
     //     const fetchCountryCodes = async () => {
@@ -47,9 +34,7 @@ export default function BasicInfo() {
     // }, [])
 
 
-    const handlePrev = () => {
 
-    }
 
     const handleChange = (event) => {
         validateField(event, formData, setFormData)
@@ -62,20 +47,12 @@ export default function BasicInfo() {
             setFormData(updatedFormData)
             return
         }
-        dispatch(saveBasicInfo(dataObj))
-        navigate("/address_info");
+        navigate("/bank_details");
 
     }
     return (
-        <div className='basic-container'>
-            <h2 className='basic-title'>Registration Form</h2>
-            <p className="basic-subtitle">
-                Please fill in the details below
-            </p>
-            <div className='basic-section'>
-                 <div className='section-header'>Basic Details</div>
-
-            <div className=' basic-grid'> 
+        <div>
+            <h2>Basic Infromation</h2>
             {
                 formData.map((item, index) => {
                     // //add country codes to mobile field
@@ -90,15 +67,7 @@ export default function BasicInfo() {
                     }
                 })
             }
-            </div>
-            </div>
-            <div className='button-container'>
-                <button className='prev-btn' onClick={handlePrev} disabled={isFirstPage}>
-                    Previous
-                </button>
-                <button className="next-btn" onClick={handlesubmit}>Next</button>
-            </div>
-
+            <button onClick={handlesubmit}>Next</button>
         </div>
     )
 }

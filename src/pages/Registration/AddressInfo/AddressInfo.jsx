@@ -1,74 +1,44 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import addressConfig from "./addressinfoconfigurations.json";
 import { Input } from "../../../components/forms/Input/Input.jsx";
 import { Select } from "../../../components/forms/Select/Select.jsx";
 import TextArea from "../../../components/forms/TextArea/TextArea.jsx";
+
 import { validateForm } from "../../Registration/formvalidation.js";
 import { useCountries } from "../../../hooks/useCountries.js";
 import { useStates } from "../../../hooks/useStates.js";
 import { validateField } from "./addressInfoValidateField.js";
-import { useSelector, useDispatch } from "react-redux";
-import { saveAddressInfo } from '../../../store/slices/RegistartionSlice.js'
-import './AddressInfo.css'
 
 function AddressForm() {
   const navigate = useNavigate();
-  // const [formData, setFormData] = useState(addressConfig);
-  const savedData = useSelector(
-    state => state.registration?.addressInfo || {}
-  )
-  const dispatch = useDispatch()
+  const [formData, setFormData] = useState(addressConfig);
 
-
-
-  const [formData, setFormData] = useState(() => {
-    return addressConfig.map(field => ({
-      ...field,
-      value: savedData[field.name] || field.value || ""
-    }))
-  })
   const country =
     formData.find((item) => item.name === "country")?.value;
+
   const countries = useCountries();
   const { states } = useStates(country);
-
-
-
-
 
   const handleChange = (event) => {
     validateField(event, formData, setFormData);
   };
 
   const handleNext = () => {
-    const { isFormvalid, dataObj, updatedFormData } = validateForm(formData);
+    const { isFormvalid, updatedFormData } = validateForm(formData);
 
     if (!isFormvalid) {
       setFormData(updatedFormData);
       return;
     }
-    dispatch(saveAddressInfo(dataObj))
-    navigate("/kyc_details");
+
+    navigate("/earning_preferences");
   };
 
-  const handlePrev = () => {
-    navigate("/basic_details");
-
-  }
   return (
-    <>
-    <div className="basic-container">
-      <h1 className="basic-title">Address Information</h1>
-      <p className="basic-subtitle">
-        Please provide your address details
-      </p>
-      <div className="basic-section">
-
-        <div className="section-header">
-          Address Details
-        </div>
-<div className="basic-grid">
+    <div>
+      <h1>ADDRESS INFORMATION</h1>
 
       {formData.map((item) => {
         let updatedItem = { ...item };
@@ -79,8 +49,8 @@ function AddressForm() {
             item.name === "country"
               ? countries
               : item.name === "state"
-                ? states
-                : item.options || [];
+              ? states
+              : item.options || [];
         }
 
         switch (item.type) {
@@ -113,17 +83,9 @@ function AddressForm() {
             );
         }
       })}
-      
-        </div>
-        </div>
-        <div className="button-container">
-        <button onClick={handlePrev} className="prev-btn">
-          Previous
-        </button>
-        <button onClick={handleNext} className="next-btn">Next</button>
-      </div>
-      </div>
-    </>
+
+      <button onClick={handleNext}>Next</button>
+    </div>
   );
 }
 
