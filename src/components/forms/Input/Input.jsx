@@ -1,6 +1,6 @@
 import "./Input.css"
 
-import React, { useMemo, useState, useEffect} from 'react'
+import React, { useMemo, useState, useEffect } from 'react'
 import { criteria } from '../../../pages/Registration/BasicInfo/basicinfovalidations'
 import { FaEye, FaEyeSlash } from "react-icons/fa"
 
@@ -166,6 +166,7 @@ export const Input = ({
     name,
     value,
     error,
+    preview,
     handleChange,
     validationRules = []
 }) => {
@@ -204,9 +205,23 @@ export const Input = ({
                 URL.revokeObjectURL(
                     url
                 );
+
+        }
+        // Existing cloudinary url
+        else if (preview) {
+
+            setPreviewUrl(
+                preview
+            );
         }
 
-    }, [value, type]);
+        else {
+            setPreviewUrl(
+                null
+            );
+        }
+
+    }, [value, type, preview]);
 
     const inputElement =
         useMemo(() => {
@@ -236,7 +251,7 @@ export const Input = ({
                 case "password":
 
                     return (
-                        <div className="password-container">
+                        <div className="password-container ">
 
                             <input
                                 type={
@@ -270,9 +285,11 @@ export const Input = ({
                     );
 
                 case "file":
-
+                    const isPdf =
+                        value?.type === "application/pdf" ||
+                        previewUrl?.toLowerCase().includes(".pdf");
                     return (
-                        <>
+                        < >
                             <input
                                 type="file"
                                 id={name}
@@ -280,18 +297,45 @@ export const Input = ({
                                 accept=".png,.jpg,.jpeg,.pdf"
                                 onChange={handleChange}
                             />
-
                             {
+                                previewUrl &&
+                                !error && (
+                                    <div className="file-preview">
+
+                                        {/* Image */}
+                                        {
+                                            isPdf
+                                                ? (
+                                                    <iframe
+                                                        src={previewUrl}
+                                                        title="pdf"
+                                                        className="preview-pdf"
+                                                    />
+                                                )
+                                                : (
+                                                    <img
+                                                        src={previewUrl}
+                                                        alt="preview"
+                                                        className="preview-image"
+                                                    />
+                                                )
+                                        }
+
+                                    </div>
+                                )
+                            }
+
+                            {/* {
                                 value &&
                                 !error && (
-                                    <div>
+                                    <div className="file-preview">
 
                                         <p>
                                             {value.name}
-                                        </p>
+                                        </p> */}
 
-                                        {/* IMAGE */}
-                                        {
+                            {/* IMAGE */}
+                            {/* {
                                             value.type?.startsWith(
                                                 "image/"
                                             ) && (
@@ -302,10 +346,10 @@ export const Input = ({
                                                     alt="preview"
                                                 />
                                             )
-                                        }
+                                        } */}
 
-                                        {/* PDF */}
-                                        {
+                            {/* PDF */}
+                            {/* {
                                             value.type ===
                                             "application/pdf" && (
                                                 <iframe
@@ -319,7 +363,7 @@ export const Input = ({
 
                                     </div>
                                 )
-                            }
+                            } */}
                         </>
                     );
 
@@ -334,11 +378,12 @@ export const Input = ({
             name,
             handleChange,
             showPassword,
-            previewUrl
+            previewUrl,
+            error
         ]);
 
     return (
-        <div>
+        <div className="input-group">
 
             <label htmlFor={name}>
                 {label}
@@ -358,7 +403,7 @@ export const Input = ({
 
             {
                 error &&
-                <span
+                <span className="error-text"
                     style={{
                         color: "red"
                     }}
