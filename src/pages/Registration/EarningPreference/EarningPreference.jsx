@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import './EarningPreference.css'
+import styles from './EarningPreference.module.css'
 import config from "./earningconfigurations.json";
 import ToggleField from "../../../components/forms/Toggle/ToggleField.jsx";
 import { Select } from "../../../components/forms/Select/Select.jsx";
@@ -102,25 +102,25 @@ function EarningPreference() {
   };
 
   return (
-    <div className="earning-container">
-      <div className="earning-header">
+    <div className={styles.earningContainer}>
 
-        <h2 className="earning-title">
+      <div className={styles.earningHeader}>
+        <h2 className={styles.earningTitle}>
           Earning Preference
         </h2>
-        <p className="earning-subtitle">
+
+        <p className={styles.earningSubtitle}>
           Choose how you want to manage your earnings
         </p>
       </div>
 
-      {/* Section */}
-      <div className="earning-section">
+      <div className={styles.earningSection}>
 
-        <div className="section-header">
+        <div className={styles.sectionHeader}>
           Earning Details
         </div>
 
-        <div className="earning-grid">
+        <div className={styles.earningGrid}>
 
           {
             formData.map(item => {
@@ -129,22 +129,19 @@ function EarningPreference() {
 
                 case "select":
                   return (
-                    <div className="field-wrapper" key={item.name} >
-                      {/* <label className="field-label">
-                        {item.label}
-                      </label> */}
+                    <div
+                      className={styles.fieldWrapper}
+                      key={item.name}
+                    >
+                      <Select
+                        {...item}
+                        handleChange={handleChange}
+                      />
 
-                      <div className="select-wrapper">
-                        <Select
-
-                          {...item}
-                          handleChange={handleChange}
-                        />
-                      </div>
                       {
                         item.error &&
                         (
-                          <span className="error-text">
+                          <span className={styles.errorText}>
                             {item.error}
                           </span>
                         )
@@ -154,22 +151,23 @@ function EarningPreference() {
 
                 case "radio":
                   return (
-                    <div key={item.name} className="field-wrapper" >
+                    <div
+                      key={item.name}
+                      className={styles.fieldWrapper}
+                    >
 
-                      <p className="field-label">
+                      <p className={styles.fieldLabel}>
                         {item.label}
                       </p>
-                      <div className="option-group">
 
+                      <div className={styles.optionGroup}>
                         {
-
                           item.options?.map(opt => (
                             <div
                               key={opt}
-                              className="toggle-card"
+                              className={styles.toggleCard}
                             >
                               <ToggleField
-                                key={opt}
                                 label={opt}
                                 name={item.name}
                                 value={opt}
@@ -177,14 +175,14 @@ function EarningPreference() {
                                 handleChange={handleChange}
                               />
                             </div>
-
                           ))
                         }
                       </div>
+
                       {
                         item.error &&
                         (
-                          <span className="error-text">
+                          <span className={styles.errorText}>
                             {item.error}
                           </span>
                         )
@@ -197,18 +195,22 @@ function EarningPreference() {
               }
             })
           }
+
         </div>
       </div>
-      <div className="button-container">
 
-        <button className="prev-btn"
+      <div className={styles.buttonContainer}>
+
+        <button
+          className={styles.prevBtn}
           type="button"
           onClick={previousfn}
         >
           Previous
         </button>
 
-        <button className="next-btn"
+        <button
+          className={styles.nextBtn}
           type="button"
           onClick={handleSubmit}
         >
@@ -218,7 +220,8 @@ function EarningPreference() {
       </div>
 
     </div>
-  );
+  )
 }
+
 
 export default EarningPreference;

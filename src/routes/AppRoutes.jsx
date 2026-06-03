@@ -1,11 +1,12 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { ROUTES } from './routesPath';
 
 import PublicLayout from '../layouts/PublicLayout';
 import InvestorLayout from '../layouts/InvestorLayout';
 import AdminLayout from '../layouts/AdminLayout';
 
-import Home from '../pages/public/home/Home'
+import Home from '../pages/public/home/Home';
 import Projects from '../pages/public/Projects';
 import Contact from '../pages/public/Contact';
 
@@ -18,61 +19,112 @@ import AdminUsers from '../pages/admin/Users';
 import AdminProjects from '../pages/admin/Projects';
 
 import BasicInfo from '../pages/Registration/BasicInfo/BasicInfo';
-import { BankDetails } from '../pages/Registration/BankDetails/BankDetails';
-import { KycDetails } from '../pages/Registration/KYCDetails/KycDetails';
-// import BankDetails from '../pages/Registration/BankDetails/BankDetails';
-
 import AddressInfo from '../pages/Registration/AddressInfo/AddressInfo';
-import EarningPreference from '../pages/Registration/EarningPreference/EarningPreference';
+import { KycDetails } from '../pages/Registration/KYCDetails/KycDetails';
 import NomineeInfo from '../pages/Registration/NomineeInfo/NomineeInfo';
+import { BankDetails } from '../pages/Registration/BankDetails/BankDetails';
+import EarningPreference from '../pages/Registration/EarningPreference/EarningPreference';
 
 function AppRoutes() {
+
   return (
     <Routes>
 
       {/* Redirect */}
       <Route
         path="/"
-        element={<Navigate to="/basic_details" />}
+        element={
+          <Navigate to={ROUTES.BASIC_INFO} />
+        }
       />
 
-      {/* Registration Routes */}
+      {/* Registration */}
       <Route
-        path="/basic_details"
+        path={ROUTES.BASIC_INFO}
         element={<BasicInfo />}
       />
 
+      <Route
+        path={ROUTES.ADDRESS_INFO}
+        element={<AddressInfo />}
+      />
 
       <Route
-        path="/bank_details"
+        path={ROUTES.KYC_DETAILS}
+        element={<KycDetails />}
+      />
+
+      <Route
+        path={ROUTES.NOMINEE_INFO}
+        element={<NomineeInfo />}
+      />
+
+      <Route
+        path={ROUTES.BANK_DETAILS}
         element={<BankDetails />}
       />
-      <Route path='/kyc_details' element={<KycDetails />} />
 
-      <Route path="/address_info" element={<AddressInfo />} />
-      <Route path="/earning_preferences" element={<EarningPreference />} />
+      <Route
+        path={ROUTES.EARNING_PREFERENCES}
+        element={<EarningPreference />}
+      />
 
-      <Route path="/nominee_info" element={<NomineeInfo />} />
-
-      {/* Public Routes */}
-      <Route path="/" element={<PublicLayout />}>
+      {/* Public */}
+      <Route
+        path={ROUTES.HOME}
+        element={<PublicLayout />}
+      >
         <Route index element={<Home />} />
-        <Route path="projects" element={<Projects />} />
-        <Route path="contact" element={<Contact />} />
+        <Route
+          path={ROUTES.PROJECTS.slice(1)}
+          element={<Projects />}
+        />
+        <Route
+          path={ROUTES.CONTACT.slice(1)}
+          element={<Contact />}
+        />
       </Route>
 
-      {/* Investor Routes */}
-      <Route path="/investor" element={<InvestorLayout />}>
-        <Route index element={<InvestorDashboard />} />
-        <Route path="wallet" element={<Wallet />} />
-        <Route path="earnings" element={<Earnings />} />
+      {/* Investor */}
+      <Route
+        path={ROUTES.INVESTOR}
+        element={<InvestorLayout />}
+      >
+        <Route
+          index
+          element={<InvestorDashboard />}
+        />
+
+        <Route
+          path="wallet"
+          element={<Wallet />}
+        />
+
+        <Route
+          path="earnings"
+          element={<Earnings />}
+        />
       </Route>
 
-      {/* Admin Routes */}
-      <Route path="/admin" element={<AdminLayout />}>
-        <Route index element={<AdminDashboard />} />
-        <Route path="users" element={<AdminUsers />} />
-        <Route path="projects" element={<AdminProjects />} />
+      {/* Admin */}
+      <Route
+        path={ROUTES.ADMIN}
+        element={<AdminLayout />}
+      >
+        <Route
+          index
+          element={<AdminDashboard />}
+        />
+
+        <Route
+          path="users"
+          element={<AdminUsers />}
+        />
+
+        <Route
+          path="projects"
+          element={<AdminProjects />}
+        />
       </Route>
 
     </Routes>

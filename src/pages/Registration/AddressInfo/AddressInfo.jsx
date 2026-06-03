@@ -1,4 +1,4 @@
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import addressConfig from "./addressinfoconfigurations.json";
 import { Input } from "../../../components/forms/Input/Input.jsx";
@@ -10,7 +10,7 @@ import { useStates } from "../../../hooks/useStates.js";
 import { validateField } from "./addressInfoValidateField.js";
 import { useSelector, useDispatch } from "react-redux";
 import { saveAddressInfo } from '../../../store/slices/RegistartionSlice.js'
-import './AddressInfo.css'
+import styles from './AddressInfo.module.css'
 
 function AddressForm() {
   const navigate = useNavigate();
@@ -33,17 +33,17 @@ function AddressForm() {
   const countries = useCountries();
 
   const { states } = useStates(country);
-   useEffect(() => {
-  if (states.length > 0) {
-    setFormData((prev) =>
-      prev.map((field) =>
-        field.name === "state"
-          ? { ...field, value: states[0] }
-          : field
-      )
-    );
-  }
-}, [states]);
+  useEffect(() => {
+    if (states.length > 0) {
+      setFormData((prev) =>
+        prev.map((field) =>
+          field.name === "state"
+            ? { ...field, value: states[0] }
+            : field
+        )
+      );
+    }
+  }, [states]);
 
   const handleChange = (event) => {
     validateField(event, formData, setFormData);
@@ -65,73 +65,83 @@ function AddressForm() {
 
   }
   return (
-    <>
-    <div className="basic-container">
-      <h1 className="basic-title">Address Information</h1>
-      <p className="basic-subtitle">
+    <div className={styles.addressContainer}>
+      <h1 className={styles.addressTitle}>
+        Address Information
+      </h1>
+
+      <p className={styles.addressSubtitle}>
         Please provide your address details
       </p>
-      <div className="basic-section">
 
-        <div className="section-header">
+      <div className={styles.addressSection}>
+
+        <div className={styles.sectionHeader}>
           Address Details
         </div>
-<div className="basic-grid">
 
-      {formData.map((item) => {
-        let updatedItem = { ...item };
+        <div className={styles.addressGrid}>
+          {formData.map((item) => {
+            let updatedItem = { ...item };
 
-        // ✅ FIX: ALWAYS HANDLE OPTIONS SAFELY
-        if (item.type === "select") {
-          updatedItem.options =
-            item.name === "country"
-              ? countries
-              : item.name === "state"
-                ? states
-                : item.options || [];
-        }
+            if (item.type === "select") {
+              updatedItem.options =
+                item.name === "country"
+                  ? countries
+                  : item.name === "state"
+                    ? states
+                    : item.options || [];
+            }
 
-        switch (item.type) {
-          case "textarea":
-            return (
-              <TextArea
-                key={item.name}
-                {...updatedItem}
-                onChange={handleChange}
-              />
-            );
+            switch (item.type) {
+              case "textarea":
+                return (
+                  <TextArea
+                    key={item.name}
+                    {...updatedItem}
+                    onChange={handleChange}
+                  />
+                );
 
-          case "select":
-            return (
-              <Select
-                key={item.name}
-                {...updatedItem}
-                handleChange={handleChange}
-              />
-            );
+              case "select":
+                return (
+                  <Select
+                    key={item.name}
+                    {...updatedItem}
+                    handleChange={handleChange}
+                  />
+                );
 
-          default:
-            return (
-              <Input
-                key={item.name}
-                {...updatedItem}
-                type={item.inputType || "text"}
-                handleChange={handleChange}
-              />
-            );
-        }
-      })}
-      
+              default:
+                return (
+                  <Input
+                    key={item.name}
+                    {...updatedItem}
+                    type={item.inputType || "text"}
+                    handleChange={handleChange}
+                  />
+                );
+            }
+          })}
         </div>
-        </div>
-        <div className="button-container">
-        <button onClick={handlePrev} className="prev-btn">
+      </div>
+
+      <div className={styles.buttonContainer}>
+        <button
+          onClick={handlePrev}
+          className={styles.prevBtn}
+        >
           Previous
         </button>
-        <button onClick={handleNext} className="next-btn">Next</button>
+
+        <button
+          onClick={handleNext}
+          className={styles.nextBtn}
+        >
+          Next
+        </button>
       </div>
-      </div>
-    </>
+    </div>
   );
 }
 

@@ -27,28 +27,29 @@ export const criteria = {
         error: "Passwords do not match"
 
     },
-    "AGE_ABOVE_18": {
-        "validate": (value) => {
+    "AGE_18_TO_60": {
+        validate: (value) => {
 
             if (!value) return false;
 
             const today = new Date();
             const birthDate = new Date(value);
 
-            const ageInMilliseconds =
-                today - birthDate;
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDifference = today.getMonth() - birthDate.getMonth();
 
-            const ageDate =
-                new Date(ageInMilliseconds);
+            // Adjust age if birthday not yet occurred this year
+            if (
+                monthDifference < 0 ||
+                (monthDifference === 0 &&
+                    today.getDate() < birthDate.getDate())
+            ) {
+                age--;
+            }
 
-            const age =
-                Math.abs(
-                    ageDate.getUTCFullYear() - 1970
-                );
-
-            return age >= 18;
+            return age >= 18 && age <= 60;
         },
 
-        "error": "Age must be above 18"
-    },
+        error: "Age must be between 18 and 60 years"
+    }
 }

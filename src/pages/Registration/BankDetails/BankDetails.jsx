@@ -5,7 +5,7 @@ import { validateField } from './bankfieldvalidate'
 import { useNavigate } from 'react-router-dom'
 import { validateForm } from '../../Registration/formvalidation'
 import { uploadToCloudinary } from '../../../services/fileUploading/FileUpload'
-import './BankDetails.css'
+import styles from './BankDetails.module.css'
 import { useSelector, useDispatch } from 'react-redux'
 import { saveBankInfo } from '../../../store/slices/RegistartionSlice'
 
@@ -139,50 +139,55 @@ export const BankDetails = () => {
             alert("File Upload Failed");
         }
     }
+    
     return (
-        <div className='basic-container'>
-            <h2 className='basic-title'>Bank Details</h2>
-            <p className="basic-subtitle">
+        <div className={styles.bankContainer}>
+
+            <h2 className={styles.bankTitle}>
+                Bank Details
+            </h2>
+
+            <p className={styles.bankSubtitle}>
                 Enter your bank information
             </p>
 
-            <div className="basic-section">
+            <div className={styles.bankSection}>
 
-                <div className="section-header">
+                <div className={styles.sectionHeader}>
                     Bank Information
                 </div>
 
-                <div className="basic-grid">
+                <div className={styles.bankGrid}>
                     {
-                        formData.map((item, index) => {
-
-                            return (
-                                <div key={index}>
-
-                                    <Input
-                                        {...item}
-                                        handleChange={handleChange}
-                                    />
-
-                                   
-
-                                </div>
-                            )
-                        })
+                        formData.map((item, index) => (
+                            <div
+                                key={index}
+                                className={styles.fieldWrapper}
+                            >
+                                <Input
+                                    {...item}
+                                    handleChange={handleChange}
+                                />
+                            </div>
+                        ))
                     }
                 </div>
             </div>
-            <div className='button-container'>
-                <button onClick={handlePrev} className='prev-btn'>
+
+            <div className={styles.buttonContainer}>
+                <button
+                    onClick={handlePrev}
+                    className={styles.prevBtn}
+                >
                     Previous
                 </button>
 
-                <button onClick={handleSubmit} className='next-btn'>
+                <button
+                    onClick={handleSubmit}
+                    className={styles.nextBtn}
+                >
                     Next
                 </button>
-            </div>
-            <div>
-                {/* <img src='https://res.cloudinary.com/dkkk60cex/image/upload/v1779273103/fg7dlulrmiifjurcwzya.jpg' /> */}
             </div>
 
         </div>
