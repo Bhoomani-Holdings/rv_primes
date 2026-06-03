@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import addressConfig from "./addressinfoconfigurations.json";
 import { Input } from "../../../components/forms/Input/Input.jsx";
@@ -31,11 +31,19 @@ function AddressForm() {
   const country =
     formData.find((item) => item.name === "country")?.value;
   const countries = useCountries();
+
   const { states } = useStates(country);
-
-
-
-
+   useEffect(() => {
+  if (states.length > 0) {
+    setFormData((prev) =>
+      prev.map((field) =>
+        field.name === "state"
+          ? { ...field, value: states[0] }
+          : field
+      )
+    );
+  }
+}, [states]);
 
   const handleChange = (event) => {
     validateField(event, formData, setFormData);
