@@ -18,6 +18,24 @@
     "validationRules": ["REQUIRED"]
   },
   {
+    "type": "select",
+    "label": "Country",
+    "name": "country",
+    "value": "",
+    "options": [],
+    "error": "",
+    "validationRules": ["REQUIRED"]
+  },
+  {
+    "type": "select",
+    "label": "State",
+    "name": "state",
+    "value": "",
+    "options": [],
+    "error": "",
+    "validationRules": ["REQUIRED"]
+  },
+  {
     "type": "input",
     "inputType": "text",
     "label": "City",
@@ -36,23 +54,5 @@
     "value": "",
     "error": "",
     "validationRules": ["REQUIRED", "PINCODE"]
-  },
-  {
-    "type": "select",
-    "label": "Country",
-    "name": "country",
-    "value": "",
-    "options": [],
-    "error": "",
-    "validationRules": ["REQUIRED"]
-  },
-  {
-    "type": "select",
-    "label": "State",
-    "name": "state",
-    "value": "",
-    "options": [],
-    "error": "",
-    "validationRules": ["REQUIRED"]
   }
 ]
