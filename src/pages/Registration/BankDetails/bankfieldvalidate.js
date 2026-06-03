@@ -8,10 +8,20 @@ export const validateField = (event, formData, setFormData) => {
         if (item.name === name) {
 
             let _value = value;
+            let _preview =
+                item.preview || "";
 
             // File Input
             if (type === "file") {
                 _value = files[0];
+
+                // REAL TIME PREVIEW
+                if (_value) {
+                    _preview =
+                        URL.createObjectURL(
+                            _value
+                        );
+                }
             }
 
             // Capitalize Account Holder Name
@@ -41,7 +51,7 @@ export const validateField = (event, formData, setFormData) => {
                     if (
                         criteria[rule].regex &&
                         !_value?.type &&
-                        !criteria[rule].regex.test(_value)
+                        !criteria[rule].regex.test(_value || "")
                     ) {
                         error = criteria[rule].error;
                         break;
@@ -70,13 +80,14 @@ export const validateField = (event, formData, setFormData) => {
                     }
                 }
             }
-            if(error && type ==='file'){
-                _value=null
+            if (error && type === 'file') {
+                _value = null
             }
 
             return {
                 ...item,
                 value: _value,
+                preview:_preview,
                 error
             };
         }
@@ -87,8 +98,8 @@ export const validateField = (event, formData, setFormData) => {
     setFormData(updatedFormData);
 };
 
-const getFormData=()=>{
-    
+const getFormData = () => {
+
 }
 
 

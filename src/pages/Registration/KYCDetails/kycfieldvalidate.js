@@ -19,11 +19,21 @@ export const validateField = (
             if (item.name === name) {
 
                 let _value = value;
+                let _preview=item._preview || ""
 
                 // FILE INPUT
                 if (type === "file") {
                     _value = files[0];
+
+                     // REAL-TIME PREVIEW
+                    if (_value) {
+                        _preview =
+                            URL.createObjectURL(
+                                _value
+                            );
+                    }
                 }
+                
 
                 // PAN UPPERCASE
                 if (name === "pancardnumber") {
@@ -46,7 +56,7 @@ export const validateField = (
                             !_value?.type &&
                             !criteria[rule]
                                 .regex
-                                .test(_value)
+                                .test(_value || "")
                         ) {
                             error =
                                 criteria[rule]
@@ -97,6 +107,7 @@ export const validateField = (
                 return {
                     ...item,
                     value: _value,
+                    preview:_preview,
                     error
                 };
             }

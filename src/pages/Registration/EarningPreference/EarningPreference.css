@@ -1,0 +1,214 @@
+/* PAGE BACKGROUND */
+body {
+    background: #f5f6f8;
+    font-family: "Inter", sans-serif;
+}
+
+/* MAIN CONTAINER */
+.earning-container {
+    max-width: 1200px;
+    margin: 50px auto;
+    padding: 60px 40px;
+    background: #ffffff;
+    border-radius: 24px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+}
+
+/* TITLE */
+.earning-title {
+    text-align: center;
+    font-size: 40px;
+    font-weight: 700;
+    color: #0d347c;
+    margin-bottom: 12px;
+}
+
+/* SUBTITLE */
+.earning-subtitle {
+    text-align: center;
+    color: #666;
+    font-size: 22px;
+    margin-bottom: 45px;
+}
+
+/* SECTION */
+.earning-section {
+    border: 1px solid #ecd58b;
+    border-radius: 18px;
+    overflow: hidden;
+    background: white;
+}
+
+/* SECTION HEADER */
+.section-header {
+    background: #fff7dc;
+    padding: 24px 30px;
+    font-size: 38px;
+    font-weight: 700;
+    color: #0d347c;
+    border-bottom: 1px solid #ecd58b;
+}
+
+/* GRID */
+.earning-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 35px 28px;
+    padding: 40px 35px;
+}
+
+/* FIELD WRAPPER */
+.field-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+/* LABEL */
+.label {
+    font-size: 22px;
+    font-weight: 600;
+    color: #111;
+    margin-bottom: 14px;
+}
+
+/* SELECT */
+select {
+    width: 100%;
+    height: 60px;
+    border: 1px solid #d9d9d9;
+    border-radius: 14px;
+    padding: 0 18px;
+    font-size: 18px;
+    background: white;
+    outline: none;
+    transition: 0.3s ease;
+}
+
+select:focus {
+    border-color: #0d347c;
+    box-shadow: 0 0 0 3px rgba(13,52,124,0.12);
+}
+
+/* OPTION GROUP */
+.option-group {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* RADIO CARD STYLE */
+.toggle-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    border: 1px solid #dddddd;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: 0.3s ease;
+    background: white;
+}
+
+.toggle-wrapper:hover {
+    border-color: #0d347c;
+    background: #f7faff;
+}
+
+.toggle-wrapper input[type="radio"] {
+    accent-color: #0d347c;
+    width: 18px;
+    height: 18px;
+}
+
+/* BUTTONS */
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 22px;
+    margin-top: 40px;
+}
+
+.prev-btn,
+.next-btn {
+    min-width: 180px;
+    height: 58px;
+    border: none;
+    border-radius: 12px;
+    font-size: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+/* PREVIOUS BUTTON */
+.prev-btn {
+    background: #d9d9d9;
+    color: #333;
+}
+
+.prev-btn:hover {
+    background: #c9c9c9;
+    transform: translateY(-2px);
+}
+
+/* SUBMIT BUTTON */
+.next-btn {
+    background: #0d347c;
+    color: white;
+}
+
+.next-btn:hover {
+    background: #08265f;
+    transform: translateY(-2px);
+}
+
+/* ERROR */
+.error-text {
+    color: red;
+    font-size: 14px;
+    margin-top: 6px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+
+    .earning-grid {
+        grid-template-columns: 1fr;
+        padding: 25px;
+    }
+
+    .earning-container {
+        margin: 20px;
+        padding: 25px;
+    }
+
+    .earning-title {
+        font-size: 34px;
+    }
+
+    .earning-subtitle {
+        font-size: 18px;
+    }
+
+    .section-header {
+        font-size: 28px;
+    }
+
+    .label {
+        font-size: 18px;
+    }
+
+    select {
+        height: 52px;
+        font-size: 16px;
+    }
+
+    .button-container {
+        flex-direction: column;
+    }
+
+    .prev-btn,
+    .next-btn {
+        width: 100%;
+    }
+}
