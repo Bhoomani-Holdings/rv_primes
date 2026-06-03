@@ -84,7 +84,7 @@
         "error": "",
         "validationRules": [
             "REQUIRED",
-             "AGE_ABOVE_18"
+             "AGE_18_TO_60"
             
         ]
     },

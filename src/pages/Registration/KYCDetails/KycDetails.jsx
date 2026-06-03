@@ -7,7 +7,7 @@ import { validateForm } from '../formvalidation'
 import { uploadToCloudinary } from '../../../services/fileUploading/FileUpload'
 import { useSelector, useDispatch } from 'react-redux'
 import { saveKycInfo } from '../../../store/slices/RegistartionSlice.js'
-import './KycDetails.css'
+import styles from './KycDetails.module.css'
 
 export const KycDetails = () => {
     const navigate = useNavigate()
@@ -205,74 +205,74 @@ export const KycDetails = () => {
         }
     };
     return (
-        <div className='basic-container'>
-            <h2 className='basic-title'>Kyc Details</h2>
-            <p className="basic-subtitle">
+        <div className={styles.kycContainer}>
+            <h2 className={styles.kycTitle}>
+                Kyc Details
+            </h2>
+
+            <p className={styles.kycSubtitle}>
                 Upload and verify your KYC documents
             </p>
-            <div className="basic-section">
 
-                <div className="section-header">
+            <div className={styles.kycSection}>
+
+                <div className={styles.sectionHeader}>
                     KYC Information
                 </div>
-                <div className="basic-grid">
-                    {
-                        formData.map((item, index) => {
-                            return (
-                                <div key={index}>
-                                    <Input
-                                        {...item}
-                                        handleChange={handleChange}
-                                    />
 
-                                    {/* {
-                                        item.type === "file" &&
-                                        item.preview &&
-                                        (
-                                            <div className="file-preview">
+                <div className={styles.kycGrid}>
+                    {formData.map((item, index) => (
+                        <div
+                            key={index}
+                            className={styles.fieldWrapper}
+                        >
+                            <Input
+                                {...item}
+                                handleChange={handleChange}
+                            />
 
-                                                {
-                                                    item.preview.includes(".pdf")
+                            {item.type === "file" &&
+                                item.preview && (
+                                    <div className={styles.filePreview}>
 
-                                                        ? (
-                                                            <iframe
-                                                                src={item.preview}
-                                                                title="pdf-preview"
-                                                                className="preview-pdf"
-                                                            />
-                                                        )
-
-                                                        : (
-                                                            <img
-                                                                src={item.preview}
-                                                                alt="preview"
-                                                                className="preview-image"
-                                                            />
-                                                        )
-                                                }
-
-                                            </div>
-                                        )
-                                    } */}
-                                </div>
-                            )
-                        })
-                    }
+                                        {item.preview.includes(".pdf")
+                                            ? (
+                                                <iframe
+                                                    src={item.preview}
+                                                    title="pdf-preview"
+                                                    className={styles.previewPdf}
+                                                />
+                                            )
+                                            : (
+                                                <img
+                                                    src={item.preview}
+                                                    alt="preview"
+                                                    className={styles.previewImage}
+                                                />
+                                            )}
+                                    </div>
+                                )}
+                        </div>
+                    ))}
                 </div>
             </div>
-            <div className='button-container'>
-                <button className="prev-btn" onClick={handlePrev}>
+
+            <div className={styles.buttonContainer}>
+                <button
+                    className={styles.prevBtn}
+                    onClick={handlePrev}
+                >
                     Previous
                 </button>
 
-                <button type="button" onClick={handleSubmit} className='next-btn'>
+                <button
+                    type="button"
+                    onClick={handleSubmit}
+                    className={styles.nextBtn}
+                >
                     Next
                 </button>
             </div>
-            <div>
-                {/* <img src='https://res.cloudinary.com/dkkk60cex/image/upload/v1779273103/fg7dlulrmiifjurcwzya.jpg' /> */}
-            </div>
-
         </div>
     )
 }

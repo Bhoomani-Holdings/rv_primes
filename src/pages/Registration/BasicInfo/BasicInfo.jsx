@@ -9,7 +9,8 @@ import { Select } from '../../../components/forms/Select/Select.jsx'
 import { validateField } from '../BasicInfo/basicinfoValidateField.js'
 import { saveBasicInfo } from '../../../store/slices/RegistartionSlice.js'
 import { useSelector, useDispatch } from 'react-redux'
-import './BasicInfo.css'
+import styles from './BasicInfo.module.css'
+
 
 
 
@@ -67,38 +68,61 @@ export default function BasicInfo() {
 
     }
     return (
-        <div className='basic-container'>
-            <h2 className='basic-title'>Registration Form</h2>
-            <p className="basic-subtitle">
+        <div className={styles.basicContainer}>
+            <h2 className={styles.basicTitle}>
+                Registration Form
+            </h2>
+
+            <p className={styles.basicSubtitle}>
                 Please fill in the details below
             </p>
-            <div className='basic-section'>
-                 <div className='section-header'>Basic Details</div>
 
-            <div className=' basic-grid'> 
-            {
-                formData.map((item, index) => {
-                    // //add country codes to mobile field
-                    // if (item.type === "tel") {
-                    //     item.countryOptions = countryCodes
-                    // }
-                    switch (item.tag) {
-                        case 'select':
-                            return <Select key={index} {...item} handleChange={handleChange} />
-                        default:
-                            return <Input key={index} {...item} handleChange={handleChange} />
-                    }
-                })
-            }
+            <div className={styles.basicSection}>
+                <div className={styles.sectionHeader}>
+                    Basic Details
+                </div>
+
+                <div className={styles.basicGrid}>
+                    {formData.map((item, index) => {
+                        switch (item.tag) {
+                            case "select":
+                                return (
+                                    <Select
+                                        key={index}
+                                        {...item}
+                                        handleChange={handleChange}
+                                    />
+                                );
+
+                            default:
+                                return (
+                                    <Input
+                                        key={index}
+                                        {...item}
+                                        handleChange={handleChange}
+                                    />
+                                );
+                        }
+                    })}
+                </div>
             </div>
-            </div>
-            <div className='button-container'>
-                <button className='prev-btn' onClick={handlePrev} disabled={isFirstPage}>
+
+            <div className={styles.buttonContainer}>
+                <button
+                    className={styles.prevBtn}
+                    onClick={handlePrev}
+                    disabled={isFirstPage}
+                >
                     Previous
                 </button>
-                <button className="next-btn" onClick={handlesubmit}>Next</button>
-            </div>
 
+                <button
+                    className={styles.nextBtn}
+                    onClick={handlesubmit}
+                >
+                    Next
+                </button>
+            </div>
         </div>
-    )
+    );
 }
