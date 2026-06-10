@@ -12,6 +12,7 @@ export const ROUTES = {
     HOME: "/",
     PROJECTS: "/projects",
     CONTACT: "/contact",
+    ABOUT_US: "/about_us",
 
     // Investor
     INVESTOR: "/investor",

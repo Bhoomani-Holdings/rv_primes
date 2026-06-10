@@ -9,6 +9,7 @@ import AdminLayout from '../layouts/AdminLayout';
 import Home from '../pages/public/home/Home';
 import Projects from '../pages/public/Projects';
 import Contact from '../pages/public/Contact';
+import AboutUs from '../pages/public/about/AboutUs';
 
 import InvestorDashboard from '../pages/investor/Dashboard';
 import Wallet from '../pages/investor/Wallet';
@@ -33,10 +34,13 @@ function AppRoutes() {
       {/* Redirect */}
       <Route
         path="/"
+
         element={
-          <Navigate to={ROUTES.BASIC_INFO} />
+          <Navigate to={ROUTES.HOME} />
         }
       />
+
+      
 
       {/* Registration */}
       <Route
@@ -74,6 +78,10 @@ function AppRoutes() {
         path={ROUTES.HOME}
         element={<PublicLayout />}
       >
+      <Route
+        path={ROUTES.ABOUT_US}
+        element={<AboutUs />} />
+       
         <Route index element={<Home />} />
         <Route
           path={ROUTES.PROJECTS.slice(1)}
