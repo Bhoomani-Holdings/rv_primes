@@ -1,7 +1,7 @@
 // hooks/useCountries.js
 
 import {useEffect,useState,} from "react";
-import {getCountries,} from "../api/CountriesApi";
+import {getCountries,} from "../api/countriesApi";
 export const useCountries = () => {
   const [countries, setCountries] =  useState([]);
   useEffect(() => {
