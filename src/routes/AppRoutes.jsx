@@ -1,3 +1,34 @@
+
+import React from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { ROUTES } from './routesPath';
+
+import PublicLayout from '../layouts/PublicLayout';
+import InvestorLayout from '../layouts/InvestorLayout';
+import AdminLayout from '../layouts/AdminLayout';
+
+import Home from '../pages/public/home/Home';
+import Projects from '../pages/public/Projects';
+import Contact from '../pages/public/Contact';
+import AboutUs from '../pages/public/about/AboutUs';
+
+import InvestorDashboard from '../pages/investor/Dashboard';
+import Wallet from '../pages/investor/Wallet';
+import Earnings from '../pages/investor/Earnings';
+
+import AdminDashboard from '../pages/admin/Dashboard';
+import AdminUsers from '../pages/admin/Users';
+import AdminProjects from '../pages/admin/Projects';
+
+import BasicInfo from '../pages/Registration/BasicInfo/BasicInfo';
+import AddressInfo from '../pages/Registration/AddressInfo/AddressInfo';
+import { KycDetails } from '../pages/Registration/KYCDetails/KycDetails';
+import NomineeInfo from '../pages/Registration/NomineeInfo/NomineeInfo';
+import { BankDetails } from '../pages/Registration/BankDetails/BankDetails';
+import EarningPreference from '../pages/Registration/EarningPreference/EarningPreference';
+
+function AppRoutes() {
+
 import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { ROUTES } from './routesPath'
@@ -26,10 +57,13 @@ import { BankDetails } from '../pages/Registration/BankDetails/BankDetails'
 import EarningPreference from '../pages/Registration/EarningPreference/EarningPreference'
 
 function AppRoutes () {
+
   return (
     <Routes>
       {/* Redirect */}
       <Route path='/' element={<Navigate to={ROUTES.BASIC_INFO} />} />
+
+      
 
       {/* Registration */}
       <Route path={ROUTES.BASIC_INFO} element={<BasicInfo />} />
