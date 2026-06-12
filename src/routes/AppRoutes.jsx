@@ -51,7 +51,7 @@ function AppRoutes () {
         <Route path={ROUTES.CONTACT.slice(1)} element={<Contact />} />
       </Route>
 
-      
+      <Route path={ROUTES.ABOUT_US} element={<AboutUs />} />
 
       
     </Routes>
