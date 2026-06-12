@@ -15,7 +15,7 @@
     transition: 0.3s;
 }
 
-.nav-menu link:hover {
+.nav-menu a:hover {
     color: #d6b253;
 }
 .nav-menu.active {
