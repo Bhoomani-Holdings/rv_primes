@@ -1,10 +1,120 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { ROUTES } from '../../../routes/routesPath';
+import { getProjects } from '../../../services/dashboardService';
 import './Home.css';
 import Header from '../../../components/header/Header';
 import Footer from '../../../components/footer/Footer';
 
+const categoryClasses = {
+  'Real Estate': 'proj-real-estate',
+  Energy: 'proj-fuel',
+  Farmland: 'proj-farmland',
+  Commercial: 'proj-commercial'
+};
+
+function ProjectArtwork({ category }) {
+  if (category === 'Energy') {
+    return (
+      <svg className="project-img-visual" viewBox="0 0 300 220" fill="none" aria-hidden="true">
+        <circle cx="150" cy="110" r="80" fill="rgba(248, 232, 183, 0.08)" stroke="rgba(248, 232, 183, 0.15)" />
+      </svg>
+    );
+  }
+
+  if (category === 'Farmland') {
+    return (
+      <svg className="project-img-visual" viewBox="0 0 300 220" fill="none" aria-hidden="true">
+        <path d="M 50 120 Q 150 50 250 120 L 250 180 L 50 180 Z" fill="rgba(248, 232, 183, 0.08)" stroke="rgba(248, 232, 183, 0.15)" />
+      </svg>
+    );
+  }
+
+  if (category === 'Commercial') {
+    return (
+      <svg className="project-img-visual" viewBox="0 0 300 220" fill="none" aria-hidden="true">
+        <rect x="60" y="60" width="80" height="100" fill="rgba(248, 232, 183, 0.08)" stroke="rgba(248, 232, 183, 0.15)" />
+        <rect x="160" y="60" width="80" height="100" fill="rgba(248, 232, 183, 0.12)" stroke="rgba(248, 232, 183, 0.15)" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg className="project-img-visual" viewBox="0 0 300 220" fill="none" aria-hidden="true">
+      <rect x="40" y="50" width="220" height="140" fill="rgba(248, 232, 183, 0.1)" stroke="rgba(248, 232, 183, 0.2)" />
+      <line x1="40" y1="80" x2="260" y2="80" stroke="rgba(248, 232, 183, 0.1)" />
+      <line x1="40" y1="110" x2="260" y2="110" stroke="rgba(248, 232, 183, 0.1)" />
+      <line x1="40" y1="140" x2="260" y2="140" stroke="rgba(248, 232, 183, 0.1)" />
+    </svg>
+  );
+}
+
 export default function Home() {
- 
+  const navigate = useNavigate();
+  const location = useLocation();
+  const projectsViewportRef = useRef(null);
+  const [projects, setProjects] = useState([]);
+  const [projectsLoading, setProjectsLoading] = useState(true);
+  const [projectsError, setProjectsError] = useState('');
+  const [isSignupStepsOpen, setIsSignupStepsOpen] = useState(false);
+  const [isInvestHintOpen, setIsInvestHintOpen] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    getProjects()
+      .then((data) => {
+        if (!cancelled) setProjects(data);
+      })
+      .catch(() => {
+        if (!cancelled) setProjectsError('Unable to load featured projects');
+      })
+      .finally(() => {
+        if (!cancelled) setProjectsLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const moveProjects = (direction) => {
+    const viewport = projectsViewportRef.current;
+    const card = viewport?.querySelector('.project-card');
+    if (!viewport || !card) return;
+    const gap = Number.parseFloat(window.getComputedStyle(viewport).columnGap) || 0;
+    viewport.scrollBy({ left: direction * (card.getBoundingClientRect().width + gap), behavior: 'instant' });
+  };
+
+  useEffect(() => {
+    if (!location.state?.showInvestHint) return;
+
+    setIsInvestHintOpen(true);
+    navigate(`${location.pathname}${location.hash}`, { replace: true, state: null });
+  }, [location.hash, location.pathname, location.state, navigate]);
+
+  useEffect(() => {
+    if (location.hash !== '#featured-projects') return undefined;
+
+    const timeout = window.setTimeout(() => {
+      document.getElementById('featured-projects')?.scrollIntoView({ behavior: 'instant', block: 'start' });
+    }, 100);
+    return () => window.clearTimeout(timeout);
+  }, [location.hash]);
+
+  useEffect(() => {
+    if (!isSignupStepsOpen && !isInvestHintOpen) return undefined;
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        setIsSignupStepsOpen(false);
+        setIsInvestHintOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isInvestHintOpen, isSignupStepsOpen]);
 
   return (
     <>
@@ -311,120 +421,151 @@ export default function Home() {
       </section>
 
       {/* FEATURED PROJECTS SECTION */}
-      <section className="projects-section">
+      <section className="projects-section" id="featured-projects">
         <div className="projects-header">
           <h2 className="section-title projects-title">
             Featured <em>Projects</em>
           </h2>
-          <a href="#" className="view-all">View All Projects →</a>
-        </div>
-        <div className="projects-grid">
-          <div className="project-card">
-            <div className="project-img proj-real-estate">
-              <svg
-                className="project-img-visual"
-                viewBox="0 0 300 220"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <rect x="40" y="50" width="220" height="140" fill="rgba(248, 232, 183, 0.1)" stroke="rgba(248, 232, 183, 0.2)" />
-                <line x1="40" y1="80" x2="260" y2="80" stroke="rgba(248, 232, 183, 0.1)" />
-                <line x1="40" y1="110" x2="260" y2="110" stroke="rgba(248, 232, 183, 0.1)" />
-                <line x1="40" y1="140" x2="260" y2="140" stroke="rgba(248, 232, 183, 0.1)" />
-              </svg>
-            </div>
-            <div className="project-body">
-              <div className="proj-tag">Real Estate</div>
-              <h3 className="project-name">Metro Residency</h3>
-              <div className="project-location">📍 Mumbai</div>
-              <div className="project-returns">
-                <div>
-                  <div className="ret-label">Expected ROI</div>
-                  <div className="ret-value">18%</div>
-                </div>
-                <div>
-                  <div className="ret-label">Tenure</div>
-                  <div className="ret-value">5 Yrs</div>
-                </div>
+          <div className="projects-header-actions">
+            <a href="/projects" className="view-all">View All Projects →</a>
+            {projects.length > 1 && (
+              <div className="project-carousel-controls">
+                <button type="button" aria-label="Previous projects" onClick={() => moveProjects(-1)}>←</button>
+                <button type="button" aria-label="Next projects" onClick={() => moveProjects(1)}>→</button>
               </div>
-              <button className="project-cta">Invest Now</button>
-            </div>
-          </div>
-
-          <div className="project-card">
-            <div className="project-img proj-fuel">
-              <svg className="project-img-visual" viewBox="0 0 300 220" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="150" cy="110" r="80" fill="rgba(248, 232, 183, 0.08)" stroke="rgba(248, 232, 183, 0.15)" />
-              </svg>
-            </div>
-            <div className="project-body">
-              <div className="proj-tag">Energy</div>
-              <h3 className="project-name">Solar Farm</h3>
-              <div className="project-location">📍 Gujarat</div>
-              <div className="project-returns">
-                <div>
-                  <div className="ret-label">Expected ROI</div>
-                  <div className="ret-value">15%</div>
-                </div>
-                <div>
-                  <div className="ret-label">Tenure</div>
-                  <div className="ret-value">7 Yrs</div>
-                </div>
-              </div>
-              <button className="project-cta">Invest Now</button>
-            </div>
-          </div>
-
-          <div className="project-card">
-            <div className="project-img proj-farmland">
-              <svg className="project-img-visual" viewBox="0 0 300 220" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M 50 120 Q 150 50 250 120 L 250 180 L 50 180 Z" fill="rgba(248, 232, 183, 0.08)" stroke="rgba(248, 232, 183, 0.15)" />
-              </svg>
-            </div>
-            <div className="project-body">
-              <div className="proj-tag">Farmland</div>
-              <h3 className="project-name">Premium Agriland</h3>
-              <div className="project-location">📍 Karnataka</div>
-              <div className="project-returns">
-                <div>
-                  <div className="ret-label">Expected ROI</div>
-                  <div className="ret-value">12%</div>
-                </div>
-                <div>
-                  <div className="ret-label">Tenure</div>
-                  <div className="ret-value">10 Yrs</div>
-                </div>
-              </div>
-              <button className="project-cta">Invest Now</button>
-            </div>
-          </div>
-
-          <div className="project-card">
-            <div className="project-img proj-commercial">
-              <svg className="project-img-visual" viewBox="0 0 300 220" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="60" y="60" width="80" height="100" fill="rgba(248, 232, 183, 0.08)" stroke="rgba(248, 232, 183, 0.15)" />
-                <rect x="160" y="60" width="80" height="100" fill="rgba(248, 232, 183, 0.12)" stroke="rgba(248, 232, 183, 0.15)" />
-              </svg>
-            </div>
-            <div className="project-body">
-              <div className="proj-tag">Commercial</div>
-              <h3 className="project-name">Tech Hub Plaza</h3>
-              <div className="project-location">📍 Bangalore</div>
-              <div className="project-returns">
-                <div>
-                  <div className="ret-label">Expected ROI</div>
-                  <div className="ret-value">20%</div>
-                </div>
-                <div>
-                  <div className="ret-label">Tenure</div>
-                  <div className="ret-value">5 Yrs</div>
-                </div>
-              </div>
-              <button className="project-cta">Invest Now</button>
-            </div>
+            )}
           </div>
         </div>
+        {projectsLoading ? (
+          <p className="projects-carousel-state" role="status">Loading featured projects...</p>
+        ) : projectsError ? (
+          <p className="projects-carousel-state" role="alert">{projectsError}</p>
+        ) : projects.length === 0 ? (
+          <p className="projects-carousel-state">No featured projects available.</p>
+        ) : (
+          <div className="projects-grid" ref={projectsViewportRef}>
+            {projects.map((project) => {
+              const category = project.category || "Project";
+              const image = project.photos?.[0];
+              return (
+                <article className="project-card" key={project.id}>
+                  <div className={`project-img ${categoryClasses[category] || "proj-real-estate"}`}>
+                    {image ? (
+                      <img className="project-img-photo" src={image} alt={project.name} loading="lazy" />
+                    ) : (
+                      <ProjectArtwork category={category} />
+                    )}
+                    <div className="proj-tag">{category}</div>
+                  </div>
+                  <div className="project-body">
+                    <h3 className="project-name">{project.name}</h3>
+                    <div className="project-location">📍 {project.city || project.location || "Location not provided"}</div>
+                    <div className="project-returns">
+                      <div>
+                        <div className="ret-label">Expected ROI</div>
+                        <div className="ret-value">{project.expectedROI == null ? "-" : `${project.expectedROI}%`}</div>
+                      </div>
+                      <div>
+                        <div className="ret-label">Tenure</div>
+                        <div className="ret-value">
+                          {project.tenure == null ? "-" : `${project.tenure} ${Number(project.tenure) === 1 ? "Year" : "Yrs"}`}
+                        </div>
+                      </div>
+                    </div>
+                    <button className="project-cta" type="button" onClick={() => setIsSignupStepsOpen(true)}>
+                      Invest Now
+                    </button>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
       </section>
+
+      {isSignupStepsOpen && (
+        <div
+          className="signup-steps-backdrop"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setIsSignupStepsOpen(false);
+          }}
+        >
+          <section
+            className="signup-steps-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="signup-steps-title"
+          >
+            <div className="signup-steps-header">
+              <div>
+                <p className="signup-steps-eyebrow">INVESTOR ONBOARDING</p>
+                <h2 id="signup-steps-title">How to get started</h2>
+              </div>
+              <button
+                className="signup-steps-close"
+                type="button"
+                aria-label="Close signup steps"
+                onClick={() => setIsSignupStepsOpen(false)}
+              >
+                ×
+              </button>
+            </div>
+            <ol className="signup-steps-list">
+              <li><span>01</span><div><strong>Basic Details</strong><p>Enter your personal and contact information.</p></div></li>
+              <li><span>02</span><div><strong>Address Information</strong><p>Add your residential address.</p></div></li>
+              <li><span>03</span><div><strong>KYC Verification</strong><p>Provide your PAN and Aadhaar details and upload documents.</p></div></li>
+              <li><span>04</span><div><strong>Nominee and Bank Details</strong><p>Add your nominee and payment information.</p></div></li>
+              <li><span>05</span><div><strong>Earning Preference</strong><p>Choose how you would like to receive earnings.</p></div></li>
+            </ol>
+            <button
+              className="signup-steps-cta"
+              type="button"
+              onClick={() => navigate(ROUTES.BASIC_INFO)}
+            >
+              Start Basic Details
+            </button>
+          </section>
+        </div>
+      )}
+
+      {isInvestHintOpen && (
+        <div
+          className="signup-steps-backdrop"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setIsInvestHintOpen(false);
+          }}
+        >
+          <section
+            className="invest-hint-dialog"
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="invest-hint-title"
+          >
+            <button
+              className="signup-steps-close"
+              type="button"
+              aria-label="Close message"
+              onClick={() => setIsInvestHintOpen(false)}
+            >
+              ×
+            </button>
+            <p className="signup-steps-eyebrow">FEATURED PROJECTS</p>
+            <h2 id="invest-hint-title">Ready to sign up?</h2>
+            <ol className="signup-steps-list invest-hint-steps">
+              <li><span>01</span><div><strong>View the projects</strong><p>Click View Projects below to close this message.</p></div></li>
+              <li><span>02</span><div><strong>Choose a project</strong><p>Review the featured projects and click Invest Now on the one you want.</p></div></li>
+              <li><span>03</span><div><strong>Start signup</strong><p>In the next popup, click Start Basic Details and complete each registration step.</p></div></li>
+            </ol>
+            <button
+              className="signup-steps-cta"
+              type="button"
+              onClick={() => setIsInvestHintOpen(false)}
+            >
+              View Projects
+            </button>
+          </section>
+        </div>
+      )}
 
       {/* WHY US SECTION */}
       <section className="why-section">

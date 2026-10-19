@@ -1,0 +1,83 @@
+.sales-card {
+  min-height: 350px;
+}
+
+.sales-card select {
+  border: 1px solid #ddd;
+  padding: 7px 10px;
+  border-radius: 5px;
+  background: white;
+}
+
+.sales-chart {
+  display: flex;
+  height: 270px;
+  margin-top: 20px;
+}
+
+.chart-lines {
+  width: 55px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-bottom: 25px;
+  font-size: 11px;
+  color: #555;
+}
+
+.chart-area {
+  flex: 1;
+  position: relative;
+}
+
+.grid-lines {
+  position: absolute;
+  inset: 0 0 25px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.grid-lines div {
+  border-top: 1px solid #edf0f4;
+}
+
+.bar-container {
+  height: calc(100% - 25px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  position: relative;
+  z-index: 1;
+}
+
+.chart-column {
+  height: 100%;
+  width: 12%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.chart-bar {
+  width: 3px;
+  background: #2166d1;
+  position: relative;
+  min-height: 5px;
+}
+
+.chart-dot {
+  position: absolute;
+  top: -4px;
+  left: -3px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #2166d1;
+}
+
+.month {
+  margin-top: 10px;
+  font-size: 11px;
+}

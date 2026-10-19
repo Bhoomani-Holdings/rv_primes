@@ -7,6 +7,7 @@ import { validateForm } from '../../Registration/formvalidation.js'
 import { uploadToCloudinary } from '../../../services/fileUploading/FileUpload'
 import { useSelector, useDispatch } from 'react-redux'
 import { saveKycInfo } from '../../../store/slices/RegistartionSlice.js'
+import { submitUserKyc } from '../../../services/userService.js'
 import styles from './KycDetails.module.css'
 
 export const KycDetails = () => {
@@ -16,7 +17,9 @@ export const KycDetails = () => {
     const savedData = useSelector(
         state => state.registration?.kycInfo || {}
     )
-    console.log(savedData);
+    const basicInfo = useSelector(state => state.registration?.basicInfo || {})
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [submitError, setSubmitError] = useState("")
 
     // const [formData, setFormData] = useState(config)
     // const [formData, setFormData] = useState(() => {
@@ -133,6 +136,8 @@ export const KycDetails = () => {
         }
 
         try {
+            setIsSubmitting(true)
+            setSubmitError("")
 
             // Find Fields
             const panField = formData.find(
@@ -194,14 +199,15 @@ export const KycDetails = () => {
             console.log("Final Data", finalData);
 
             dispatch(saveKycInfo(finalData));
+            await submitUserKyc(basicInfo.email, finalData)
 
             navigate("/nominee_info");
 
         } catch (error) {
 
-            console.log(error);
-
-            alert("File Upload Failed");
+            setSubmitError(error.message || "Unable to save KYC details")
+        } finally {
+            setIsSubmitting(false)
         }
     };
     return (
@@ -269,10 +275,12 @@ export const KycDetails = () => {
                     type="button"
                     onClick={handleSubmit}
                     className={styles.nextBtn}
+                    disabled={isSubmitting}
                 >
-                    Next
+                    {isSubmitting ? "Saving..." : "Next"}
                 </button>
             </div>
+            {submitError && <p role="alert">{submitError}</p>}
         </div>
     )
 }

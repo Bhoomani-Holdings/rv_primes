@@ -15,7 +15,7 @@
     transition: 0.3s;
 }
 
-.nav-menu link:hover {
+.nav-menu a:hover {
     color: #d6b253;
 }
 .nav-menu.active {
@@ -29,6 +29,14 @@
     gap: 5px;
     cursor: pointer;
     margin-left: auto;
+    padding: 8px;
+    border: 0;
+    background: transparent;
+}
+
+.hamburger:focus-visible {
+    outline: 2px solid #d6b253;
+    outline-offset: 3px;
 }
 
 .hamburger span{
