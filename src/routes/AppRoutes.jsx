@@ -3,15 +3,10 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { ROUTES } from './routesPath';
 
 import PublicLayout from '../layouts/PublicLayout';
-import InvestorLayout from '../layouts/InvestorLayout';
-import AdminLayout from '../layouts/AdminLayout';
-
 import Home from '../pages/public/home/Home';
 import Projects from '../pages/public/Projects';
 import Contact from '../pages/public/Contact';
 import AboutUs from '../pages/public/about/AboutUs';
-
-import InvestorDashboard from '../pages/investor/Dashboard';
 import Wallet from '../pages/investor/Wallet';
 import Earnings from '../pages/investor/Earnings';
 
