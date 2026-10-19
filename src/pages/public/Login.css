@@ -1,0 +1,99 @@
+.login-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 32px 18px;
+  background: #f4f6f8;
+  color: #0b1526;
+}
+
+.login-panel {
+  width: min(100%, 440px);
+  padding: 38px;
+  border: 1px solid #e1e5eb;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 12px 32px rgba(11, 21, 38, 0.08);
+}
+
+.login-panel h1 {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.25;
+  text-align: center;
+}
+
+.login-form {
+  display: grid;
+  gap: 10px;
+}
+
+.login-form label {
+  margin-top: 8px;
+  color: #26364d;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.login-form input {
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 12px;
+  border: 1px solid #cbd3dd;
+  border-radius: 4px;
+  background: #ffffff;
+  color: #0b1526;
+  font: inherit;
+}
+
+.login-form input:focus-visible {
+  border-color: #9b7724;
+  outline: 2px solid rgba(214, 178, 83, 0.28);
+  outline-offset: 1px;
+}
+
+.login-form button {
+  min-height: 46px;
+  margin-top: 14px;
+  border: 0;
+  border-radius: 4px;
+  background: #0b1526;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.login-form button:hover {
+  background: #1e2e4a;
+}
+
+.login-message {
+  margin: 2px 0 0;
+  color: #8a5e00;
+  font-size: 13px;
+}
+
+.signup-prompt {
+  margin: 24px 0 0;
+  color: #526176;
+  font-size: 14px;
+  text-align: center;
+}
+
+.signup-prompt a {
+  color: #8d6b20;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 480px) {
+  .login-panel {
+    padding: 28px 22px;
+  }
+
+  .login-panel h1 {
+    font-size: 25px;
+  }
+}

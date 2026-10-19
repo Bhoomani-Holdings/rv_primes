@@ -7,6 +7,8 @@ export const ROUTES = {
     NOMINEE_INFO: "/nominee_info",
     BANK_DETAILS: "/bank_details",
     EARNING_PREFERENCES: "/earning_preferences",
+    LOGIN: "/login",
+    SIGNUP: "/signup",
 
     // Public
     HOME: "/",
@@ -21,6 +23,8 @@ export const ROUTES = {
 
     // Admin
     ADMIN: "/admin",
+    ADMIN_DASHBOARD: "/admin/admindashboard",
     ADMIN_USERS: "/admin/users",
-    ADMIN_PROJECTS: "/admin/projects"
+    ADMIN_PROJECTS: "/admin/projects",
+    ADMIN_KYC_APPROVALS: "/admin/kyc-approvals"
 };

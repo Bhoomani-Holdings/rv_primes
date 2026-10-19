@@ -8,6 +8,7 @@ import { uploadToCloudinary } from '../../../services/fileUploading/FileUpload'
 import styles from './BankDetails.module.css'
 import { useSelector, useDispatch } from 'react-redux'
 import { saveBankInfo } from '../../../store/slices/RegistartionSlice'
+import { updateUserRegistrationDetails } from '../../../services/userService'
 
 
 
@@ -18,6 +19,10 @@ export const BankDetails = () => {
     const savedData = useSelector(
         state => state.registration?.bankInfo || {}
     )
+    const basicInfo = useSelector(state => state.registration?.basicInfo || {})
+    const nomineeInfo = useSelector(state => state.registration?.nomineeInfo || {})
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [submitError, setSubmitError] = useState("")
 
     const [formData, setFormData] = useState(() => {
 
@@ -83,6 +88,8 @@ export const BankDetails = () => {
             return
         }
         try {
+            setIsSubmitting(true)
+            setSubmitError("")
 
             // // Find Cancelled Cheque File
             // const cancelledChequeFile =
@@ -126,17 +133,16 @@ export const BankDetails = () => {
                 cancelledcheque: chequeUrl
             };
 
-            console.log(finalData);
+            await updateUserRegistrationDetails(basicInfo.email, nomineeInfo, finalData)
             dispatch(saveBankInfo(finalData))
 
             //Api CAll
             navigate("/earning_preferences");
         }
         catch (error) {
-
-            console.log(error);
-
-            alert("File Upload Failed");
+            setSubmitError(error.message || "Unable to save bank details")
+        } finally {
+            setIsSubmitting(false)
         }
     }
     
@@ -185,10 +191,12 @@ export const BankDetails = () => {
                 <button
                     onClick={handleSubmit}
                     className={styles.nextBtn}
+                    disabled={isSubmitting}
                 >
-                    Next
+                    {isSubmitting ? "Saving..." : "Next"}
                 </button>
             </div>
+            {submitError && <p role="alert">{submitError}</p>}
 
         </div>
     )

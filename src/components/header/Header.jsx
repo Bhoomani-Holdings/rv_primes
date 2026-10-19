@@ -1,30 +1,29 @@
-import React, {useState} from "react";
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "../../routes/routesPath";
 import "./Header.css";
 import Navigation from "../navigation/Navigation.jsx";
 
 function Header() {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const navigate = useNavigate();
     return (
-        <header className="header">
+        <header className="site-header">
             <div className="header-container">
-                {/* Logo or Brand Name */}
                 <div className="logo-wrapper">
-                <div className="logo-icon"></div>
-                
-                <div className="logo-text">
-                    <h2 className="logo-title">
-                        BHOOMANI HOLDINGS
-                    </h2>
-                    <p className="logo-subtitle">
-                        PRIVATE LIMITED
-                    </p>
+                    <div className="logo-icon"></div>
+                    <div className="logo-text">
+                        <h2 className="logo-title">BHOOMANI HOLDINGS</h2>
+                        <p className="logo-subtitle">PRIVATE LIMITED</p>
+                    </div>
                 </div>
-            </div>
-                {/* Navigation Links */}
-               <Navigation />
-              <button className="login-btn desktop-btn">Investor Login</button>
-               
-                
+                <Navigation />
+                <button
+                    className="login-btn desktop-btn"
+                    type="button"
+                    onClick={() => navigate(ROUTES.LOGIN)}
+                >
+                    Investor Login
+                </button>
             </div>
         </header>
     )

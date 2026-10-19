@@ -15,9 +15,7 @@ import InvestorDashboard from '../pages/investor/Dashboard';
 import Wallet from '../pages/investor/Wallet';
 import Earnings from '../pages/investor/Earnings';
 
-import AdminDashboard from '../pages/admin/Dashboard';
-import AdminUsers from '../pages/admin/Users';
-import AdminProjects from '../pages/admin/Projects';
+import AdminDashboard from '../pages/admin/AdminDashboard/admindashboard';
 
 import BasicInfo from '../pages/Registration/BasicInfo/BasicInfo';
 import AddressInfo from '../pages/Registration/AddressInfo/AddressInfo';
@@ -25,22 +23,12 @@ import { KycDetails } from '../pages/Registration/KYCDetails/KycDetails';
 import NomineeInfo from '../pages/Registration/NomineeInfo/NomineeInfo';
 import { BankDetails } from '../pages/Registration/BankDetails/BankDetails';
 import EarningPreference from '../pages/Registration/EarningPreference/EarningPreference';
+import Login from '../pages/public/Login';
 
 function AppRoutes() {
 
   return (
     <Routes>
-
-      {/* Redirect */}
-      <Route
-        path="/"
-
-        element={
-          <Navigate to={ROUTES.HOME} />
-        }
-      />
-
-      
 
       {/* Registration */}
       <Route
@@ -71,6 +59,12 @@ function AppRoutes() {
       <Route
         path={ROUTES.EARNING_PREFERENCES}
         element={<EarningPreference />}
+      />
+
+      <Route path={ROUTES.LOGIN} element={<Login />} />
+      <Route
+        path={ROUTES.SIGNUP}
+        element={<Navigate to={ROUTES.BASIC_INFO} replace />}
       />
 
       {/* Public */}
@@ -125,13 +119,38 @@ function AppRoutes() {
         />
 
         <Route
-          path="users"
-          element={<AdminUsers />}
+          path="admindashboard"
+          element={<AdminDashboard />}
         />
 
         <Route
           path="projects"
-          element={<AdminProjects />}
+          element={<AdminDashboard initialPage="Projects" />}
+        />
+
+        <Route
+          path="projects/new"
+          element={<AdminDashboard initialPage="Add Project" />}
+        />
+
+        <Route
+          path="projects/:projectId"
+          element={<AdminDashboard initialPage="Edit Project" />}
+        />
+
+        <Route
+          path="users"
+          element={<AdminDashboard initialPage="Users" />}
+        />
+
+        <Route
+          path="users/:userId"
+          element={<AdminDashboard initialPage="User Details" />}
+        />
+
+        <Route
+          path="kyc-approvals"
+          element={<AdminDashboard initialPage="KYC Approvals" />}
         />
       </Route>
 

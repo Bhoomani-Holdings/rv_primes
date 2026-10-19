@@ -1,0 +1,155 @@
+.project-management-content {
+  padding: 24px;
+}
+
+.project-management-card .card-header {
+  margin-bottom: 18px;
+}
+
+.project-management-card .card-header h3 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.project-management-card table {
+  min-width: 760px;
+}
+
+.project-management-row {
+  cursor: pointer;
+}
+
+.project-management-row:hover {
+  background: #f7f9fc;
+}
+
+.project-management-row:focus-visible {
+  outline: 2px solid #155ac7;
+  outline-offset: -2px;
+}
+
+.project-edit-backdrop {
+  position: fixed;
+  z-index: 20;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgb(10 22 36 / 48%);
+}
+
+.project-edit-modal {
+  width: min(100%, 480px);
+  max-height: calc(100vh - 40px);
+  padding: 24px;
+  overflow-y: auto;
+  border: 1px solid #dce2e9;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 18px 50px rgb(10 22 36 / 22%);
+}
+
+.project-edit-header,
+.project-edit-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.project-edit-header h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.project-edit-header button {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  background: transparent;
+  color: #435064;
+  font-size: 26px;
+  cursor: pointer;
+}
+
+.project-edit-name {
+  margin: 8px 0 20px;
+  color: #596575;
+  font-size: 14px;
+}
+
+.project-edit-modal form,
+.project-edit-modal label {
+  display: grid;
+  gap: 8px;
+}
+
+.project-edit-modal form {
+  gap: 16px;
+}
+
+.project-edit-modal label {
+  color: #313d4c;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.project-edit-modal input {
+  width: 100%;
+  min-height: 42px;
+  padding: 8px 10px;
+  border: 1px solid #cbd3dd;
+  border-radius: 4px;
+  font: inherit;
+  font-size: 14px;
+}
+
+.project-edit-modal input:focus {
+  border-color: #155ac7;
+  outline: 2px solid rgb(21 90 199 / 16%);
+}
+
+.project-edit-actions {
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.project-edit-actions button {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid #155ac7;
+  border-radius: 5px;
+  background: #155ac7;
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.project-edit-actions .project-edit-cancel {
+  border-color: #cbd3dd;
+  background: #fff;
+  color: #313d4c;
+}
+
+.project-edit-actions button:disabled,
+.project-edit-header button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.management-row-error {
+  margin: 0;
+  color: #b42318;
+  font-size: 13px;
+}
+
+@media (max-width: 700px) {
+  .project-management-content {
+    padding: 14px;
+  }
+
+  .project-management-card {
+    padding: 14px;
+  }
+}

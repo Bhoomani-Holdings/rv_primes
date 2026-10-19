@@ -373,6 +373,7 @@ section {
 /* FEATURED PROJECTS */
 .projects-section {
   background: var(--navy);
+  scroll-margin-top: 75px;
 }
 
 .projects-header {
@@ -401,18 +402,58 @@ section {
   gap: 8px;
 }
 
-.projects-grid {
+.projects-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.project-carousel-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.project-carousel-controls button {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 1px solid rgba(201, 168, 76, 0.45);
+  border-radius: 3px;
+  background: transparent;
+  color: var(--gold-light);
+  font: inherit;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.project-carousel-controls button:hover {
+  background: var(--gold);
+  color: var(--navy);
+}
+
+.projects-grid {
+  display: flex;
   gap: 2px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-inline: contain;
+}
+
+.projects-grid::-webkit-scrollbar {
+  display: none;
 }
 
 .project-card {
+  flex: 0 0 calc((100% - 6px) / 4);
+  min-width: 0;
   background: var(--navy-mid);
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.3s;
   position: relative;
+  scroll-snap-align: start;
 }
 
 .project-card:hover {
@@ -433,6 +474,14 @@ section {
   width: 100%;
   height: 100%;
   position: relative;
+}
+
+.project-img-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .proj-real-estate {
@@ -526,6 +575,173 @@ section {
 .project-cta:hover {
   background: var(--gold);
   color: var(--navy);
+}
+
+.signup-steps-backdrop {
+  position: fixed;
+  z-index: 1200;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(7, 19, 39, 0.78);
+}
+
+.signup-steps-dialog {
+  width: min(100%, 560px);
+  max-height: min(760px, calc(100vh - 40px));
+  overflow-y: auto;
+  padding: 30px;
+  border: 1px solid rgba(214, 178, 83, 0.42);
+  border-radius: 8px;
+  background: #101e35;
+  color: #fff;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.38);
+}
+
+.invest-hint-dialog {
+  position: relative;
+  width: min(100%, 480px);
+  padding: 30px;
+  border: 1px solid rgba(214, 178, 83, 0.42);
+  border-radius: 8px;
+  background: #101e35;
+  color: #fff;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.38);
+}
+
+.invest-hint-dialog .signup-steps-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+}
+
+.invest-hint-dialog h2 {
+  margin: 0;
+  color: #fff;
+  font-family: var(--font-serif);
+  font-size: 26px;
+}
+
+.invest-hint-steps {
+  margin-top: 10px;
+}
+
+.signup-steps-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.signup-steps-eyebrow {
+  margin: 0 0 8px;
+  color: var(--gold);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+}
+
+.signup-steps-header h2 {
+  margin: 0;
+  color: #fff;
+  font-family: var(--font-serif);
+  font-size: 26px;
+}
+
+.signup-steps-close {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 4px;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.signup-steps-list {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 8px 0;
+  list-style: none;
+}
+
+.signup-steps-list li {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.signup-steps-list li > span {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid rgba(214, 178, 83, 0.55);
+  border-radius: 50%;
+  color: var(--gold-light);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.signup-steps-list strong {
+  color: #fff;
+  font-size: 14px;
+}
+
+.signup-steps-list p {
+  margin: 4px 0 0;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.signup-steps-cta {
+  width: 100%;
+  min-height: 46px;
+  margin-top: 18px;
+  border: 1px solid var(--gold);
+  border-radius: 4px;
+  background: var(--gold);
+  color: var(--navy);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.signup-steps-cta:hover {
+  background: var(--gold-light);
+}
+
+@media (max-width: 480px) {
+  .signup-steps-dialog {
+    padding: 22px 18px;
+  }
+
+  .invest-hint-dialog {
+    padding: 24px 18px;
+  }
+
+  .signup-steps-header h2 {
+    font-size: 23px;
+  }
+
+  .invest-hint-dialog h2 {
+    padding-right: 32px;
+    font-size: 23px;
+  }
 }
 
 /* WHY US */
@@ -933,9 +1149,8 @@ section {
     font-size: 18px;
   }
 
-  .projects-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1px;
+  .project-card {
+    flex-basis: calc((100% - 2px) / 2);
   }
 
   .why-inner {
@@ -1101,6 +1316,11 @@ section {
     margin-bottom: 40px;
   }
 
+  .projects-header-actions {
+    align-self: stretch;
+    justify-content: space-between;
+  }
+
   .projects-title {
     font-size: clamp(28px, 3.5vw, 42px);
   }
@@ -1109,8 +1329,8 @@ section {
     font-size: 10px;
   }
 
-  .projects-grid {
-    grid-template-columns: 1fr;
+  .project-card {
+    flex-basis: 100%;
   }
 
   .project-img {

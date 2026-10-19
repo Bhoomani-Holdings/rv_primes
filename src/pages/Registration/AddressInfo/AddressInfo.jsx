@@ -10,6 +10,7 @@ import { useStates } from "../../../hooks/useStates.js";
 import { validateField } from "./addressInfoValidateField.js";
 import { useSelector, useDispatch } from "react-redux";
 import { saveAddressInfo } from '../../../store/slices/RegistartionSlice.js'
+import { createUser } from "../../../services/userService.js";
 import styles from './AddressInfo.module.css'
 
 function AddressForm() {
@@ -19,6 +20,9 @@ function AddressForm() {
     state => state.registration?.addressInfo || {}
   )
   const dispatch = useDispatch()
+  const basicInfo = useSelector(state => state.registration?.basicInfo || {});
+  const [saving, setSaving] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
 
 
@@ -49,15 +53,24 @@ function AddressForm() {
     validateField(event, formData, setFormData);
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     const { isFormvalid, dataObj, updatedFormData } = validateForm(formData);
 
     if (!isFormvalid) {
       setFormData(updatedFormData);
       return;
     }
-    dispatch(saveAddressInfo(dataObj))
-    navigate("/kyc_details");
+    dispatch(saveAddressInfo(dataObj));
+    setSaving(true);
+    setSubmitError("");
+    try {
+      await createUser(basicInfo, dataObj);
+      navigate("/kyc_details");
+    } catch (error) {
+      setSubmitError(error.message || "Unable to save registration details");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handlePrev = () => {
@@ -137,10 +150,12 @@ function AddressForm() {
         <button
           onClick={handleNext}
           className={styles.nextBtn}
+          disabled={saving}
         >
-          Next
+          {saving ? "Saving..." : "Next"}
         </button>
       </div>
+      {submitError && <p role="alert">{submitError}</p>}
     </div>
   );
 }
