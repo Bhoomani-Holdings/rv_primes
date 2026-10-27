@@ -1,294 +1,350 @@
 {
-  "stats": {
-    "totalProjects": 13,
-    "totalUnits": 3250,
-    "totalInvestors": 980,
-    "totalSales": 12500000,
-    "totalRevenue": 125000000
-  },
-  "projects": [
-    {
-      "id": 1,
-      "name": "Skyline Towers",
-      "description": "Skyline Towers is a modern residential development designed to offer comfortable and contemporary living. The project features thoughtfully designed residential units, quality construction, and convenient access to essential amenities, educational institutions, healthcare facilities, and transportation. With a focus on functionality, security, and a pleasant living environment, Skyline Towers aims to provide an ideal home for families and individuals seeking a comfortable urban lifestyle.",
-      "category": "Real Estate",
-      "location": "Hyderabad",
-      "projectType": "Ownership",
-      "totalUnits": 200,
-      "soldUnits": 120,
-      "availableUnits": 80,
-      "initialValue": 50000000,
-      "currentValue": 60000000,
-      "expectedROI": 8,
-      "tenure": 5,
-      "pricePerUnit": 300000,
-      "totalLandArea": 20000,
-      "landAreaUnit": "Sq. Ft.",
-      "unitsPerArea": 0.01,
-      "status": "Active",
-      "latitude": null,
-      "longitude": null,
-      "address": "",
-      "street": "",
-      "city": "Hyderabad",
-      "pincode": "",
-      "photos": [],
-      "videos": []
-    },
-    {
-      "id": 2,
-      "name": "Green Valley",
-      "description": "Green Valley is a modern residential development designed to offer comfortable and contemporary living. The project features thoughtfully designed residential units, quality construction, and convenient access to essential amenities, educational institutions, healthcare facilities, and transportation. With a focus on functionality, security, and a pleasant living environment, Skyline Towers aims to provide an ideal home for families and individuals seeking a comfortable urban lifestyle.",
-      "category": "Commercial",
-      "location": "Bangalore",
-      "projectType": "Leasing",
-      "totalUnits": 180,
-      "soldUnits": 90,
-      "availableUnits": 90,
-      "initialValue": 32000000,
-      "currentValue": 36000000,
-      "expectedROI": 12,
-      "tenure": 7,
-      "pricePerUnit": 200000,
-      "totalLandArea": 22000,
-      "landAreaUnit": "Sq. Ft.",
-      "unitsPerArea": 0.008181818181818182,
-      "status": "Active",
-      "latitude": null,
-      "longitude": null,
-      "address": "",
-      "street": "",
-      "city": "Bangalore",
-      "pincode": "",
-      "photos": [],
-      "videos": []
-    },
-    {
-      "id": 3,
-      "name": "Lakeview Residency",
-      "description": "Lakeview Residency is a modern residential development designed to offer comfortable and contemporary living. The project features thoughtfully designed residential units, quality construction, and convenient access to essential amenities, educational institutions, healthcare facilities, and transportation. With a focus on functionality, security, and a pleasant living environment, Skyline Towers aims to provide an ideal home for families and individuals seeking a comfortable urban lifestyle.",
-      "category": "Real Estate",
-      "location": "Pune",
-      "projectType": "Ownership",
-      "totalUnits": 150,
-      "soldUnits": 60,
-      "availableUnits": 90,
-      "initialValue": 25000000,
-      "currentValue": 30000000,
-      "expectedROI": 16,
-      "tenure": 9,
-      "pricePerUnit": 200000,
-      "totalLandArea": 15000,
-      "landAreaUnit": "Sq. Ft.",
-      "unitsPerArea": 0.01,
-      "status": "Active",
-      "latitude": null,
-      "longitude": null,
-      "address": "",
-      "street": "",
-      "city": "Pune",
-      "pincode": "",
-      "photos": [],
-      "videos": []
-    },
-    {
-      "id": 4,
-      "name": "Sunrise Heights",
-      "description": "Sunrise Heights is a modern residential development designed to offer comfortable and contemporary living. The project features thoughtfully designed residential units, quality construction, and convenient access to essential amenities, educational institutions, healthcare facilities, and transportation. With a focus on functionality, security, and a pleasant living environment, Skyline Towers aims to provide an ideal home for families and individuals seeking a comfortable urban lifestyle.",
-      "category": "Farmland",
-      "location": "Hyderabad",
-      "projectType": "Leasing",
-      "totalUnits": 120,
-      "soldUnits": 45,
-      "availableUnits": 75,
-      "initialValue": 21000000,
-      "currentValue": 25000000,
-      "expectedROI": 8,
-      "tenure": 6,
-      "pricePerUnit": 208333.33333333334,
-      "totalLandArea": 12000,
-      "landAreaUnit": "Sq. Ft.",
-      "unitsPerArea": 0.01,
-      "status": "Active",
-      "latitude": null,
-      "longitude": null,
-      "address": "",
-      "street": "",
-      "city": "Hyderabad",
-      "pincode": "",
-      "photos": [],
-      "videos": []
-    },
-    {
-      "id": 5,
-      "name": "Palm Grove",
-      "description": "**Project Description – Palm Grove (Farmland)**\n\nPalm Grove is a premium farmland development offering an opportunity to own agricultural land in a peaceful, green environment. The project features spacious land parcels surrounded by natural greenery, making it suitable for farming, weekend retreats, and long-term land investment. With convenient road access and a focus on sustainable land development, Palm Grove provides an ideal option for individuals seeking to connect with nature while investing in land with future potential.",
-      "category": "Farmland",
-      "location": "Chennai",
-      "projectType": "Ownership",
-      "totalUnits": 100,
-      "soldUnits": 30,
-      "availableUnits": 70,
-      "initialValue": 14000000,
-      "currentValue": 16000000,
-      "expectedROI": 15,
-      "tenure": 7,
-      "pricePerUnit": 160000,
-      "totalLandArea": 10000,
-      "landAreaUnit": "Sq. Ft.",
-      "unitsPerArea": 0.01,
-      "status": "Active",
-      "latitude": null,
-      "longitude": null,
-      "address": "",
-      "street": "",
-      "city": "Chennai",
-      "pincode": "",
-      "photos": [],
-      "videos": []
-    },
-    {
-      "id": 6,
-      "name": "Mountail valley",
-      "description": "**Project Description – Palm Grove (Farmland)**\nMountain Valley is a premium farmland development offering an opportunity to own agricultural land in a peaceful, green environment. The project features spacious land parcels surrounded by natural greenery, making it suitable for farming, weekend retreats, and long-term land investment. With convenient road access and a focus on sustainable land development, Palm Grove provides an ideal option for individuals seeking to connect with nature while investing in land with future potential.",
-      "category": "Commercial",
-      "location": "Kerala",
-      "projectType": "Leasing",
-      "totalUnits": 2000,
-      "soldUnits": 0,
-      "availableUnits": 2000,
-      "initialValue": 1000000,
-      "currentValue": 10000000,
-      "expectedROI": 5,
-      "tenure": 3,
-      "pricePerUnit": 5000,
-      "totalLandArea": 5,
-      "landAreaUnit": "Acres",
-      "unitsPerArea": 400,
-      "status": "Active",
-      "latitude": null,
-      "longitude": null,
-      "address": "",
-      "street": "",
-      "city": "Kerala",
-      "pincode": "",
-      "photos": [],
-      "videos": []
-    }
-  ],
-  "salesOverview": [
-    {
-      "month": "Jan",
-      "sales": 2000000
-    },
-    {
-      "month": "Feb",
-      "sales": 4000000
-    },
-    {
-      "month": "Mar",
-      "sales": 5500000
-    },
-    {
-      "month": "Apr",
-      "sales": 7500000
-    },
-    {
-      "month": "May",
-      "sales": 7000000
-    },
-    {
-      "month": "Jun",
-      "sales": 12500000
-    }
-  ],
-  "kycApprovals": {
-    "pending": 56,
-    "approved": 132,
-    "rejected": 10
-  },
-  "transactions": [
-    {
-      "id": 1,
-      "investor": "Ravi Kumar",
-      "project": "Skyline Towers",
-      "amount": 4200000,
-      "paymentStatus": "Success",
-      "date": "20 May 2024"
-    },
-    {
-      "id": 2,
-      "investor": "Sneha Reddy",
-      "project": "Green Valley",
-      "amount": 8100000,
-      "paymentStatus": "Success",
-      "date": "19 May 2024"
-    },
-    {
-      "id": 3,
-      "investor": "Arun Mehta",
-      "project": "Lakeview Residency",
-      "amount": 3000000,
-      "paymentStatus": "Pending",
-      "date": "18 May 2024"
-    },
-    {
-      "id": 4,
-      "investor": "Pooja Sharma",
-      "project": "Sunrise Heights",
-      "amount": 2000000,
-      "paymentStatus": "Success",
-      "date": "17 May 2024"
-    }
-  ],
-  "revenueOverview": {
-    "totalRevenue": 41000000,
-    "profitShare": 10100000,
-    "otherIncome": 33100000
-  },
-  "users": [
-    {
-      "id": 1,
-      "firstName": "Kamal",
-      "lastName": "Javvaji",
-      "fullName": "Kamal Javvaji",
-      "mobileNumber": "7799113427",
-      "email": "jkamal.kumar17@gmail.com",
-      "dateOfBirth": "1995-06-07",
-      "gender": "Male",
-      "address": "ddsfsdafsfdf",
-      "address1": "asdfsdvfsdf",
-      "country": "India",
-      "state": "Andaman and Nicobar Islands",
-      "city": "Tenali",
-      "pincode": "522201",
-      "approvalStatus": "Pending for Approval"
-    },
-    {
-      "id": 2,
-      "firstName": "Raghu",
-      "lastName": "Bhoomani",
-      "fullName": "Raghu Bhoomani",
-      "mobileNumber": "2233445599",
-      "email": "bhoomani@gmail.com",
-      "dateOfBirth": "2003-06-15",
-      "gender": "Male",
-      "address": "ssddds",
-      "address1": "ksdlddsss",
-      "country": "India",
-      "state": "Andhra Pradesh",
-      "city": "Vijayawada",
-      "pincode": "521108",
-      "approvalStatus": "Pending for Approval",
-      "kycDetails": {
-        "pancardnumber": "ACIPF7445F",
-        "aadhaarnumber": "777799995555",
-        "uploadpancard": "https://res.cloudinary.com/dhvefnbbm/image/upload/v1792388701/registration/documents/j3tfqvojpcmmtylum648.jpg",
-        "uploadaadhaar": "https://res.cloudinary.com/dhvefnbbm/image/upload/v1792388702/registration/documents/ehb0bpfpfzmaxalhcrro.jpg",
-        "uploadaddressproof": "https://res.cloudinary.com/dhvefnbbm/image/upload/v1792388702/registration/documents/yfa1o0pnfnzw9i2uhyrr.jpg",
-        "selfiephoto": "https://res.cloudinary.com/dhvefnbbm/image/upload/v1792388703/registration/documents/yfaflv3suxudjjf0l7rn.jpg"
-      },
-      "kycStatus": "Pending for Approval"
-    }
-  ]
+    "stats":  {
+                  "totalProjects":  7,
+                  "totalUnits":  9250,
+                  "totalInvestors":  980,
+                  "totalSales":  12500000,
+                  "totalRevenue":  125000000
+              },
+    "projects":  [
+                     {
+                         "id":  1,
+                         "name":  "Skyline Towers",
+                         "description":  "Skyline Towers is a modern residential development designed to offer comfortable and contemporary living. The project features thoughtfully designed residential units, quality construction, and convenient access to essential amenities, educational institutions, healthcare facilities, and transportation. With a focus on functionality, security, and a pleasant living environment, Skyline Towers aims to provide an ideal home for families and individuals seeking a comfortable urban lifestyle.",
+                         "category":  "Real Estate",
+                         "location":  "Hyderabad",
+                         "projectType":  "Ownership",
+                         "totalUnits":  200,
+                         "soldUnits":  120,
+                         "availableUnits":  80,
+                         "initialValue":  50000000,
+                         "currentValue":  60000000,
+                         "expectedROI":  8,
+                         "tenure":  5,
+                         "pricePerUnit":  300000,
+                         "totalLandArea":  20000,
+                         "landAreaUnit":  "Sq. Ft.",
+                         "unitsPerArea":  0.01,
+                         "status":  "Active",
+                         "latitude":  null,
+                         "longitude":  null,
+                         "address":  "",
+                         "street":  "",
+                         "city":  "Hyderabad",
+                         "pincode":  "",
+                         "photos":  [
+
+                                    ],
+                         "videos":  [
+
+                                    ]
+                     },
+                     {
+                         "id":  2,
+                         "name":  "Green Valley",
+                         "description":  "Green Valley is a modern residential development designed to offer comfortable and contemporary living. The project features thoughtfully designed residential units, quality construction, and convenient access to essential amenities, educational institutions, healthcare facilities, and transportation. With a focus on functionality, security, and a pleasant living environment, Skyline Towers aims to provide an ideal home for families and individuals seeking a comfortable urban lifestyle.",
+                         "category":  "Commercial",
+                         "location":  "Bangalore",
+                         "projectType":  "Leasing",
+                         "totalUnits":  180,
+                         "soldUnits":  90,
+                         "availableUnits":  90,
+                         "initialValue":  32000000,
+                         "currentValue":  36000000,
+                         "expectedROI":  12,
+                         "tenure":  7,
+                         "pricePerUnit":  200000,
+                         "totalLandArea":  22000,
+                         "landAreaUnit":  "Sq. Ft.",
+                         "unitsPerArea":  0.008181818181818182,
+                         "status":  "Active",
+                         "latitude":  null,
+                         "longitude":  null,
+                         "address":  "",
+                         "street":  "",
+                         "city":  "Bangalore",
+                         "pincode":  "",
+                         "photos":  [
+
+                                    ],
+                         "videos":  [
+
+                                    ]
+                     },
+                     {
+                         "id":  3,
+                         "name":  "Lakeview Residency",
+                         "description":  "Lakeview Residency is a modern residential development designed to offer comfortable and contemporary living. The project features thoughtfully designed residential units, quality construction, and convenient access to essential amenities, educational institutions, healthcare facilities, and transportation. With a focus on functionality, security, and a pleasant living environment, Skyline Towers aims to provide an ideal home for families and individuals seeking a comfortable urban lifestyle.",
+                         "category":  "Real Estate",
+                         "location":  "Pune",
+                         "projectType":  "Ownership",
+                         "totalUnits":  150,
+                         "soldUnits":  60,
+                         "availableUnits":  90,
+                         "initialValue":  25000000,
+                         "currentValue":  30000000,
+                         "expectedROI":  16,
+                         "tenure":  9,
+                         "pricePerUnit":  200000,
+                         "totalLandArea":  15000,
+                         "landAreaUnit":  "Sq. Ft.",
+                         "unitsPerArea":  0.01,
+                         "status":  "Active",
+                         "latitude":  null,
+                         "longitude":  null,
+                         "address":  "",
+                         "street":  "",
+                         "city":  "Pune",
+                         "pincode":  "",
+                         "photos":  [
+
+                                    ],
+                         "videos":  [
+
+                                    ]
+                     },
+                     {
+                         "id":  4,
+                         "name":  "Sunrise Heights",
+                         "description":  "Sunrise Heights is a modern residential development designed to offer comfortable and contemporary living. The project features thoughtfully designed residential units, quality construction, and convenient access to essential amenities, educational institutions, healthcare facilities, and transportation. With a focus on functionality, security, and a pleasant living environment, Skyline Towers aims to provide an ideal home for families and individuals seeking a comfortable urban lifestyle.",
+                         "category":  "Farmland",
+                         "location":  "Hyderabad",
+                         "projectType":  "Leasing",
+                         "totalUnits":  120,
+                         "soldUnits":  45,
+                         "availableUnits":  75,
+                         "initialValue":  21000000,
+                         "currentValue":  25000000,
+                         "expectedROI":  8,
+                         "tenure":  6,
+                         "pricePerUnit":  208333.33333333334,
+                         "totalLandArea":  12000,
+                         "landAreaUnit":  "Sq. Ft.",
+                         "unitsPerArea":  0.01,
+                         "status":  "Active",
+                         "latitude":  null,
+                         "longitude":  null,
+                         "address":  "",
+                         "street":  "",
+                         "city":  "Hyderabad",
+                         "pincode":  "",
+                         "photos":  [
+
+                                    ],
+                         "videos":  [
+
+                                    ]
+                     },
+                     {
+                         "id":  5,
+                         "name":  "Palm Grove",
+                         "description":  "**Project Description â€“ Palm Grove (Farmland)**\n\nPalm Grove is a premium farmland development offering an opportunity to own agricultural land in a peaceful, green environment. The project features spacious land parcels surrounded by natural greenery, making it suitable for farming, weekend retreats, and long-term land investment. With convenient road access and a focus on sustainable land development, Palm Grove provides an ideal option for individuals seeking to connect with nature while investing in land with future potential.",
+                         "category":  "Farmland",
+                         "location":  "Chennai",
+                         "projectType":  "Ownership",
+                         "totalUnits":  100,
+                         "soldUnits":  30,
+                         "availableUnits":  70,
+                         "initialValue":  14000000,
+                         "currentValue":  16000000,
+                         "expectedROI":  15,
+                         "tenure":  7,
+                         "pricePerUnit":  160000,
+                         "totalLandArea":  10000,
+                         "landAreaUnit":  "Sq. Ft.",
+                         "unitsPerArea":  0.01,
+                         "status":  "Active",
+                         "latitude":  null,
+                         "longitude":  null,
+                         "address":  "",
+                         "street":  "",
+                         "city":  "Chennai",
+                         "pincode":  "",
+                         "photos":  [
+
+                                    ],
+                         "videos":  [
+
+                                    ]
+                     },
+                     {
+                         "id":  6,
+                         "name":  "Mountail valley",
+                         "description":  "**Project Description â€“ Palm Grove (Farmland)**\nMountain Valley is a premium farmland development offering an opportunity to own agricultural land in a peaceful, green environment. The project features spacious land parcels surrounded by natural greenery, making it suitable for farming, weekend retreats, and long-term land investment. With convenient road access and a focus on sustainable land development, Palm Grove provides an ideal option for individuals seeking to connect with nature while investing in land with future potential.",
+                         "category":  "Commercial",
+                         "location":  "Kerala",
+                         "projectType":  "Leasing",
+                         "totalUnits":  2000,
+                         "soldUnits":  0,
+                         "availableUnits":  2000,
+                         "initialValue":  1000000,
+                         "currentValue":  10000000,
+                         "expectedROI":  5,
+                         "tenure":  3,
+                         "pricePerUnit":  5000,
+                         "totalLandArea":  5,
+                         "landAreaUnit":  "Acres",
+                         "unitsPerArea":  400,
+                         "status":  "Active",
+                         "latitude":  null,
+                         "longitude":  null,
+                         "address":  "",
+                         "street":  "",
+                         "city":  "Kerala",
+                         "pincode":  "",
+                         "photos":  [
+
+                                    ],
+                         "videos":  [
+
+                                    ]
+                     },
+                     {
+                         "id":  7,
+                         "name":  "Solar farm",
+                         "description":  "Solar farm",
+                         "category":  "Commercial",
+                         "location":  "Chennai",
+                         "projectType":  "Leasing",
+                         "totalUnits":  6000,
+                         "soldUnits":  0,
+                         "availableUnits":  6000,
+                         "initialValue":  500000,
+                         "currentValue":  500000,
+                         "expectedROI":  8,
+                         "tenure":  5,
+                         "pricePerUnit":  83.33333333333333,
+                         "totalLandArea":  5,
+                         "landAreaUnit":  "Acres",
+                         "unitsPerArea":  1200,
+                         "status":  "Active",
+                         "latitude":  null,
+                         "longitude":  null,
+                         "address":  "",
+                         "street":  "",
+                         "city":  "Chennai",
+                         "pincode":  "",
+                         "photos":  [
+                                        "http://localhost:5000/uploads/2ae0fdd6-4f10-4387-b1a6-3f5de97a498d.jpeg"
+                                    ],
+                         "videos":  [
+
+                                    ]
+                     }
+                 ],
+    "salesOverview":  [
+                          {
+                              "month":  "Jan",
+                              "sales":  2000000
+                          },
+                          {
+                              "month":  "Feb",
+                              "sales":  4000000
+                          },
+                          {
+                              "month":  "Mar",
+                              "sales":  5500000
+                          },
+                          {
+                              "month":  "Apr",
+                              "sales":  7500000
+                          },
+                          {
+                              "month":  "May",
+                              "sales":  7000000
+                          },
+                          {
+                              "month":  "Jun",
+                              "sales":  12500000
+                          }
+                      ],
+    "kycApprovals":  {
+                         "pending":  56,
+                         "approved":  132,
+                         "rejected":  10
+                     },
+    "transactions":  [
+                         {
+                             "id":  1,
+                             "investor":  "Ravi Kumar",
+                             "project":  "Skyline Towers",
+                             "amount":  4200000,
+                             "paymentStatus":  "Success",
+                             "date":  "20 May 2024"
+                         },
+                         {
+                             "id":  2,
+                             "investor":  "Sneha Reddy",
+                             "project":  "Green Valley",
+                             "amount":  8100000,
+                             "paymentStatus":  "Success",
+                             "date":  "19 May 2024"
+                         },
+                         {
+                             "id":  3,
+                             "investor":  "Arun Mehta",
+                             "project":  "Lakeview Residency",
+                             "amount":  3000000,
+                             "paymentStatus":  "Pending",
+                             "date":  "18 May 2024"
+                         },
+                         {
+                             "id":  4,
+                             "investor":  "Pooja Sharma",
+                             "project":  "Sunrise Heights",
+                             "amount":  2000000,
+                             "paymentStatus":  "Success",
+                             "date":  "17 May 2024"
+                         }
+                     ],
+    "revenueOverview":  {
+                            "totalRevenue":  41000000,
+                            "profitShare":  10100000,
+                            "otherIncome":  33100000
+                        },
+    "users":  [
+                  {
+                      "id":  1,
+                      "firstName":  "Kamal",
+                      "lastName":  "Javvaji",
+                      "fullName":  "Kamal Javvaji",
+                      "mobileNumber":  "7799113427",
+                      "email":  "jkamal.kumar17@gmail.com",
+                      "dateOfBirth":  "1995-06-07",
+                      "gender":  "Male",
+                      "address":  "ddsfsdafsfdf",
+                      "address1":  "asdfsdvfsdf",
+                      "country":  "India",
+                      "state":  "Andaman and Nicobar Islands",
+                      "city":  "Tenali",
+                      "pincode":  "522201",
+                      "approvalStatus":  "Pending for Approval"
+                  },
+                  {
+                      "id":  2,
+                      "firstName":  "Raghu",
+                      "lastName":  "Bhoomani",
+                      "fullName":  "Raghu Bhoomani",
+                      "mobileNumber":  "2233445599",
+                      "email":  "bhoomani@gmail.com",
+                      "dateOfBirth":  "2003-06-15",
+                      "gender":  "Male",
+                      "address":  "ssddds",
+                      "address1":  "ksdlddsss",
+                      "country":  "India",
+                      "state":  "Andhra Pradesh",
+                      "city":  "Vijayawada",
+                      "pincode":  "521108",
+                      "approvalStatus":  "Pending for Approval",
+                      "kycDetails":  {
+                                         "pancardnumber":  "ACIPF7445F",
+                                         "aadhaarnumber":  "777799995555",
+                                         "uploadpancard":  "https://res.cloudinary.com/dhvefnbbm/image/upload/v1792388701/registration/documents/j3tfqvojpcmmtylum648.jpg",
+                                         "uploadaadhaar":  "https://res.cloudinary.com/dhvefnbbm/image/upload/v1792388702/registration/documents/ehb0bpfpfzmaxalhcrro.jpg",
+                                         "uploadaddressproof":  "https://res.cloudinary.com/dhvefnbbm/image/upload/v1792388702/registration/documents/yfa1o0pnfnzw9i2uhyrr.jpg",
+                                         "selfiephoto":  "https://res.cloudinary.com/dhvefnbbm/image/upload/v1792388703/registration/documents/yfaflv3suxudjjf0l7rn.jpg"
+                                     },
+                      "kycStatus":  "Pending for Approval"
+                  }
+              ]
 }

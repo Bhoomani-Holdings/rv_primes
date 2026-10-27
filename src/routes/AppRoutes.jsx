@@ -13,7 +13,6 @@ import Earnings from '../pages/investor/Earnings';
 import AdminDashboard from '../pages/admin/AdminDashboard/admindashboard';
 
 import BasicInfo from '../pages/Registration/BasicInfo/BasicInfo';
-import AddressInfo from '../pages/Registration/AddressInfo/AddressInfo';
 import { KycDetails } from '../pages/Registration/KYCDetails/KycDetails';
 import NomineeInfo from '../pages/Registration/NomineeInfo/NomineeInfo';
 import { BankDetails } from '../pages/Registration/BankDetails/BankDetails';
@@ -33,7 +32,7 @@ function AppRoutes() {
 
       <Route
         path={ROUTES.ADDRESS_INFO}
-        element={<AddressInfo />}
+        element={<Navigate to={ROUTES.BASIC_INFO} replace />}
       />
 
       <Route

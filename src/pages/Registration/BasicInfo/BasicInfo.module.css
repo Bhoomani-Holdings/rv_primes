@@ -35,6 +35,10 @@
     background: #fff;
 }
 
+.basicSection + .basicSection {
+    margin-top: 24px;
+}
+
 .sectionHeader {
     background: #fff8df;
     padding: 18px 25px;
@@ -51,6 +55,40 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 25px;
+}
+
+.mobileField {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    min-width: 0;
+}
+
+.countryCodeLabel {
+    display: flex;
+    flex: 0 0 145px;
+    flex-direction: column;
+    color: #222;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: "Roboto";
+}
+
+.countryCodeLabel select {
+    width: 100%;
+    margin-top: 8px;
+    padding: 14px 10px;
+    border: 1px solid #d9d9d9;
+    border-radius: 10px;
+    background: #fff;
+    font: inherit;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.mobileField :global(.input-group) {
+    flex: 1;
+    min-width: 0;
 }
 
 .buttonContainer {

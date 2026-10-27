@@ -4,8 +4,12 @@ export const criteria = {
         "error": "this feild is required"
     },
     "MOBILE": {
-        "regex": /^[0-9]{10}$/,
-        "error": "Please enter a valid 10-digit phone number"
+        "regex": /^[0-9]{4,14}$/,
+        "error": "Please enter a valid phone number"
+    },
+    "PINCODE": {
+        "regex": /^[0-9]{6}$/,
+        "error": "Pincode must be 6 digits"
     },
     "EMAIL": {
         "regex": /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,

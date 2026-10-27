@@ -172,6 +172,7 @@ function AdminDashboard({ initialPage = "Dashboard" }) {
 
             <ProjectOverview
               projects={dashboard.projects}
+              compact
               onViewAll={() => setActivePage("Projects")}
             />
 
