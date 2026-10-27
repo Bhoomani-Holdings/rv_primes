@@ -4,10 +4,13 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const multer = require("multer");
+const mongoose = require("mongoose");
+require("dotenv").config();
 
 const app = express();
 
 const PORT = Number(process.env.PORT) || 5000;
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/rvprimes";
 
 app.use(cors());
 app.use(express.json());
@@ -17,6 +20,50 @@ const dashboardFile = process.env.DASHBOARD_FILE || path.join(
   "data",
   "dashboard.json"
 );
+const dashboardSchema = new mongoose.Schema({
+  _id: { type: String, default: "primary" },
+  stats: { type: mongoose.Schema.Types.Mixed, default: {} },
+  projects: { type: [mongoose.Schema.Types.Mixed], default: [] },
+  salesOverview: { type: [mongoose.Schema.Types.Mixed], default: [] },
+  kycApprovals: { type: mongoose.Schema.Types.Mixed, default: {} },
+  transactions: { type: [mongoose.Schema.Types.Mixed], default: [] },
+  revenueOverview: { type: mongoose.Schema.Types.Mixed, default: {} },
+  users: { type: [mongoose.Schema.Types.Mixed], default: [] }
+}, { collection: "dashboard", versionKey: false });
+const Dashboard = mongoose.model("Dashboard", dashboardSchema);
+
+const cleanDashboard = (dashboard) => {
+  if (!dashboard) return null;
+  const result = dashboard.toObject ? dashboard.toObject() : dashboard;
+  delete result._id;
+  return result;
+};
+
+const readDashboard = async () => cleanDashboard(await Dashboard.findById("primary"));
+const saveDashboard = async (dashboard) => {
+  const saved = await Dashboard.findOneAndReplace(
+    { _id: "primary" },
+    { ...dashboard, _id: "primary" },
+    { upsert: true, new: true }
+  );
+  return cleanDashboard(saved);
+};
+
+const initializeDatabase = async () => {
+  await mongoose.connect(MONGODB_URI);
+  const initialData = JSON.parse(fs.readFileSync(dashboardFile, "utf-8"));
+  const existingData = await readDashboard();
+  if (existingData) {
+    const completedData = { ...initialData, ...existingData };
+    const missingFields = ["stats", "projects", "salesOverview", "kycApprovals", "transactions", "revenueOverview", "users"]
+      .filter((field) => existingData[field] === undefined);
+    if (missingFields.length > 0) await saveDashboard(completedData);
+    return;
+  }
+
+  await Dashboard.create({ ...initialData, _id: "primary" });
+  console.log(`Seeded MongoDB database "${mongoose.connection.name}" from backend/data/dashboard.json`);
+};
 const uploadDirectory = path.join(__dirname, "uploads");
 const maxImageSize = 5 * 1024 * 1024;
 const maxVideoSize = 50 * 1024 * 1024;
@@ -75,11 +122,9 @@ const parseProjectUpload = (req, res, next) => {
   });
 };
 
-app.get("/api/dashboard", (req, res) => {
+app.get("/api/dashboard", async (req, res) => {
   try {
-    const data = fs.readFileSync(dashboardFile, "utf-8");
-
-    res.json(JSON.parse(data));
+    res.json(await readDashboard());
   } catch (error) {
     console.error(error);
 
@@ -89,9 +134,9 @@ app.get("/api/dashboard", (req, res) => {
   }
 });
 
-app.get("/api/projects", (req, res) => {
+app.get("/api/projects", async (req, res) => {
   try {
-    const data = JSON.parse(fs.readFileSync(dashboardFile, "utf-8"));
+    const data = await readDashboard();
     res.json(data.projects);
   } catch (error) {
     console.error(error);
@@ -99,9 +144,9 @@ app.get("/api/projects", (req, res) => {
   }
 });
 
-app.get("/api/users", (req, res) => {
+app.get("/api/users", async (req, res) => {
   try {
-    const data = JSON.parse(fs.readFileSync(dashboardFile, "utf-8"));
+    const data = await readDashboard();
     res.json(data.users || []);
   } catch (error) {
     console.error(error);
@@ -109,7 +154,7 @@ app.get("/api/users", (req, res) => {
   }
 });
 
-app.post("/api/users", (req, res) => {
+app.post("/api/users", async (req, res) => {
   const { basicInfo, addressInfo } = req.body || {};
   const requiredBasicFields = ["firstname", "lastname", "mobileNumber", "email"];
   const requiredAddressFields = ["address", "address1", "country", "state", "city", "pincode"];
@@ -121,7 +166,7 @@ app.post("/api/users", (req, res) => {
   }
 
   try {
-    const data = JSON.parse(fs.readFileSync(dashboardFile, "utf-8"));
+    const data = await readDashboard();
     data.users = Array.isArray(data.users) ? data.users : [];
     const email = basicInfo.email.trim().toLowerCase();
     if (data.users.some((user) => user.email.toLowerCase() === email)) {
@@ -149,7 +194,7 @@ app.post("/api/users", (req, res) => {
     };
 
     data.users.push(user);
-    fs.writeFileSync(dashboardFile, `${JSON.stringify(data, null, 2)}\n`);
+    await saveDashboard(data);
     return res.status(201).json(user);
   } catch (error) {
     console.error(error);
@@ -157,19 +202,19 @@ app.post("/api/users", (req, res) => {
   }
 });
 
-app.patch("/api/users/:id/status", (req, res) => {
+app.patch("/api/users/:id/status", async (req, res) => {
   const allowedStatuses = ["Pending for Approval", "Rejected", "Approved"];
   if (!allowedStatuses.includes(req.body.approvalStatus)) {
     return res.status(400).json({ message: "Invalid user approval status" });
   }
 
   try {
-    const data = JSON.parse(fs.readFileSync(dashboardFile, "utf-8"));
+    const data = await readDashboard();
     const user = (data.users || []).find((item) => Number(item.id) === Number(req.params.id));
     if (!user) return res.status(404).json({ message: "User not found" });
 
     user.approvalStatus = req.body.approvalStatus;
-    fs.writeFileSync(dashboardFile, `${JSON.stringify(data, null, 2)}\n`);
+    await saveDashboard(data);
     return res.json(user);
   } catch (error) {
     console.error(error);
@@ -177,14 +222,14 @@ app.patch("/api/users/:id/status", (req, res) => {
   }
 });
 
-app.patch("/api/users/registration-details", (req, res) => {
+app.patch("/api/users/registration-details", async (req, res) => {
   const { email, nomineeInfo, bankInfo } = req.body || {};
   if (typeof email !== "string" || !email.trim() || !nomineeInfo || !bankInfo) {
     return res.status(400).json({ message: "Registration details are incomplete" });
   }
 
   try {
-    const data = JSON.parse(fs.readFileSync(dashboardFile, "utf-8"));
+    const data = await readDashboard();
     const user = (data.users || []).find((item) => item.email.toLowerCase() === email.trim().toLowerCase());
     if (!user) return res.status(404).json({ message: "Registered user not found" });
 
@@ -202,7 +247,7 @@ app.patch("/api/users/registration-details", (req, res) => {
       cancelledcheque: bankInfo.cancelledcheque || ""
     };
 
-    fs.writeFileSync(dashboardFile, `${JSON.stringify(data, null, 2)}\n`);
+    await saveDashboard(data);
     return res.json(user);
   } catch (error) {
     console.error(error);
@@ -210,7 +255,7 @@ app.patch("/api/users/registration-details", (req, res) => {
   }
 });
 
-app.patch("/api/users/kyc", (req, res) => {
+app.patch("/api/users/kyc", async (req, res) => {
   const { email, kycDetails } = req.body || {};
   const requiredKycFields = [
     "pancardnumber",
@@ -226,13 +271,13 @@ app.patch("/api/users/kyc", (req, res) => {
   }
 
   try {
-    const data = JSON.parse(fs.readFileSync(dashboardFile, "utf-8"));
+    const data = await readDashboard();
     const user = (data.users || []).find((item) => item.email.toLowerCase() === email.trim().toLowerCase());
     if (!user) return res.status(404).json({ message: "Registered user not found" });
 
     user.kycDetails = Object.fromEntries(requiredKycFields.map((field) => [field, kycDetails[field].trim()]));
     user.kycStatus = "Pending for Approval";
-    fs.writeFileSync(dashboardFile, `${JSON.stringify(data, null, 2)}\n`);
+    await saveDashboard(data);
     return res.json(user);
   } catch (error) {
     console.error(error);
@@ -240,20 +285,20 @@ app.patch("/api/users/kyc", (req, res) => {
   }
 });
 
-app.patch("/api/users/:id/kyc-status", (req, res) => {
+app.patch("/api/users/:id/kyc-status", async (req, res) => {
   const allowedStatuses = ["Pending for Approval", "Accept", "Reject"];
   if (!allowedStatuses.includes(req.body.kycStatus)) {
     return res.status(400).json({ message: "Invalid KYC approval status" });
   }
 
   try {
-    const data = JSON.parse(fs.readFileSync(dashboardFile, "utf-8"));
+    const data = await readDashboard();
     const user = (data.users || []).find((item) => Number(item.id) === Number(req.params.id));
     if (!user) return res.status(404).json({ message: "User not found" });
     if (!user.kycDetails) return res.status(400).json({ message: "User has not submitted KYC details" });
 
     user.kycStatus = req.body.kycStatus;
-    fs.writeFileSync(dashboardFile, `${JSON.stringify(data, null, 2)}\n`);
+    await saveDashboard(data);
     return res.json(user);
   } catch (error) {
     console.error(error);
@@ -261,9 +306,9 @@ app.patch("/api/users/:id/kyc-status", (req, res) => {
   }
 });
 
-app.patch("/api/projects/:id", (req, res) => {
+app.patch("/api/projects/:id", async (req, res) => {
   try {
-    const data = JSON.parse(fs.readFileSync(dashboardFile, "utf-8"));
+    const data = await readDashboard();
     const projectIndex = data.projects.findIndex((item) => Number(item.id) === Number(req.params.id));
     if (projectIndex === -1) {
       return res.status(404).json({ message: "Project not found" });
@@ -354,7 +399,7 @@ app.patch("/api/projects/:id", (req, res) => {
     };
 
     data.projects[projectIndex] = nextProject;
-    fs.writeFileSync(dashboardFile, `${JSON.stringify(data, null, 2)}\n`);
+    await saveDashboard(data);
 
     res.json({ project: nextProject, stats: { totalUnits: data.stats.totalUnits } });
   } catch (error) {
@@ -363,7 +408,7 @@ app.patch("/api/projects/:id", (req, res) => {
   }
 });
 
-app.post("/api/projects", parseProjectUpload, (req, res) => {
+app.post("/api/projects", parseProjectUpload, async (req, res) => {
   let projectDetails;
   try {
     projectDetails = JSON.parse(req.body.project || "{}");
@@ -437,7 +482,7 @@ app.post("/api/projects", parseProjectUpload, (req, res) => {
   }
 
   try {
-    const data = JSON.parse(fs.readFileSync(dashboardFile, "utf-8"));
+    const data = await readDashboard();
     const project = {
       id: Math.max(0, ...data.projects.map((item) => Number(item.id) || 0)) + 1,
       name: name.trim(),
@@ -470,7 +515,7 @@ app.post("/api/projects", parseProjectUpload, (req, res) => {
     data.projects.push(project);
     data.stats.totalProjects += 1;
     data.stats.totalUnits += total;
-    fs.writeFileSync(dashboardFile, `${JSON.stringify(data, null, 2)}\n`);
+    await saveDashboard(data);
 
     res.status(201).json({
       project,
@@ -486,11 +531,22 @@ app.post("/api/projects", parseProjectUpload, (req, res) => {
 
 app.get("/api/health", (req, res) => {
   res.json({
-    status: "success",
-    message: "Bhoomani Admin API is running"
+    status: mongoose.connection.readyState === 1 ? "success" : "error",
+    message: mongoose.connection.readyState === 1
+      ? "Bhoomani Admin API is running"
+      : "MongoDB is not connected",
+    database: mongoose.connection.readyState === 1 ? mongoose.connection.name : "disconnected"
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`Backend running on http://localhost:${PORT}`);
-});
+initializeDatabase()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Backend running on http://localhost:${PORT}`);
+      console.log(`Connected to MongoDB database "${mongoose.connection.name}"`);
+    });
+  })
+  .catch((error) => {
+    console.error("Unable to connect to MongoDB or initialize dashboard data.", error);
+    process.exit(1);
+  });

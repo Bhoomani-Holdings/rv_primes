@@ -248,6 +248,19 @@ export const Input = ({
                         />
                     );
 
+                case "tel":
+                    return (
+                        <input
+                            type="tel"
+                            inputMode="numeric"
+                            id={name}
+                            placeholder={placeholder}
+                            name={name}
+                            value={value}
+                            onChange={handleChange}
+                        />
+                    );
+
                 case "password":
 
                     return (

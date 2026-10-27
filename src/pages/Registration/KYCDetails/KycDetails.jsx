@@ -72,7 +72,7 @@ export const KycDetails = () => {
     }
 
     const handlePrev = () => {
-        navigate("/address_info");
+        navigate("/basic_details");
 
     }
     // const handleSubmit = async () => {

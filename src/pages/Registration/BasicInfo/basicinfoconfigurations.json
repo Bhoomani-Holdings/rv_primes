@@ -24,7 +24,7 @@
     },
     {
         "label":"Mobile Number",
-        "type":"number",
+        "type":"tel",
         "placeholder":"Enter your mobile number",
         "name":"mobileNumber",
          "notes":"OTP verification required",
@@ -48,32 +48,6 @@
             "EMAIL"
         ]
     },
-    {
-        "label":"Password",
-        "type":"password",
-        "placeholder":"Enter your asswrod",
-        "name":"password",
-        "notes":"Strong password validation ",
-        "value":"",
-        "error":"",
-        "validationRules":[
-            "REQUIRED",
-            "PASSWORD"
-        ]
-    },
-     {
-    "label": "Confirm Password",
-    "type": "password",
-    "name": "confirmpassword",
-    "placeholder": "Confirm your password",
-    "notes":"Must match password  ",
-    "value": "",
-    "error": "",
-    "validationRules": [
-        "REQUIRED",
-        "MATCH_PASSWORD"
-    ]
-},
 {
         "label": "Date of Birth",
         "type": "date",

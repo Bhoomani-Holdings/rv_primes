@@ -23,6 +23,7 @@ function AddressForm() {
   const basicInfo = useSelector(state => state.registration?.basicInfo || {});
   const [saving, setSaving] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [saved, setSaved] = useState(false);
 
 
 
@@ -65,7 +66,7 @@ function AddressForm() {
     setSubmitError("");
     try {
       await createUser(basicInfo, dataObj);
-      navigate("/kyc_details");
+      setSaved(true);
     } catch (error) {
       setSubmitError(error.message || "Unable to save registration details");
     } finally {
@@ -150,11 +151,12 @@ function AddressForm() {
         <button
           onClick={handleNext}
           className={styles.nextBtn}
-          disabled={saving}
+          disabled={saving || saved}
         >
-          {saving ? "Saving..." : "Next"}
+          {saving ? "Saving..." : saved ? "Saved" : "Save"}
         </button>
       </div>
+      {saved && <p role="status">Your details have been saved.</p>}
       {submitError && <p role="alert">{submitError}</p>}
     </div>
   );
