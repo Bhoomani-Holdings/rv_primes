@@ -42,10 +42,23 @@
   display: inline-block;
   padding: 5px 9px;
   border-radius: 20px;
-  background: #fff5e6;
-  color: #9a6200;
   font-size: 12px;
   white-space: nowrap;
+}
+
+.user-approval-status.is-pending {
+  background: #fff5e6;
+  color: #9a6200;
+}
+
+.user-approval-status.is-approved {
+  background: #e8f7ee;
+  color: #16834a;
+}
+
+.user-approval-status.is-rejected {
+  background: #fdecec;
+  color: #c93636;
 }
 
 .users-error {

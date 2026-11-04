@@ -13,11 +13,28 @@ export const ROUTES = {
     // Public
     HOME: "/",
     PROJECTS: "/projects",
+    CAREERS: "/careers",
     CONTACT: "/contact",
-    ABOUT_US: "/about_us",
+    ABOUT_US: "/aboutus",
+    OUR_BUSINESS: "/our-business",
+    OUR_TEAM: "/our-team",
+    NEWS_AND_UPDATES: "/news-and-updates",
+    INVESTORS: "/investors",
+    INVESTOR_OPPORTUNITIES: "/investor-opportunities",
+    HOW_IT_WORKS: "/how-it-works",
+    REFUND_POLICY: "/refund-policy",
+    FAQS: "/faqs",
+    DOCUMENTS: "/documents",
+    SITEMAP: "/sitemap",
+    PRIVACY_POLICY: "/privacy-policy",
+    KYC_POLICY: "/kyc-policy",
+    DISCLAIMER: "/disclaimer",
+    TERMS_AND_CONDITIONS: "/terms-and-conditions",
+    TERMS_OF_USE: "/terms-of-use",
 
     // Investor
     INVESTOR: "/investor",
+    INVESTOR_KYC_APPROVALS: "/investor/kyc-approvals",
     WALLET: "/investor/wallet",
     EARNINGS: "/investor/earnings",
 
@@ -26,5 +43,7 @@ export const ROUTES = {
     ADMIN_DASHBOARD: "/admin/admindashboard",
     ADMIN_USERS: "/admin/users",
     ADMIN_PROJECTS: "/admin/projects",
-    ADMIN_KYC_APPROVALS: "/admin/kyc-approvals"
+    ADMIN_CAREERS: "/admin/careers",
+    ADMIN_KYC_APPROVALS: "/admin/kyc-approvals",
+    ADMIN_SETTINGS: "/admin/settings"
 };

@@ -39,17 +39,9 @@
 .logo-icon {
     width: 52px;
     height: 52px;
-    background: #d6b253;
     flex-shrink: 0;
-
-    clip-path: polygon(
-        50% 0%,
-        93% 25%,
-        93% 75%,
-        50% 100%,
-        7% 75%,
-        7% 25%
-    );
+    object-fit: contain;
+    clip-path: polygon(50% 0%, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%);
 }
 
 .logo-title {

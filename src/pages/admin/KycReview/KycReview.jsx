@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { getUsers, updateUserKycStatus } from "../../../services/userService";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "../../../routes/routesPath";
+import { getUsers } from "../../../services/userService";
 import "./kycReview.css";
 
-const kycStatuses = ["Pending for Approval", "Accept", "Reject"];
 const documentLinks = [
   ["uploadpancard", "PAN"],
   ["uploadaadhaar", "Aadhaar"],
@@ -10,18 +11,33 @@ const documentLinks = [
   ["selfiephoto", "Selfie"]
 ];
 
+const hasSubmittedKycDocuments = (details) =>
+  Boolean(details) && documentLinks.every(([field]) => Boolean(details[field]));
+
 export default function KycReview() {
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [updatingUserId, setUpdatingUserId] = useState(null);
+
+  const openInvestorDetails = (userId) =>
+    navigate(`${ROUTES.ADMIN_KYC_APPROVALS}/${userId}`);
+
+  const getKycStatusLabel = (status, documentsSubmitted) => {
+    if (!documentsSubmitted) return "Not submitted";
+    if (status === "Accept") return "Approved";
+    if (status === "Reject") return "Rejected";
+    return status || "Pending for Approval";
+  };
 
   useEffect(() => {
     let cancelled = false;
 
     getUsers()
       .then((data) => {
-        if (!cancelled) setUsers(data);
+        if (!cancelled) {
+          setUsers([...data].sort((first, second) => Number(second.id) - Number(first.id)));
+        }
       })
       .catch((loadError) => {
         if (!cancelled) setError(loadError.message || "Unable to load KYC submissions");
@@ -35,25 +51,12 @@ export default function KycReview() {
     };
   }, []);
 
-  const handleStatusChange = async (userId, kycStatus) => {
-    setUpdatingUserId(userId);
-    setError("");
-    try {
-      const updatedUser = await updateUserKycStatus(userId, kycStatus);
-      setUsers((current) => current.map((user) => user.id === userId ? updatedUser : user));
-    } catch (updateError) {
-      setError(updateError.message || "Unable to update KYC status");
-    } finally {
-      setUpdatingUserId(null);
-    }
-  };
-
   return (
     <section className="kyc-review-content">
       <div className="dashboard-card kyc-review-card">
         <div className="kyc-review-heading">
           <h1>KYC Approvals</h1>
-          <span>{users.filter((user) => user.kycDetails).length} submissions</span>
+          <span>{users.filter((user) => hasSubmittedKycDocuments(user.kycDetails)).length} submissions</span>
         </div>
         {error && <p className="kyc-review-error" role="alert">{error}</p>}
         {loading ? (
@@ -65,8 +68,9 @@ export default function KycReview() {
             <table>
               <thead>
                 <tr>
-                  <th>Basic Details</th>
-                  <th>Address</th>
+                  <th>Investor ID</th>
+                  <th>Name</th>
+                  <th>Email</th>
                   <th>PAN Number</th>
                   <th>Aadhaar Number</th>
                   <th>KYC Documents</th>
@@ -76,21 +80,26 @@ export default function KycReview() {
               <tbody>
                 {users.map((user) => {
                   const details = user.kycDetails;
+                  const documentsSubmitted = hasSubmittedKycDocuments(details);
                   return (
-                    <tr key={user.id}>
-                      <td>
-                        <strong>{user.fullName}</strong>
-                        <span className="kyc-review-secondary">{user.email}</span>
-                        <span className="kyc-review-secondary">{user.mobileNumber}</span>
-                        <span className="kyc-review-secondary">DOB: {user.dateOfBirth || "-"}</span>
-                        <span className="kyc-review-secondary">Gender: {user.gender || "-"}</span>
-                      </td>
-                      <td>{[user.address, user.address1, user.city, user.state, user.country, user.pincode].filter(Boolean).join(", ") || "-"}</td>
+                    <tr
+                      key={user.id}
+                      className="kyc-review-row"
+                      tabIndex={0}
+                      onDoubleClick={() => openInvestorDetails(user.id)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter") openInvestorDetails(user.id);
+                      }}
+                    >
+                      <td title="Double-click to view investor details">{user.investorId || "-"}</td>
+                      <td><strong>{user.fullName || "-"}</strong></td>
+                      <td>{user.email || "-"}</td>
                       <td>{details?.pancardnumber || "-"}</td>
                       <td>{details?.aadhaarnumber || "-"}</td>
                       <td>
-                        {details ? (
+                        {documentsSubmitted ? (
                           <div className="kyc-document-links">
+                            <span className="kyc-documents-submitted">Submitted</span>
                             {documentLinks.map(([field, label]) => details[field] && (
                               <a key={field} href={details[field]} target="_blank" rel="noreferrer">
                                 {label}
@@ -101,20 +110,7 @@ export default function KycReview() {
                           <span className="kyc-review-secondary">Not submitted</span>
                         )}
                       </td>
-                      <td>
-                        <select
-                          className="kyc-status-select"
-                          aria-label={`KYC status for ${user.fullName}`}
-                          value={user.kycStatus || "Pending for Approval"}
-                          disabled={!details || updatingUserId === user.id}
-                          onChange={(event) => handleStatusChange(user.id, event.target.value)}
-                        >
-                          {kycStatuses.map((status) => (
-                            <option key={status} value={status}>{status}</option>
-                          ))}
-                        </select>
-                        {!details && <span className="kyc-review-secondary">Not submitted</span>}
-                      </td>
+                      <td><span className="kyc-status-label">{getKycStatusLabel(user.kycStatus, documentsSubmitted)}</span></td>
                     </tr>
                   );
                 })}

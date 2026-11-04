@@ -1,0 +1,2 @@
+.sitemap-cards{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:0}.sitemap-links{list-style:none;margin:0;padding:0}.sitemap-links li{border-bottom:1px solid #e3e2db}.sitemap-links li:last-child{border-bottom:0}.sitemap-links a{display:block;padding:10px 0;color:#12243b;text-decoration:none;font-size:15px}.sitemap-links a:hover{color:#a98424}
+@media(max-width:800px){.sitemap-cards{grid-template-columns:1fr}}

@@ -17,8 +17,8 @@ export const criteria = {
 
     },
     "PASSWORD": {
-        "regex": /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-        "error": "Password must contain uppercase, lowercase, number and special character"
+        "regex": /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/,
+        "error": "Password must be at least 8 characters with an uppercase letter, lowercase letter, number, and symbol"
     },
     "MATCH_PASSWORD": {
         validate: (value, formData) => {

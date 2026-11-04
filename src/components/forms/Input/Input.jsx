@@ -1,6 +1,6 @@
 import "./Input.css"
 
-import React, { useMemo, useState, useEffect } from 'react'
+import React, { useMemo, useState, useEffect, useRef } from 'react'
 import { criteria } from '../../../pages/Registration/BasicInfo/basicinfovalidations'
 import { FaEye, FaEyeSlash } from "react-icons/fa"
 
@@ -168,6 +168,7 @@ export const Input = ({
     error,
     preview,
     handleChange,
+    onRemove,
     validationRules = []
 }) => {
 
@@ -183,6 +184,12 @@ export const Input = ({
     const [previewUrl,
         setPreviewUrl] =
         useState(null);
+    const fileInputRef = useRef(null);
+
+    const handleRemoveFile = () => {
+        if (fileInputRef.current) fileInputRef.current.value = "";
+        onRemove?.();
+    };
 
     // FILE PREVIEW URL
     useEffect(() => {
@@ -304,6 +311,7 @@ export const Input = ({
                     return (
                         < >
                             <input
+                                ref={fileInputRef}
                                 type="file"
                                 id={name}
                                 name={name}
@@ -314,6 +322,17 @@ export const Input = ({
                                 previewUrl &&
                                 !error && (
                                     <div className="file-preview">
+                                        {onRemove && (
+                                            <button
+                                                type="button"
+                                                className="file-preview-remove"
+                                                onClick={handleRemoveFile}
+                                                aria-label={`Remove ${label || "uploaded file"}`}
+                                                title="Remove file"
+                                            >
+                                                ×
+                                            </button>
+                                        )}
 
                                         {/* Image */}
                                         {
@@ -390,6 +409,8 @@ export const Input = ({
             placeholder,
             name,
             handleChange,
+            onRemove,
+            label,
             showPassword,
             previewUrl,
             error

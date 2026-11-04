@@ -35,12 +35,26 @@
   vertical-align: top;
 }
 
+.kyc-review-row {
+  cursor: pointer;
+}
+
+.kyc-review-row:focus-visible {
+  outline: 2px solid #155ac7;
+  outline-offset: -2px;
+}
+
 .kyc-review-card td:first-child {
   min-width: 190px;
 }
 
 .kyc-review-card td:nth-child(2) {
-  min-width: 210px;
+  min-width: 190px;
+}
+
+.kyc-review-card td:nth-child(3),
+.kyc-review-card td:nth-child(4) {
+  min-width: 145px;
 }
 
 .kyc-review-secondary {
@@ -51,8 +65,16 @@
 .kyc-document-links {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 8px 12px;
   min-width: 160px;
+}
+
+.kyc-documents-submitted {
+  flex-basis: 100%;
+  color: #18794e;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .kyc-document-links a {
@@ -62,20 +84,11 @@
   text-underline-offset: 3px;
 }
 
-.kyc-status-select {
-  min-height: 36px;
-  max-width: 190px;
-  padding: 6px 28px 6px 8px;
-  border: 1px solid #cbd3dd;
-  border-radius: 4px;
-  background: #fff;
+.kyc-status-label {
+  display: inline-block;
   color: #26364d;
-  font: inherit;
   font-size: 13px;
-}
-
-.kyc-status-select:disabled {
-  opacity: 0.65;
+  font-weight: 600;
 }
 
 .kyc-review-error {

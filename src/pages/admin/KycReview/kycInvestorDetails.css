@@ -1,0 +1,168 @@
+.kyc-investor-details {
+  display: grid;
+  gap: 18px;
+  padding: 24px;
+}
+
+.kyc-investor-back {
+  justify-self: start;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #155ac7;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.kyc-investor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #e1e5eb;
+}
+
+.kyc-investor-header span {
+  color: #647184;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.kyc-investor-header h1 {
+  margin: 5px 0;
+  font-size: 22px;
+}
+
+.kyc-investor-header p {
+  margin: 0;
+  color: #647184;
+}
+
+.kyc-investor-status {
+  color: #26364d;
+  font-size: 14px;
+}
+
+.kyc-investor-section {
+  padding: 18px 0;
+  border-bottom: 1px solid #e1e5eb;
+}
+
+.kyc-investor-section h2 {
+  margin: 0 0 14px;
+  color: #0b1526;
+  font-size: 17px;
+}
+
+.kyc-investor-section dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 28px;
+  margin: 0;
+}
+
+.kyc-investor-field dt {
+  margin-bottom: 4px;
+  color: #647184;
+  font-size: 12px;
+}
+
+.kyc-investor-field dd {
+  margin: 0;
+  color: #172335;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.kyc-investor-section > a,
+.kyc-investor-documents a {
+  color: #155ac7;
+  font-size: 14px;
+  font-weight: 600;
+  text-underline-offset: 3px;
+}
+
+.kyc-investor-documents {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+}
+
+.kyc-investor-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 8px 0 24px;
+}
+
+.kyc-investor-actions p {
+  margin: 0 auto 0 0;
+  color: #647184;
+  font-size: 13px;
+}
+
+.kyc-investor-actions button {
+  min-width: 125px;
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 6px;
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.kyc-investor-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.kyc-investor-reject {
+  background: #c93636;
+}
+
+.kyc-investor-approve {
+  background: #16834a;
+}
+
+.kyc-investor-error {
+  margin: 0;
+  color: #b42318;
+}
+
+.kyc-investor-notice {
+  margin: 0;
+  color: #16834a;
+  font-weight: 600;
+}
+
+@media (max-width: 700px) {
+  .kyc-investor-details {
+    padding: 14px;
+  }
+
+  .kyc-investor-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .kyc-investor-section dl {
+    grid-template-columns: 1fr;
+  }
+
+  .kyc-investor-actions {
+    justify-content: stretch;
+  }
+
+  .kyc-investor-actions p {
+    flex-basis: 100%;
+  }
+
+  .kyc-investor-actions button {
+    flex: 1;
+  }
+}

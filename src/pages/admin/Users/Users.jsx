@@ -4,6 +4,13 @@ import { ROUTES } from "../../../routes/routesPath";
 import { getUsers } from "../../../services/userService";
 import "./users.css";
 
+const getApprovalStatusClass = (status) => {
+  const normalizedStatus = String(status || "").toLowerCase();
+  if (normalizedStatus === "approved") return "is-approved";
+  if (normalizedStatus === "rejected") return "is-rejected";
+  return "is-pending";
+};
+
 export default function Users() {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
@@ -15,7 +22,9 @@ export default function Users() {
 
     getUsers()
       .then((data) => {
-        if (!cancelled) setUsers(data);
+        if (!cancelled) {
+          setUsers([...data].sort((a, b) => Number(b.id) - Number(a.id)));
+        }
       })
       .catch((loadError) => {
         if (!cancelled) setError(loadError.message || "Unable to load users");
@@ -48,6 +57,7 @@ export default function Users() {
             <table>
               <thead>
                 <tr>
+                  <th>Investor ID</th>
                   <th>Name</th>
                   <th>Email</th>
                   <th>Mobile</th>
@@ -67,13 +77,16 @@ export default function Users() {
                       if (event.key === "Enter") openUserDetails(user.id);
                     }}
                   >
+                    <td>{user.investorId || "-"}</td>
                     <td>{user.fullName}</td>
                     <td>{user.email}</td>
                     <td>{user.mobileNumber}</td>
                     <td>{user.dateOfBirth}</td>
                     <td>{user.gender}</td>
                     <td>
-                      <span className="user-approval-status">{user.approvalStatus}</span>
+                      <span className={`user-approval-status ${getApprovalStatusClass(user.approvalStatus)}`}>
+                        {user.approvalStatus || "Pending for Approval"}
+                      </span>
                     </td>
                   </tr>
                 ))}

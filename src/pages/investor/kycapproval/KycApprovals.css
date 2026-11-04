@@ -1,0 +1,106 @@
+.investor-kyc-page {
+  min-height: 60vh;
+  display: grid;
+  place-items: start center;
+  padding: 40px 20px;
+  background: #f4f6f8;
+}
+
+.investor-kyc-card {
+  width: min(100%, 720px);
+  padding: 32px;
+  border: 1px solid #e1e5eb;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(11, 21, 38, 0.07);
+}
+
+.investor-kyc-eyebrow {
+  margin: 0 0 8px;
+  color: #9a7727;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.investor-kyc-card h1 {
+  margin: 0 0 24px;
+  color: #0b1526;
+  font-size: 26px;
+}
+
+.investor-kyc-welcome {
+  margin: 0 0 4px;
+  color: #172335;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.investor-kyc-email {
+  margin: 0 0 22px;
+  color: #647184;
+  font-size: 14px;
+}
+
+.investor-kyc-status {
+  display: inline-block;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.investor-kyc-status.approved {
+  background: #e8f7ee;
+  color: #16834a;
+}
+
+.investor-kyc-status.rejected {
+  background: #fdecec;
+  color: #c93636;
+}
+
+.investor-kyc-status.pending,
+.investor-kyc-status.not-submitted {
+  background: #fff5e6;
+  color: #9a6200;
+}
+
+.investor-kyc-message {
+  margin: 18px 0 0;
+  color: #526176;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.investor-kyc-submit-button {
+  justify-self: center;
+  margin: 0 auto 24px;
+  padding: 12px 18px;
+  border: 0;
+  border-radius: 6px;
+  background: #0b2035;
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.investor-kyc-submit-button:hover {
+  background: #155ac7;
+}
+
+@media (max-width: 600px) {
+  .investor-kyc-page {
+    padding: 24px 14px;
+  }
+
+  .investor-kyc-card {
+    padding: 24px 20px;
+  }
+
+  .investor-kyc-card h1 {
+    font-size: 22px;
+  }
+}

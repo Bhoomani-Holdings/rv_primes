@@ -8,8 +8,9 @@ import { validateForm } from "../../Registration/formvalidation.js"
 import { Input } from "../../../components/forms/Input/Input"
 import { Select } from "../../../components/forms/Select/Select"
 import { saveNomineeInfo } from '../../../store/slices/RegistartionSlice.js'
+import { updateUserNomineeDetails } from '../../../services/userService.js'
 
-function NomineeInfo() {
+function NomineeInfo({ investorMode = false, onCancel, onInvestorNomineeSubmitted }) {
 
     const navigate = useNavigate()
     const dispatch = useDispatch()
@@ -18,12 +19,23 @@ function NomineeInfo() {
     const savedData = useSelector(
         state => state.registration?.nomineeInfo || {}
     )
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [submitError, setSubmitError] = useState("")
 
     // Load config + redux data
     const [formData, setFormData] = useState(() => {
         return NomineeInfoConfiguration.map(field => ({
             ...field,
-            value: savedData[field.name] || field.value || ""
+            value: investorMode
+                ? (() => {
+                    try {
+                        const investor = JSON.parse(sessionStorage.getItem("investorSession") || "{}")
+                        return investor.nomineeDetails?.[field.name] || field.value || ""
+                    } catch {
+                        return field.value || ""
+                    }
+                })()
+                : savedData[field.name] || field.value || ""
         }))
     })
 
@@ -37,11 +49,15 @@ function NomineeInfo() {
 
     // Previous
     const handlePrev = () => {
+        if (investorMode) {
+            onCancel?.()
+            return
+        }
         navigate('/kyc_details')
     }
 
     // Next
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
 
         e.preventDefault()
 
@@ -56,8 +72,25 @@ function NomineeInfo() {
             return
         }
 
-        // Save to Redux
         dispatch(saveNomineeInfo(dataObj))
+
+        if (investorMode) {
+            try {
+                setIsSubmitting(true)
+                setSubmitError("")
+                const savedInvestor = JSON.parse(sessionStorage.getItem("investorSession") || "{}")
+                if (!savedInvestor.email) throw new Error("Please sign in again to save nominee details.")
+                const updatedInvestor = await updateUserNomineeDetails(savedInvestor.email, dataObj)
+                const investorSession = { ...savedInvestor, ...updatedInvestor }
+                sessionStorage.setItem("investorSession", JSON.stringify(investorSession))
+                onInvestorNomineeSubmitted?.(investorSession)
+            } catch (error) {
+                setSubmitError(error.message || "Unable to save nominee details")
+            } finally {
+                setIsSubmitting(false)
+            }
+            return
+        }
 
         navigate('/bank_details')
     }
@@ -69,7 +102,7 @@ function NomineeInfo() {
         >
 
             <h2 className={styles.nomineeTitle}>
-                Nominee Information
+                {investorMode ? "Nominee Details" : "Nominee Information"}
             </h2>
 
             <p className={styles.nomineeSubtitle}>
@@ -112,22 +145,26 @@ function NomineeInfo() {
 
             <div className={styles.buttonContainer}>
 
-                <button
-                    className={styles.prevBtn}
-                    type="button"
-                    onClick={handlePrev}
-                >
-                    Previous
-                </button>
+                {!investorMode && (
+                    <button
+                        className={styles.prevBtn}
+                        type="button"
+                        onClick={handlePrev}
+                    >
+                        Previous
+                    </button>
+                )}
 
                 <button
                     type="submit"
                     className={styles.nextBtn}
+                    disabled={isSubmitting}
                 >
-                    Next
+                    {isSubmitting ? "Saving..." : investorMode ? "Submit nominee details" : "Next"}
                 </button>
 
             </div>
+            {submitError && <p role="alert">{submitError}</p>}
 
         </form>
     )

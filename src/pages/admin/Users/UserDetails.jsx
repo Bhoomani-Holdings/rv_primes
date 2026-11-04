@@ -1,10 +1,16 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../../routes/routesPath";
-import { getUsers } from "../../../services/userService";
+import { getUsers, updateUserApprovalStatus } from "../../../services/userService";
 import "./userDetails.css";
 
 const showValue = (value) => value || "Not provided";
+const getApprovalStatusClass = (status) => {
+  const normalizedStatus = String(status || "").toLowerCase();
+  if (normalizedStatus === "approved") return "is-approved";
+  if (normalizedStatus === "rejected") return "is-rejected";
+  return "is-pending";
+};
 
 function DetailSection({ title, fields }) {
   return (
@@ -27,6 +33,22 @@ export default function UserDetails({ userId }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [statusError, setStatusError] = useState("");
+  const [savingStatus, setSavingStatus] = useState(false);
+
+  const changeApprovalStatus = async (approvalStatus) => {
+    setSavingStatus(true);
+    setStatusError("");
+    try {
+      const updatedUser = await updateUserApprovalStatus(userId, approvalStatus);
+      setUser(updatedUser);
+      navigate(ROUTES.ADMIN_USERS);
+    } catch (updateError) {
+      setStatusError(updateError.message || "Unable to update approval status");
+    } finally {
+      setSavingStatus(false);
+    }
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -64,7 +86,9 @@ export default function UserDetails({ userId }) {
       </button>
       <header className="user-details-header">
         <h1>{user.fullName}</h1>
-        <span>{user.approvalStatus || "Pending for Approval"}</span>
+        <span className={`user-detail-approval-status ${getApprovalStatusClass(user.approvalStatus)}`}>
+          {user.approvalStatus || "Pending for Approval"}
+        </span>
       </header>
 
       <DetailSection
@@ -118,6 +142,25 @@ export default function UserDetails({ userId }) {
           <p>Not provided</p>
         )}
       </section>
+      <div className="user-approval-actions">
+        {statusError && <p className="user-details-error" role="alert">{statusError}</p>}
+        <button
+          className="user-approval-button user-approval-button-reject"
+          type="button"
+          disabled={savingStatus}
+          onClick={() => changeApprovalStatus("Rejected")}
+        >
+          Reject
+        </button>
+        <button
+          className="user-approval-button user-approval-button-approve"
+          type="button"
+          disabled={savingStatus}
+          onClick={() => changeApprovalStatus("Approved")}
+        >
+          Approve
+        </button>
+      </div>
     </section>
   );
 }

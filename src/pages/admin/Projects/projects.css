@@ -209,6 +209,17 @@
   font-size: 14px;
 }
 
+.project-editor-form input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.project-editor-form input[type="number"]::-webkit-inner-spin-button,
+.project-editor-form input[type="number"]::-webkit-outer-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
+
 .project-editor-form textarea {
   min-height: 84px;
   resize: vertical;
@@ -318,3 +329,55 @@
   border-color: #155ac7;
   outline: 2px solid rgb(21 90 199 / 16%);
 }
+
+/* Land area calculator */
+.land-calculator {
+  border: 1px solid #d9e2ec;
+  border-radius: 12px;
+  background: #f7faff;
+  padding: 16px;
+  display: grid;
+  gap: 12px;
+}
+.land-calculator-header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px; }
+.land-calculator-header h4 { margin: 0; font-size: 16px; color: #12355b; }
+.land-calculator-header span { font-size: 12px; color: #627d98; }
+.land-calculator-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.land-calculator-chips button {
+  border: 1px solid #b6c6da; background: #fff; color: #12355b;
+  border-radius: 999px; padding: 6px 14px; font-size: 13px; cursor: pointer;
+}
+.land-calculator-chips button.active { background: #12355b; color: #fff; border-color: #12355b; }
+.land-calculator-results { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.land-calculator-results > div {
+  background: #fff; border: 1px solid #e1e8f0; border-radius: 10px; padding: 12px;
+  display: grid; gap: 4px;
+}
+.land-calculator-results small { color: #627d98; font-size: 12px; }
+.land-calculator-results strong { color: #0b6b3a; font-size: 17px; word-break: break-word; }
+.land-calculator-note { margin: 0; font-size: 13px; color: #334e68; }
+.land-calculator-warning { margin: 0; font-size: 13px; color: #b42318; }
+@media (max-width: 600px) { .land-calculator-results { grid-template-columns: 1fr; } }
+
+.land-calculator-steps { background: #fff; border: 1px solid #e1e8f0; border-radius: 10px; padding: 12px 14px; font-size: 13px; color: #334e68; }
+.land-calculator-steps ol { margin: 8px 0 0; padding-left: 20px; display: grid; gap: 4px; }
+.land-calculator-table-wrap { overflow-x: auto; }
+.land-calculator-table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #e1e8f0; border-radius: 10px; font-size: 13px; }
+.land-calculator-table caption { text-align: left; font-weight: 600; color: #12355b; padding: 0 0 6px; }
+.land-calculator-table th, .land-calculator-table td { padding: 8px 10px; text-align: left; border-bottom: 1px solid #eef2f7; white-space: nowrap; }
+.land-calculator-table th { background: #eef4fb; color: #12355b; font-weight: 600; }
+.land-calculator-table tr.selected td { background: #e6f6ec; font-weight: 600; }
+
+.land-calculator-inline { display: flex; gap: 8px; }
+.land-calculator-inline input { flex: 1; min-width: 0; }
+.land-calculator-add { border: 0; background: #12355b; color: #fff; border-radius: 8px; padding: 0 14px; font-size: 13px; cursor: pointer; white-space: nowrap; }
+.land-calculator-add:disabled { opacity: .5; cursor: not-allowed; }
+.land-calculator-reverse { display: grid; gap: 6px; }
+.land-calculator-table-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; color: #12355b; }
+.land-calculator-table-tools input { max-width: 260px; }
+.land-calculator-scroll { overflow: auto; max-height: 360px; border: 1px solid #e1e8f0; border-radius: 10px; }
+.land-calculator-scroll .land-calculator-table { border: 0; }
+.land-calculator-scroll .land-calculator-table th { position: sticky; top: 0; }
+
+.units-area-hint { display: block; margin-top: 4px; font-size: 12px; color: #0b6b3a; }
+.land-calculator-addrow { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 13px; color: #334e68; }

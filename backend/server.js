@@ -28,9 +28,17 @@ const dashboardSchema = new mongoose.Schema({
   kycApprovals: { type: mongoose.Schema.Types.Mixed, default: {} },
   transactions: { type: [mongoose.Schema.Types.Mixed], default: [] },
   revenueOverview: { type: mongoose.Schema.Types.Mixed, default: {} },
+  careerPosts: { type: [mongoose.Schema.Types.Mixed], default: [] },
+  careerApplications: { type: [mongoose.Schema.Types.Mixed], default: [] },
   users: { type: [mongoose.Schema.Types.Mixed], default: [] }
 }, { collection: "dashboard", versionKey: false });
 const Dashboard = mongoose.model("Dashboard", dashboardSchema);
+const userCredentialSchema = new mongoose.Schema({
+  userId: { type: Number, required: true },
+  email: { type: String, required: true, unique: true },
+  passwordHash: { type: String, required: true }
+}, { collection: "usercredentials", timestamps: true, versionKey: false });
+const UserCredential = mongoose.model("UserCredential", userCredentialSchema);
 
 const cleanDashboard = (dashboard) => {
   if (!dashboard) return null;
@@ -55,7 +63,7 @@ const initializeDatabase = async () => {
   const existingData = await readDashboard();
   if (existingData) {
     const completedData = { ...initialData, ...existingData };
-    const missingFields = ["stats", "projects", "salesOverview", "kycApprovals", "transactions", "revenueOverview", "users"]
+    const missingFields = ["stats", "projects", "salesOverview", "kycApprovals", "transactions", "revenueOverview", "careerPosts", "careerApplications", "users"]
       .filter((field) => existingData[field] === undefined);
     if (missingFields.length > 0) await saveDashboard(completedData);
     return;
@@ -65,10 +73,13 @@ const initializeDatabase = async () => {
   console.log(`Seeded MongoDB database "${mongoose.connection.name}" from backend/data/dashboard.json`);
 };
 const uploadDirectory = path.join(__dirname, "uploads");
+const resumeUploadDirectory = path.join(__dirname, "private_uploads", "resumes");
 const maxImageSize = 5 * 1024 * 1024;
 const maxVideoSize = 50 * 1024 * 1024;
+const maxResumeSize = 5 * 1024 * 1024;
 
 fs.mkdirSync(uploadDirectory, { recursive: true });
+fs.mkdirSync(resumeUploadDirectory, { recursive: true });
 app.use("/uploads", express.static(uploadDirectory));
 
 const allowedMediaExtensions = {
@@ -90,6 +101,24 @@ const upload = multer({
     if (!allowedExtensions || !allowedExtensions.has(extension)) {
       const mediaType = file.fieldname === "photos" ? "image" : "video";
       return callback(new Error(`Unsupported ${mediaType} format.`));
+    }
+    callback(null, true);
+  }
+});
+
+const allowedResumeExtensions = new Set([".pdf", ".doc", ".docx"]);
+const resumeUpload = multer({
+  storage: multer.diskStorage({
+    destination: resumeUploadDirectory,
+    filename: (req, file, callback) => {
+      callback(null, `${crypto.randomUUID()}${path.extname(file.originalname).toLowerCase()}`);
+    }
+  }),
+  limits: { fileSize: maxResumeSize },
+  fileFilter: (req, file, callback) => {
+    const extension = path.extname(file.originalname).toLowerCase();
+    if (!allowedResumeExtensions.has(extension)) {
+      return callback(new Error("Upload your resume as a PDF, DOC, or DOCX file."));
     }
     callback(null, true);
   }
@@ -144,32 +173,212 @@ app.get("/api/projects", async (req, res) => {
   }
 });
 
+app.get("/api/careers", async (req, res) => {
+  try {
+    const data = await readDashboard();
+    res.json(data.careerPosts || []);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Unable to load career posts" });
+  }
+});
+
+app.post("/api/careers", async (req, res) => {
+  const { title, department, location, employmentType, experience, salaryRange, description, requirements } = req.body || {};
+  const requiredFields = { title, department, location, employmentType, description };
+  if (Object.values(requiredFields).some((value) => typeof value !== "string" || !value.trim()) ||
+    (experience !== "" && experience != null && (!Number.isFinite(Number(experience)) || Number(experience) < 0)) ||
+    typeof salaryRange !== "string" || typeof requirements !== "string") {
+    return res.status(400).json({ message: "Complete the required career details" });
+  }
+
+  try {
+    const data = await readDashboard();
+    data.careerPosts = Array.isArray(data.careerPosts) ? data.careerPosts : [];
+    const career = {
+      id: Math.max(0, ...data.careerPosts.map((item) => Number(item.id) || 0)) + 1,
+      title: title.trim(),
+      department: department.trim(),
+      location: location.trim(),
+      employmentType: employmentType.trim(),
+      experience: experience === "" || experience == null ? null : Number(experience),
+      salaryRange: salaryRange.trim(),
+      description: description.trim(),
+      requirements: requirements.trim(),
+      status: "Open",
+      createdAt: new Date().toISOString()
+    };
+    data.careerPosts.unshift(career);
+    await saveDashboard(data);
+    return res.status(201).json(career);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Unable to save career post" });
+  }
+});
+
+app.post("/api/careers/:id/applications", (req, res, next) => {
+  resumeUpload.single("resume")(req, res, (error) => {
+    if (!error) return next();
+    const message = error.code === "LIMIT_FILE_SIZE"
+      ? "Resume file must be 5 MB or smaller."
+      : error.message || "Unable to upload resume.";
+    return res.status(400).json({ message });
+  });
+}, async (req, res) => {
+  const { fullName, email, phone, experience, currentCTC, linkedin = "", coverLetter = "" } = req.body || {};
+  const removeResume = () => {
+    if (req.file?.path) {
+      try {
+        fs.unlinkSync(req.file.path);
+      } catch (error) {
+        if (error.code !== "ENOENT") console.error(error);
+      }
+    }
+  };
+  const normalizedEmail = typeof email === "string" ? email.trim().toLowerCase() : "";
+  const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail);
+  const validPhone = typeof phone === "string" && /^[0-9+() .-]{7,24}$/.test(phone.trim());
+
+  const experienceNumber = Number(experience);
+  if (typeof fullName !== "string" || !fullName.trim() || !validEmail || !validPhone ||
+    typeof experience !== "string" || !experience.trim() || !Number.isFinite(experienceNumber) || experienceNumber < 0 ||
+    typeof currentCTC !== "string" || !currentCTC.trim() || !req.file) {
+    removeResume();
+    return res.status(400).json({ message: "Enter your contact details, experience, current CTC, and attach your resume." });
+  }
+
+  try {
+    const data = await readDashboard();
+    const careerId = Number(req.params.id);
+    const career = (data.careerPosts || []).find((item) => Number(item.id) === careerId);
+    if (!career || career.status === "Closed") {
+      removeResume();
+      return res.status(404).json({ message: "This career opening is no longer available." });
+    }
+
+    data.careerApplications = Array.isArray(data.careerApplications) ? data.careerApplications : [];
+    const application = {
+      id: Math.max(0, ...data.careerApplications.map((item) => Number(item.id) || 0)) + 1,
+      careerId,
+      careerTitle: career.title,
+      fullName: fullName.trim(),
+      email: normalizedEmail,
+      phone: phone.trim(),
+      experience: experienceNumber,
+      currentCTC: currentCTC.trim(),
+      linkedin: typeof linkedin === "string" ? linkedin.trim() : "",
+      coverLetter: typeof coverLetter === "string" ? coverLetter.trim() : "",
+      resume: {
+        fileName: req.file.filename,
+        originalName: path.basename(req.file.originalname),
+        size: req.file.size,
+        contentType: req.file.mimetype,
+        storagePath: path.relative(__dirname, req.file.path)
+      },
+      submittedAt: new Date().toISOString()
+    };
+
+    data.careerApplications.push(application);
+    await saveDashboard(data);
+    return res.status(201).json({ message: "Your application was submitted successfully." });
+  } catch (error) {
+    console.error(error);
+    removeResume();
+    return res.status(500).json({ message: "Unable to submit your application. Please try again." });
+  }
+});
+
 app.get("/api/users", async (req, res) => {
   try {
     const data = await readDashboard();
-    res.json(data.users || []);
+    const newestFirst = [...(data.users || [])]
+      .sort((a, b) => Number(b.id) - Number(a.id));
+    res.json(newestFirst);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Unable to load users" });
   }
 });
 
+const createInvestorId = (users) => {
+  const currentMax = users.reduce((max, user) => {
+    const match = /^BHOOM(\d+)$/i.exec(user.investorId || "");
+    return match ? Math.max(max, Number(match[1])) : max;
+  }, 0);
+  return `BHOOM${String(currentMax + 1).padStart(5, "0")}`;
+};
+
+app.post("/api/auth/login", async (req, res) => {
+  const submittedEmail = req.body?.email ?? req.body?.username;
+  const username = typeof submittedEmail === "string" ? submittedEmail.trim().toLowerCase() : "";
+  const password = typeof req.body?.password === "string" ? req.body.password : "";
+  if (!username || !password) {
+    return res.status(400).json({ message: "Enter your registered email and password." });
+  }
+
+  try {
+    const credential = await UserCredential.findOne({ email: username }).lean();
+    if (!credential) return res.status(401).json({ message: "Invalid username or password." });
+
+    const [algorithm, salt, storedHash] = credential.passwordHash.split("$");
+    if (algorithm !== "scrypt" || !salt || !storedHash) {
+      return res.status(401).json({ message: "Invalid username or password." });
+    }
+    const actualHash = crypto.scryptSync(password, salt, 64);
+    const expectedHash = Buffer.from(storedHash, "hex");
+    if (actualHash.length !== expectedHash.length || !crypto.timingSafeEqual(actualHash, expectedHash)) {
+      return res.status(401).json({ message: "Invalid username or password." });
+    }
+
+    const data = await readDashboard();
+    const user = (data.users || []).find((item) => Number(item.id) === Number(credential.userId));
+    if (!user) return res.status(401).json({ message: "Invalid username or password." });
+
+    const approvalStatus = user.approvalStatus || "Pending for Approval";
+    if (approvalStatus === "Pending for Approval") {
+      return res.status(403).json({ code: "APPROVAL_PENDING", message: "This application is pending for approval." });
+    }
+    if (approvalStatus === "Rejected") {
+      return res.status(403).json({ code: "APPLICATION_REJECTED", message: "Your application is rejected." });
+    }
+    if (approvalStatus !== "Approved") {
+      return res.status(403).json({ message: "Your account is not approved for login." });
+    }
+
+    return res.json({
+      user: {
+        id: user.id,
+        fullName: user.fullName,
+        email: user.email,
+        kycStatus: user.kycStatus || "Not Submitted"
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Unable to sign in right now. Please try again." });
+  }
+});
+
 app.post("/api/users", async (req, res) => {
-  const { basicInfo, addressInfo } = req.body || {};
+  const { basicInfo, addressInfo, credentials } = req.body || {};
   const requiredBasicFields = ["firstname", "lastname", "mobileNumber", "email"];
   const requiredAddressFields = ["address", "address1", "country", "state", "city", "pincode"];
+  const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
 
   if (!basicInfo || !addressInfo ||
     requiredBasicFields.some((field) => typeof basicInfo[field] !== "string" || !basicInfo[field].trim()) ||
-    requiredAddressFields.some((field) => typeof addressInfo[field] !== "string" || !addressInfo[field].trim())) {
-    return res.status(400).json({ message: "Complete the required basic and address information" });
+    requiredAddressFields.some((field) => typeof addressInfo[field] !== "string" || !addressInfo[field].trim()) ||
+    typeof credentials?.password !== "string" || !passwordPattern.test(credentials.password) ||
+    credentials.password !== credentials.confirmPassword) {
+    return res.status(400).json({ message: "Complete the required information and enter matching passwords that meet the password requirements." });
   }
 
   try {
     const data = await readDashboard();
     data.users = Array.isArray(data.users) ? data.users : [];
     const email = basicInfo.email.trim().toLowerCase();
-    if (data.users.some((user) => user.email.toLowerCase() === email)) {
+    if (data.users.some((user) => user.email.toLowerCase() === email) || await UserCredential.exists({ email })) {
       return res.status(409).json({ message: "A user with this email already exists" });
     }
 
@@ -177,6 +386,7 @@ app.post("/api/users", async (req, res) => {
     const lastName = basicInfo.lastname.trim();
     const user = {
       id: Math.max(0, ...data.users.map((item) => Number(item.id) || 0)) + 1,
+      investorId: createInvestorId(data.users),
       firstName,
       lastName,
       fullName: `${firstName} ${lastName}`,
@@ -193,8 +403,24 @@ app.post("/api/users", async (req, res) => {
       approvalStatus: "Pending for Approval"
     };
 
-    data.users.push(user);
-    await saveDashboard(data);
+    const salt = crypto.randomBytes(16).toString("hex");
+    const passwordHash = crypto.scryptSync(credentials.password, salt, 64).toString("hex");
+    let savedCredential;
+    try {
+      savedCredential = await UserCredential.create({
+        userId: user.id,
+        email,
+        passwordHash: `scrypt$${salt}$${passwordHash}`
+      });
+      data.users.push(user);
+      await saveDashboard(data);
+    } catch (error) {
+      if (savedCredential) await UserCredential.deleteOne({ _id: savedCredential._id });
+      if (error.code === 11000) {
+        return res.status(409).json({ message: "A user with this email already exists" });
+      }
+      throw error;
+    }
     return res.status(201).json(user);
   } catch (error) {
     console.error(error);
@@ -224,7 +450,7 @@ app.patch("/api/users/:id/status", async (req, res) => {
 
 app.patch("/api/users/registration-details", async (req, res) => {
   const { email, nomineeInfo, bankInfo } = req.body || {};
-  if (typeof email !== "string" || !email.trim() || !nomineeInfo || !bankInfo) {
+  if (typeof email !== "string" || !email.trim() || (!nomineeInfo && !bankInfo)) {
     return res.status(400).json({ message: "Registration details are incomplete" });
   }
 
@@ -233,19 +459,25 @@ app.patch("/api/users/registration-details", async (req, res) => {
     const user = (data.users || []).find((item) => item.email.toLowerCase() === email.trim().toLowerCase());
     if (!user) return res.status(404).json({ message: "Registered user not found" });
 
-    user.nomineeDetails = {
-      UserName: nomineeInfo.UserName || "",
-      UserNumber: nomineeInfo.UserNumber || "",
-      Relationship: nomineeInfo.Relationship || ""
-    };
-    user.bankDetails = {
-      accountholdername: bankInfo.accountholdername || "",
-      bankname: bankInfo.bankname || "",
-      accountnumber: bankInfo.accountnumber || "",
-      ifsccode: bankInfo.ifsccode || "",
-      upiid: bankInfo.upiid || "",
-      cancelledcheque: bankInfo.cancelledcheque || ""
-    };
+    if (nomineeInfo) {
+      user.nomineeDetails = {
+        ...(user.nomineeDetails || {}),
+        UserName: nomineeInfo.UserName || "",
+        UserNumber: nomineeInfo.UserNumber || "",
+        Relationship: nomineeInfo.Relationship || ""
+      };
+    }
+    if (bankInfo) {
+      user.bankDetails = {
+        ...(user.bankDetails || {}),
+        accountholdername: bankInfo.accountholdername || "",
+        bankname: bankInfo.bankname || "",
+        accountnumber: bankInfo.accountnumber || "",
+        ifsccode: bankInfo.ifsccode || "",
+        upiid: bankInfo.upiid || "",
+        cancelledcheque: bankInfo.cancelledcheque || ""
+      };
+    }
 
     await saveDashboard(data);
     return res.json(user);
@@ -286,8 +518,10 @@ app.patch("/api/users/kyc", async (req, res) => {
 });
 
 app.patch("/api/users/:id/kyc-status", async (req, res) => {
-  const allowedStatuses = ["Pending for Approval", "Accept", "Reject"];
-  if (!allowedStatuses.includes(req.body.kycStatus)) {
+  const legacyStatusMap = { Accept: "Approved", Reject: "Rejected" };
+  const kycStatus = legacyStatusMap[req.body.kycStatus] || req.body.kycStatus;
+  const allowedStatuses = ["Pending for Approval", "Approved", "Rejected"];
+  if (!allowedStatuses.includes(kycStatus)) {
     return res.status(400).json({ message: "Invalid KYC approval status" });
   }
 
@@ -295,9 +529,12 @@ app.patch("/api/users/:id/kyc-status", async (req, res) => {
     const data = await readDashboard();
     const user = (data.users || []).find((item) => Number(item.id) === Number(req.params.id));
     if (!user) return res.status(404).json({ message: "User not found" });
-    if (!user.kycDetails) return res.status(400).json({ message: "User has not submitted KYC details" });
+    const requiredKycDocuments = ["uploadpancard", "uploadaadhaar", "uploadaddressproof", "selfiephoto"];
+    if (!user.kycDetails || requiredKycDocuments.some((field) => !user.kycDetails[field])) {
+      return res.status(400).json({ message: "User has not submitted all KYC documents" });
+    }
 
-    user.kycStatus = req.body.kycStatus;
+    user.kycStatus = kycStatus;
     await saveDashboard(data);
     return res.json(user);
   } catch (error) {

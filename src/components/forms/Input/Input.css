@@ -83,11 +83,35 @@
 
 /* Preview Section */
 .file-preview {
+    position: relative;
     margin-top: 12px;
     padding: 10px;
     background: #fafafa;
     border: 1px solid #ececec;
     border-radius: 10px;
+}
+
+.file-preview-remove {
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(13, 52, 124, 0.92);
+    color: #fff;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.file-preview-remove:hover {
+    background: #08265f;
 }
 
 .file-preview p {
