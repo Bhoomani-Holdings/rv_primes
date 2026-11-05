@@ -42,19 +42,11 @@ html, body,
 }
 
 .footer-icon {
-    width: 45px;
-    height: 45px;
-    background: #d6b253;
+    width: 70px;
+    height: 70px;
     flex-shrink: 0;
-
-    clip-path: polygon(
-        50% 0%,
-        93% 25%,
-        93% 75%,
-        50% 100%,
-        7% 75%,
-        7% 25%
-    );
+    object-fit: contain;
+    border-radius: 6px;
 }
 
 .footer-logo h2 {
@@ -74,22 +66,36 @@ html, body,
     display: flex;
     gap: 15px;
     margin-top: 35px;
+    width: max-content;
 }
 
-.social-icons div {
-    width: 45px;
-    height: 45px;
-    border: 1px solid rgba(255,255,255,0.15);
+.social-icons a {
+    width: 48px;
+    height: 48px;
+    border: 1px solid rgba(255,255,255,0.16);
     display: flex;
     align-items: center;
     justify-content: center;
+    color: #fff;
     cursor: pointer;
-    transition: 0.3s;
+    transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
 }
 
-.social-icons div:hover {
+.social-icons a svg {
+    display: block;
+    width: 21px;
+    height: 21px;
+}
+
+.social-icons a:hover,
+.social-icons a:focus-visible {
     border-color: #d6b253;
     color: #d6b253;
+}
+
+.social-icons a:focus-visible {
+    outline: 2px solid #d6b253;
+    outline-offset: 3px;
 }
 
 .footer-column {
@@ -168,4 +174,14 @@ html, body,
     .footer-logo h2{
         font-size: 22px;
     }
-}    
+
+    .social-icons {
+        gap: 14px;
+        margin-top: 28px;
+    }
+
+    .social-icons a {
+        width: 48px;
+        height: 48px;
+    }
+}

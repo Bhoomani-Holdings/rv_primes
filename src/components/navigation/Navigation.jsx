@@ -16,10 +16,10 @@ export default function Navigation() {
       >
         <Link to={ROUTES.HOME}>Home</Link>
         <Link to={ROUTES.ABOUT_US}>AboutUs</Link>
-        <Link to="/our-business">Our Business</Link>
-        <Link to="/investment-opportunities">Investment Oppurtunities</Link>
-        <Link to="/investors">Investors</Link>
-        <Link to="/news-and-updates">News & Updates</Link>
+        <Link to={ROUTES.OUR_BUSINESS}>Our Business</Link>
+        <Link to={ROUTES.INVESTOR_OPPORTUNITIES}>Investment Opportunities</Link>
+        <Link to={ROUTES.INVESTORS}>Investors</Link>
+        <Link to={ROUTES.NEWS_AND_UPDATES}>News &amp; Updates</Link>
         <Link to={ROUTES.CONTACT}>Contact</Link>
 
          <button

@@ -66,7 +66,7 @@
 
 .countryCodeLabel {
     display: flex;
-    flex: 0 0 145px;
+    flex: 0 0 205px;
     flex-direction: column;
     color: #222;
     font-size: 16px;
@@ -132,6 +132,70 @@
     background: #08265f;
 }
 
+.successBackdrop {
+    position: fixed;
+    z-index: 2000;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: rgba(3, 17, 38, 0.58);
+}
+
+.successDialog {
+    width: min(100%, 430px);
+    padding: 32px 28px;
+    border: 1px solid #f1d98c;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 18px 55px rgba(0, 0, 0, 0.22);
+    text-align: center;
+    font-family: "Roboto", sans-serif;
+}
+
+.successIcon {
+    display: grid;
+    width: 52px;
+    height: 52px;
+    margin: 0 auto 16px;
+    place-items: center;
+    border-radius: 50%;
+    background: #eaf8f1;
+    color: #25855a;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.successDialog h3 {
+    margin: 0;
+    color: #0d347c;
+    font-size: 22px;
+}
+
+.successDialog p {
+    margin: 12px 0 22px;
+    color: #536174;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.successButton {
+    min-width: 120px;
+    min-height: 42px;
+    padding: 0 22px;
+    border: 0;
+    border-radius: 8px;
+    background: #0d347c;
+    color: #fff;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.successButton:hover {
+    background: #08265f;
+}
+
 /* ---------- Tablet ---------- */
 @media (max-width: 768px) {
     .basicContainer {
@@ -179,6 +243,15 @@
     .sectionHeader {
         font-size: 20px;
         text-align: center;
+    }
+
+    .mobileField {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .countryCodeLabel {
+        flex: 1 1 auto;
     }
 
     .buttonContainer {

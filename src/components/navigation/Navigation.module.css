@@ -58,13 +58,14 @@
         left: -100%;
         width: 100%;
         height: calc(100vh - 75px);
+        overflow-y: auto;
         background: #071327;
 
         flex-direction: column;
         align-items: center;
         justify-content: flex-start;
-        gap: 35px;
-        padding-top: 40px;
+        gap: 22px;
+        padding: 28px 16px 32px;
         transition: 0.4s;
     }
 

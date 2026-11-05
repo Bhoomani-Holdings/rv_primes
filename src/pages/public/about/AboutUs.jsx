@@ -1,407 +1,345 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
+import { ROUTES } from "../../../routes/routesPath";
 import styles from "./AboutUs.module.css";
-import Header from '../../../components/header/Header';
-import Footer from '../../../components/footer/Footer';
+import Header from "../../../components/header/Header";
+import Footer from "../../../components/footer/Footer";
+import { missionPoints, sectors, approach, principles, techPoints } from "./aboutData";
+import heroPic from "../../../assets/aboutus/d-hero.svg";
+import landscape from "../../../assets/aboutus/d-landscape.svg";
+import imgSolar from "../../../assets/aboutus/d-solar.svg";
+import imgAgri from "../../../assets/aboutus/d-agri.svg";
+import imgRealEstate from "../../../assets/aboutus/d-realestate.svg";
+import imgTech from "../../../assets/aboutus/d-tech.svg";
+import imgEducation from "../../../assets/aboutus/d-education.svg";
+import imgHospitality from "../../../assets/aboutus/d-hospitality.svg";
+import tPlant from "../../../assets/aboutus/t-plantation.svg";
+import tSolar from "../../../assets/aboutus/t-solar.svg";
 
-const timeline = [
-  {
-    year: "2015",
-    title: "Foundation",
-    desc: "Bhoomani Holdings incorporated in Hyderabad with a vision to democratize premium real estate investment for everyday investors.",
-  },
-  {
-    year: "2017",
-    title: "RV Prime Assets Launch",
-    desc: "Launched our flagship real estate investment platform, onboarding 200+ investors within the first year of operations.",
-  },
-  {
-    year: "2019",
-    title: "Fuel Station Vertical",
-    desc: "Entered the high-yield fuel station investment category, partnering with operators across AP and Telangana.",
-  },
-  {
-    year: "2021",
-    title: "₹100 Cr Milestone",
-    desc: "Crossed ₹100 Crore in assets under management and expanded into farmland and commercial property categories.",
-  },
-  {
-    year: "2023",
-    title: "Pan-India Expansion",
-    desc: "Expanded presence to 10+ cities, launched Future Ventures division, and surpassed 2,000 active investors.",
-  },
-];
+const sectorImages = [imgSolar, imgAgri, imgRealEstate, imgTech, imgEducation, imgHospitality];
+const pillars = ["Assets", "Expertise", "Operations", "Technology", "Capital"];
+const values = ["Accessibility", "Transparency", "Responsibility", "Long-Term Thinking", "Collective Growth"];
 
-const assetStats = [
-  ["₹500+ Cr", "Assets Under Management"],
-  ["2,500+", "Happy Investors"],
-  ["25+", "Active Projects"],
-  ["10+", "Cities Across India"],
-  ["16–24%", "Annual Returns"],
-  ["100%", "Transparency & Trust"],
-];
-
-const leaders = [
-  {
-    initials: "RK",
-    name: "Rajesh Kumar Sharma",
-    role: "Founder & Managing Director",
-    bio: "A visionary entrepreneur with 20+ years in real estate and infrastructure. Rajesh founded Bhoomani Holdings with the mission of making premium investments accessible to every Indian investor.",
-    accent: "gold",
-    socials: ["in", "tw"],
-  },
-  {
-    initials: "PV",
-    name: "Priya Venkatesh",
-    role: "Chief Financial Officer",
-    bio: "A chartered accountant with deep expertise in fund management and financial structuring. Priya ensures every investment is backed by rigorous, transparent governance.",
-    accent: "green",
-    socials: ["in", "tw"],
-  },
-  {
-    initials: "AM",
-    name: "Arjun Mehta",
-    role: "Chief Operations Officer",
-    bio: "With 15+ years in operations and project management, Arjun drives execution excellence across all active projects, ensuring timely delivery and quality outcomes for every investor.",
-    accent: "purple",
-    socials: ["in", "tw"],
-  },
-];
-
-const values = [
-  {
-    title: "Transparency",
-    desc: "Clear processes, regular reporting, and real-time updates. No hidden fees, no fine print surprises — ever.",
-    icon: (
-      <div className={styles.valueIcon}>
-        <div className={styles.valueIconCircle}>
-          <div className={styles.valueIconDot} />
-        </div>
-      </div>
-    ),
-  },
-  {
-    title: "Integrity",
-    desc: "We do what we say, always. Our track record of honoring commitments is our most valuable asset.",
-    icon: <div className={styles.valueDiamond} />,
-  },
-  {
-    title: "Discipline",
-    desc: "Rigorous due diligence, conservative underwriting, and patient capital allocation.",
-    icon: <div className={styles.valueRing} />,
-  },
-  {
-    title: "Investor First",
-    desc: "We grow when our investors grow. Every strategy, every project, every decision starts with one question.",
-    icon: <div className={styles.valueBadge} />,
-  },
-  {
-    title: "Innovation",
-    desc: "We constantly explore new asset classes, technologies, and structures to give our investors access to the best opportunities.",
-    icon: <div className={styles.valueArrow} />,
-  },
-  {
-    title: "Community",
-    desc: "Our investments create jobs, develop infrastructure, and strengthen communities — building India alongside building wealth.",
-    icon: <div className={styles.valueShield} />,
-  },
-];
-
-const achievements = [
-  ["₹", "₹500+ Crore AUM", "One of India's fastest-growing alternative investment platforms by assets under management."],
-  ["★", "Forbes Featured Company", "Recognized by Forbes India, Economic Times, and Mint for investment excellence and investor trust."],
-  ["↑", "16–24% Consistent Returns", "Delivered above-market returns to investors across all five asset categories since inception."],
-  ["target", "100% Repayment Track Record", "Never missed a single investor repayment in 10 years of operations across 25+ projects."],
-  ["⬡", "Startup India Recognized", "Officially recognized by Startup India for innovation in financial services and investment access."],
-];
-
-const featured = ["Forbes", "The Economic Times", "BW Businessworld", "Startup India", "Zee Business", "Mint"];
-
-function HeroArt() {
+/* fade / slide in when scrolled into view */
+function Reveal({ delay = 0, className = "", children }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (!("IntersectionObserver" in window)) {
+      el.classList.add(styles.visible);
+      return;
+    }
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.classList.add(styles.visible);
+          io.disconnect();
+        }
+      },
+      { threshold: 0.12 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
   return (
-    <div className={styles.heroArt}>
-      <div className={styles.hexagon}>
-        <div className={styles.hexagonInner}>
-          <div className={styles.hexagonCore}>BH</div>
-        </div>
-      </div>
+    <div ref={ref} className={`${styles.reveal} ${className}`} style={{ transitionDelay: `${delay}ms` }}>
+      {children}
+    </div>
+  );
+}
 
-      <div className={`${styles.line} ${styles.line1}`} />
-      <div className={`${styles.line} ${styles.line2}`} />
-      <div className={`${styles.line} ${styles.line3}`} />
-      <div className={`${styles.line} ${styles.line4}`} />
-
-      <div className={`${styles.node} ${styles.node1}`} />
-      <div className={`${styles.node} ${styles.node2}`} />
-      <div className={`${styles.node} ${styles.node3}`} />
-      <div className={`${styles.node} ${styles.node4}`} />
-
-      <div className={styles.buildings}>
-        <div className={styles.building}></div>
-        <div className={`${styles.building} ${styles.tall}`}></div>
-        <div className={styles.building}></div>
-      </div>
+function Tag({ children, className = "" }) {
+  return (
+    <div className={`${styles.tag} ${className}`}>
+      <span className={styles.tagText}>{children}</span>
     </div>
   );
 }
 
 export default function AboutUs() {
-  return (<><Header />
-    <div className={styles.aboutus}>
-      <section className={styles.hero}>
-        <div className={styles.heroContent}>
-          <div className={styles.heroLine}></div>
-          <p className={styles.heroTag}>About Bhoomani Holdings</p>
-
-          <h1 className={styles.heroTitle}>Our Story</h1>
-          <h1 className={`${styles.heroSubtitle} ${styles.gold}`}>of Building</h1>
-          <h1 className={styles.heroTitle}>Legacies.</h1>
-          <p className={styles.heroDesc}>
-            Bhoomani Holdings Private Limited was founded with a singular conviction — that disciplined,
-            transparent investing in real assets creates enduring value for investors and communities alike.
-          </p>
-          <div className={styles.divider}></div>
-          <div className={styles.heroStats}>
-            <div>
-              <h3>10+</h3>
-              <span>YEARS OF EXCELLENCE</span>
-            </div>
-            <div>
-              <h3>₹500 Cr</h3>
-              <span>ASSETS MANAGED</span>
-            </div>
-            <div>
-              <h3>2,500+</h3>
-              <span>INVESTORS SERVED</span>
-            </div>
-          </div>
-        </div>
-
-        <HeroArt />
-      </section>
-
-      <section className={styles.timelineSection}>
-        <div className={styles.timelineLeft}>
-          <div className={styles.heroLine}></div>
-          <p className={styles.heroTag}>OUR STORY</p>
-
-          <h2 className={styles.storyTitle}>
-            <span className={styles.storyLine1}>A Decade of</span>
-            <span className={`${styles.storyLine2} ${styles.gold}`}>Building Trust,</span>
-            <span className={styles.storyLine3}>Creating Wealth.</span>
-          </h2>
-
-          <p className={styles.storyDesc}>
-            Bhoomani Holdings Private Limited was born from a simple belief that every investor deserves access to high-quality,
-            income-generating assets — not just the privileged few. Founded in 2015, we set out to democratize premium real estate,
-            infrastructure, and agricultural investments across India.
-          </p>
-
-          <div className={styles.quote}>
-            <p>“We don't just manage capital — we build relationships rooted in trust, transparency, and shared prosperity.”</p>
-            <cite>— FOUNDER & MANAGING DIRECTOR, BHOOMANI HOLDINGS</cite>
-          </div>
-
-          <p className={styles.storyDesc}>
-            Today, Bhoomani Holdings manages over ₹500 Crore in assets across five distinct investment categories — real estate,
-            fuel stations, farmland, commercial properties, and future ventures — spanning 10+ cities across India.
-          </p>
-        </div>
-
-        <div className={styles.timelineRight}>
-          <div className={styles.timelineLine}></div>
-          {timeline.map((item) => (
-            <div key={item.year} className={styles.timelineItem}>
-              <div className={styles.timelineMarker}>
-                <span className={styles.markerNode}></span>
-                <span className={styles.markerYear}>{item.year}</span>
-              </div>
-
-              <div className={styles.timelineContent}>
-                <h3>{item.title}</h3>
-                <p>{item.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className={styles.missionVision}>
-        <div className={styles.missionBox}>
-          <div className={styles.missionIcon} aria-hidden>
-            <div className={styles.iconCircle}></div>
-          </div>
-
-          <p className={styles.missionTag}>OUR MISSION</p>
-          <h2 className={styles.missionHeading}>
-            To deliver <span className={styles.gold}>sustainable</span> value to every investor through disciplined investing.
-          </h2>
-          <p className={styles.missionDesc}>
-            We create and manage a diversified portfolio of high-quality assets that generate consistent returns while safeguarding capital. Our mission is built on four pillars: transparency, discipline, diversification, and investor-first thinking — always.
-          </p>
-        </div>
-
-        <div className={styles.missionBox}>
-          <div className={styles.missionIcon} aria-hidden>
-            <div className={styles.iconDiamond}></div>
-          </div>
-
-          <p className={styles.missionTag}>OUR VISION</p>
-          <h2 className={styles.missionHeading}>
-            To be India's most <span className={styles.gold}>trusted</span> alternative investment platform by 2030.
-          </h2>
-          <p className={styles.missionDesc}>
-            We envision a future where every Indian investor has access to premium, diversified asset classes that were previously available only to institutions and ultra-high-net-worth individuals. Bhoomani Holdings will be the bridge that makes this future possible.
-          </p>
-        </div>
-      </section>
-
-      <section className={styles.statsStrip}>
-        <div className={styles.statsContainer}>
-          {assetStats.map(([value, label]) => (
-            <div key={label} className={styles.statItem}>
-              <h3>{value}</h3>
-              <span>{label}</span>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className={styles.leadership}>
-        <div className={styles.leadershipIntro}>
-          <div className={styles.leadershipHeadline}>
-            <div className={styles.heroLine}></div>
-            <p className={styles.heroTag}>LEADERSHIP TEAM</p>
-
-            <h2 className={styles.leadershipTitle}>
-              The People
-              <span> Behind the Vision.</span>
-            </h2>
-          </div>
-
-          <div className={styles.leadershipTextWrapper}>
-            <p className={styles.leadershipText}>
-              Our leadership team brings together decades of combined expertise in real estate, finance, operations, and technology. Each leader is personally committed to the success of every investor who trusts us with their capital.
+  return (
+    <div className={styles.page}>
+      <Header />
+      <div className={styles.about}>
+        {/* HERO */}
+        <section className={styles.hero}>
+          <div className={styles.heroDots}></div>
+          <div className={styles.heroText}>
+            <Tag className={styles.heroTag}>About Bhoomani Holdings</Tag>
+            <h1 className={styles.heroTitle}>
+              Building Access <em>To Real Assets.</em>
+            </h1>
+            <p className={styles.heroTagline}>Creating opportunities for long-term growth.</p>
+            <p className={styles.lead}>
+              <strong>Bhoomani Holdings Private Limited</strong> is an India-based holding company
+              building a multi-sector real-asset platform focused on creating accessible
+              opportunities across agriculture, renewable energy, real estate, hospitality,
+              technology, education and other asset-focused sectors.
+            </p>
+            <p className={styles.lead}>
+              We believe participation in real assets should not always be limited by high entry
+              barriers. Our vision is to explore and structure opportunities that allow individuals
+              to participate in selected asset-backed projects through clearly defined models,
+              documented terms and responsible decision-making.
+            </p>
+            <p className={styles.lead}>
+              Our approach is built around{" "}
+              <strong>accessibility, transparency, responsible structuring and long-term value creation.</strong>
             </p>
           </div>
+          <div className={styles.heroVisual}>
+            <div className={styles.heroCard}>
+              <div className={styles.heroPic} style={{ backgroundImage: `url(${heroPic})` }}></div>
+            </div>
+            <span className={`${styles.float} ${styles.f1}`}>Renewable Energy</span>
+            <span className={`${styles.float} ${styles.f2}`}>Agriculture</span>
+            <span className={`${styles.float} ${styles.f3}`}>Real Estate</span>
+            <div className={styles.seal}>
+              <i></i>
+              <span>Real<br />Assets</span>
+            </div>
+          </div>
+        </section>
+
+        {/* VALUES BAND */}
+        <div className={styles.band} aria-hidden="true">
+          <div className={styles.bandTrack}>
+            {[...values, ...values, ...values, ...values].map((v, i) => (
+              <span key={i}>{v}<b></b></span>
+            ))}
+          </div>
         </div>
 
-        <div className={styles.leadersGrid}>
-          {leaders.map((leader) => (
-            <div key={leader.name} className={styles.leaderCard}>
-              <div className={`${styles.leaderBanner} ${styles[`${leader.accent}Banner`]}`}>
-                <span>{leader.initials}</span>
+        {/* WHO WE ARE */}
+        <section className={`${styles.section} ${styles.who} ${styles.tTeal}`}>
+          <Reveal className={styles.whoPics}>
+            <div className={styles.arch} style={{ backgroundImage: `url(${imgSolar})` }}></div>
+            <div className={styles.circle} style={{ backgroundImage: `url(${imgAgri})` }}></div>
+            <div className={styles.pill}><strong>Multi-Sector</strong><small>Real-Asset Platform</small></div>
+          </Reveal>
+          <Reveal delay={120}>
+            <Tag>Who We Are</Tag>
+            <h2 className={styles.title}>A Diversified Platform <em>Built Around Real Assets</em></h2>
+            <p className={styles.body}>
+              Bhoomani Holdings Private Limited is being developed as a diversified platform that
+              brings together opportunities across multiple sectors. Rather than focusing on a
+              single industry, we are building a broader ecosystem around tangible assets, operating
+              projects and strategic opportunities.
+            </p>
+            <p className={styles.body}>
+              Our current focus includes renewable energy and agriculture, while our roadmap extends
+              into real estate, education, technology, hospitality and other emerging sectors. We
+              work with project stakeholders and strategic partners where appropriate to explore
+              opportunities and develop participation models aligned with the underlying asset and
+              project structure.
+            </p>
+          </Reveal>
+        </section>
+
+        {/* VISION */}
+        <section className={`${styles.vision} ${styles.tSky}`} style={{ backgroundImage: `url(${landscape})` }}>
+          <Reveal className={styles.visionCard}>
+            <Tag>Our Vision</Tag>
+            <h2 className={styles.title}>Making Real-Asset Participation <em>More Accessible</em></h2>
+            <p className={styles.body}>
+              Our long-term vision is to build a platform where more people can explore
+              participation in carefully selected real-asset opportunities with greater clarity and
+              understanding. We want to move beyond the traditional perception that meaningful asset
+              participation always requires substantial capital.
+            </p>
+            <p className={styles.body}>
+              Through lower entry points, structured opportunities and transparent information, we
+              aim to create a pathway for individuals to explore real-asset participation while
+              understanding the associated terms, risks and responsibilities.
+            </p>
+          </Reveal>
+        </section>
+
+        {/* MISSION – side image + cards */}
+        <section className={`${styles.section} ${styles.mission} ${styles.tCoral}`}>
+          <div className={styles.split}>
+            <Reveal className={styles.sideArt}>
+              <div className={styles.sidePic} style={{ backgroundImage: `url(${tPlant})` }}></div>
+              <span className={styles.sideBadge}>Agriculture &amp; Renewable Energy</span>
+            </Reveal>
+            <div>
+              <Reveal>
+                <Tag>Our Mission</Tag>
+                <h2 className={styles.title}>What We're <em>Working Toward</em></h2>
+              </Reveal>
+              <div className={styles.missionGrid}>
+                {missionPoints.map((p, i) => (
+                  <Reveal key={p} delay={(i % 2) * 80} className={styles.mCard}>
+                    <span className={styles.mNum}>{i + 1}</span>
+                    <p>{p}</p>
+                  </Reveal>
+                ))}
               </div>
+            </div>
+          </div>
+        </section>
 
-              <div className={styles.leaderInfo}>
-                <h3>{leader.name}</h3>
-                <p className={styles.role}>{leader.role}</p>
-                <p className={styles.leaderBio}>{leader.bio}</p>
-
-                <div className={styles.leaderActions}>
-                  {leader.socials.map((social) => (
-                    <button key={social} className={styles.socialButton} aria-label={social}>
-                      {social}
-                    </button>
-                  ))}
+        {/* SECTORS – bento grid */}
+        <section className={`${styles.section} ${styles.sectors} ${styles.tViolet}`}>
+          <Reveal>
+            <Tag>What We Focus On</Tag>
+            <h2 className={styles.title}>Sectors <em>We're Building Across</em></h2>
+          </Reveal>
+          <div className={styles.bento}>
+            {sectors.map((s, i) => (
+              <Reveal key={s.name} delay={(i % 3) * 100} className={`${styles.bCard} ${styles["b" + (i + 1)]}`}>
+                <div className={styles.bImg} style={{ backgroundImage: `url(${sectorImages[i]})` }}></div>
+                <div className={styles.bText}>
+                  <h3>{s.name}</h3>
+                  <p>{s.desc}</p>
                 </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className={styles.values}>
-        <div className={styles.valuesIntro}>
-          <div className={styles.heroLine}></div>
-          <p className={styles.heroTag}>OUR CORE VALUES</p>
-          <h2 className={styles.valuesTitle}>
-            Principles We Never
-            <span> Compromise.</span>
-          </h2>
-          <p className={styles.valuesIntroText}>
-            Every decision at Bhoomani Holdings — from which project we greenlight to how we communicate with investors — is guided by these six uncompromising values.
-          </p>
-        </div>
-
-        <div className={styles.valuesGrid}>
-          {values.map((value, index) => (
-            <div key={value.title} className={styles.valueCard} data-number={String(index + 1).padStart(2, "0")}> 
-              {value.icon}
-              <h3>{value.title}</h3>
-              <p>{value.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className={styles.achievementsSection}>
-        <div className={styles.achievementsIntro}>
-          <div className={styles.achievementsHeadingWrapper}>
-            <div className={styles.heroLine}></div>
-            <p className={styles.heroTag}>OUR ACHIEVEMENTS</p>
+              </Reveal>
+            ))}
           </div>
-          <h2 className={styles.achievementsTitle}>
-            Milestones That <span className={styles.gold}>Define</span> Our Journey.
-          </h2>
-          <p className={styles.achievementsDesc}>
-            Every number we've achieved is backed by hundreds of real investor stories — professionals, families, and entrepreneurs who trusted us with their savings and received consistent, transparent returns in exchange.
-          </p>
-          <p className={styles.achievementsDesc}>
-            Our growth has not been accidental. It has been the result of an unwavering commitment to quality, a conservative investment philosophy, and a leadership team that treats every rupee invested as if it were their own.
-          </p>
-          <div className={styles.achievementsActions}>
-            <button className={`${styles.ctaButton} ${styles.ctaPrimary}`}>
-              EXPLORE INVESTMENT OPPORTUNITIES
-            </button>
-            <a className={styles.meetTeamLink} href="#">Meet Our Team →</a>
+        </section>
+
+        {/* APPROACH – zig-zag timeline */}
+        <section className={`${styles.section} ${styles.approach} ${styles.tBlue}`}>
+          <Reveal>
+            <Tag>Our Approach</Tag>
+            <h2 className={styles.title}>From Opportunity <em>to Participation</em></h2>
+          </Reveal>
+          <div className={styles.zig}>
+            {approach.map((a, i) => (
+              <Reveal key={a.num} className={styles.zStep}>
+                <span className={styles.zNode}>{a.num}</span>
+                <div className={styles.zCard}>
+                  <h3>{a.title}</h3>
+                  <p>{a.desc}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </section>
+
+        {/* PRINCIPLES – cards + side image */}
+        <section className={`${styles.section} ${styles.principles} ${styles.tRose}`}>
+          <div className={`${styles.split} ${styles.splitRev}`}>
+            <div>
+              <Reveal>
+                <Tag>Our Core Principles</Tag>
+                <h2 className={styles.title}>The Values That <em>Guide Us</em></h2>
+              </Reveal>
+              <div className={styles.pGrid}>
+                {principles.map((p, i) => (
+                  <Reveal key={p.title} delay={(i % 2) * 90} className={styles.pCard}>
+                    <h3>{p.title}</h3>
+                    <p>{p.desc}</p>
+                  </Reveal>
+                ))}
+              </div>
+            </div>
+            <Reveal className={styles.sideArt}>
+              <div className={styles.sidePic} style={{ backgroundImage: `url(${tSolar})` }}></div>
+              <span className={styles.sideBadge}>Built for the long term</span>
+            </Reveal>
+          </div>
+        </section>
+
+        {/* STRATEGIC RELATIONSHIPS */}
+        <section className={`${styles.section} ${styles.strategic}`}>
+          <Reveal className={styles.strategicText}>
+            <h2 className={styles.title}>Building Through <em>Strategic Relationships</em></h2>
+            <p className={styles.body}>
+              Our approach involves working with project stakeholders, operating partners and
+              strategic collaborators where appropriate. These relationships can help bring together
+              Assets, Expertise, Operations, Technology and Capital Participation — creating a
+              stronger ecosystem around each opportunity while maintaining clarity around the
+              underlying project structure and responsibilities of each stakeholder.
+            </p>
+          </Reveal>
+          <div className={styles.pillars}>
+            {pillars.map((p, i) => (
+              <Reveal key={p} delay={i * 90} className={`${styles.pillar} ${styles["pl" + (i + 1)]}`}>
+                <span>{p}</span>
+              </Reveal>
+            ))}
+          </div>
+        </section>
+
+        {/* TECHNOLOGY */}
+        <section className={`${styles.section} ${styles.tech} ${styles.tCyan}`} style={{ backgroundImage: `url(${imgTech})` }}>
+          <div className={styles.techShade}></div>
+          <div className={styles.techInner}>
+            <Reveal>
+              <Tag>Technology at the Core</Tag>
+              <h2 className={`${styles.title} ${styles.onDark}`}>Technology Is Part of <em>How We Build</em></h2>
+              <p className={`${styles.body} ${styles.onDark}`}>
+                Technology is not separate from our vision — it is an important part of how we intend
+                to build the business. We are working toward digital platforms that can make it easier to:
+              </p>
+            </Reveal>
+            <div className={styles.techGrid}>
+              {techPoints.map((p, i) => (
+                <Reveal key={p} delay={(i % 4) * 70} className={styles.techChip}>
+                  <b>{String(i + 1).padStart(2, "0")}</b>
+                  {p}
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* LOOKING AHEAD */}
+        <section className={`${styles.section} ${styles.ahead} ${styles.tGreen}`}>
+          <div className={styles.aheadPic} style={{ backgroundImage: `url(${landscape})` }}></div>
+          <Reveal className={styles.aheadInner}>
+            <Tag>Looking Ahead</Tag>
+            <h2 className={`${styles.title} ${styles.onDark}`}>Built With a <em>Long-Term Perspective</em></h2>
+            <div className={styles.cols}>
+              <p className={styles.glass}>
+                Bhoomani Holdings is being built with a long-term perspective. Today, our focus is on
+                developing opportunities around renewable energy and agriculture while laying the
+                foundation for expansion into additional asset-focused sectors. Tomorrow, we envision
+                a broader platform connecting people with opportunities across multiple real-asset categories.
+              </p>
+              <p className={styles.glass}>
+                Our journey is not simply about expanding into more sectors. It is about building a
+                trusted, technology-enabled ecosystem for exploring real assets and long-term opportunities.
+              </p>
+            </div>
+          </Reveal>
+        </section>
+
+        {/* COMMITMENT */}
+        <section className={`${styles.commit}`}>
+          <Reveal>
+            <h2>Every opportunity has its own structure, terms, eligibility requirements and risks.</h2>
+            <p>
+              We are committed to presenting opportunities responsibly and encouraging interested
+              participants to carefully review the relevant project documentation before making any
+              decision. We believe informed participation is better than uninformed expectation.
+            </p>
+          </Reveal>
+        </section>
+
+        {/* CTA */}
+        <div className={styles.cta}>
+          <div>
+            <h2>Bhoomani Holdings</h2>
+            <p className={styles.ctaSub}>Collective Growth. Secure Future.</p>
+            <p className={styles.ctaLine}>Explore opportunities. Understand the structure. Make informed decisions.</p>
+          </div>
+          <div className={styles.ctaBtns}>
+            <Link to={ROUTES.PROJECTS} className={styles.btnDark}>Explore Opportunities</Link>
+            <Link to={ROUTES.CONTACT} className={styles.btnLight}>Contact Us</Link>
           </div>
         </div>
 
-        <div className={styles.achievementsGrid}>
-          {achievements.map(([icon, title, desc]) => (
-            <div key={title} className={styles.achievementItem}>
-              <div className={styles.achievementIcon}>
-                {icon === "target" ? <div className={styles.targetIcon} /> : icon}
-              </div>
-              <div>
-                <h3 className={styles.achievementTitle}>{title}</h3>
-                <p className={styles.achievementDesc}>{desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className={styles.featuredSection}>
-        <span className={styles.featuredLabel}>As Featured In</span>
-        <div className={styles.featuredList}>
-          {featured.map((name) => (
-            <span key={name} className={styles.featuredItem}>{name}</span>
-          ))}
-        </div>
-      </section>
-
-      <section className={styles.ctaSection}>
-        <div className={styles.ctaIntro}>
-          <h2 className={styles.ctaHeading}>
-            Ready to Start<br />
-            Your Investment Journey?
-          </h2>
-          <p className={styles.ctaText}>
-            Join 2,500+ investors who trust Bhoomani Holdings for smart, secure, and transparent investments.
-          </p>
-        </div>
-
-        <div className={styles.ctaActions}>
-          <button className={`${styles.ctaButton} ${styles.ctaExplorer}`}>
-            EXPLORE OPPORTUNITIES
-          </button>
-          <button className={`${styles.ctaButton} ${styles.ctaSecondary}`}>
-            CONTACT US
-          </button>
-        </div>
-      </section>
+        <p className={styles.legal}>
+          All opportunities are subject to applicable project documents, agreements, eligibility
+          requirements, legal and regulatory conditions, and other applicable terms. Any reference to
+          potential income, appreciation or returns is subject to the specific project structure and
+          documentation and should not be interpreted as a guarantee unless expressly documented.
+        </p>
+      </div>
+      <Footer />
     </div>
-    <Footer />
-  </>);
+  );
 }

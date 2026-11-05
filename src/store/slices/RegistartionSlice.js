@@ -32,7 +32,8 @@ const registrationSlice = createSlice({
     },
     saveEarningInfo: (state, action) => {
       state.earningInfo = action.payload;
-    }
+    },
+    resetRegistration: () => initialState
   }
 });
 
@@ -42,7 +43,8 @@ export const {
   saveKycInfo,
   saveNomineeInfo,
   saveBankInfo,
-  saveEarningInfo
+  saveEarningInfo,
+  resetRegistration
 } = registrationSlice.actions;
 
 export default registrationSlice.reducer;

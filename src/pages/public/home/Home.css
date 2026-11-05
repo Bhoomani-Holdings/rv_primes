@@ -76,7 +76,7 @@ body {
 
 .hero-eyebrow-text {
   font-family: var(--font-sans);
-  font-size: 11px;
+  font-size: 15px;
   font-weight: 500;
   letter-spacing: 0.3em;
   text-transform: uppercase;
@@ -103,7 +103,7 @@ body {
 }
 
 .hero-sub {
-  font-size: 15px;
+  font-size: 19px;
   color: rgba(255, 255, 255, 0.55);
   line-height: 1.8;
   max-width: 400px;
@@ -121,7 +121,7 @@ body {
   color: var(--navy);
   padding: 16px 36px;
   font-family: var(--font-sans);
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -138,7 +138,7 @@ body {
 
 .btn-ghost {
   color: rgba(255, 255, 255, 0.65);
-  font-size: 13px;
+  font-size: 17px;
   font-weight: 400;
   text-decoration: none;
   letter-spacing: 0.05em;
@@ -217,14 +217,14 @@ body {
 
 .stat-number {
   font-family: var(--font-serif);
-  font-size: 32px;
+  font-size: 36px;
   font-weight: 600;
   color: var(--navy);
   line-height: 1;
 }
 
 .stat-label {
-  font-size: 10px;
+  font-size: 14px;
   font-weight: 500;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -251,7 +251,7 @@ section {
 }
 
 .section-eyebrow-text {
-  font-size: 10px;
+  font-size: 14px;
   font-weight: 500;
   letter-spacing: 0.3em;
   text-transform: uppercase;
@@ -289,7 +289,7 @@ section {
 }
 
 .ecosystem-desc {
-  font-size: 15px;
+  font-size: 19px;
   color: var(--text-mid);
   line-height: 1.8;
   margin-top: 28px;
@@ -303,77 +303,286 @@ section {
 }
 
 .asset-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 360px;
   background: var(--white);
   padding: 40px 36px;
   border-bottom: 3px solid transparent;
-  transition: all 0.3s;
+  transition: transform 0.45s cubic-bezier(.2,.8,.2,1), box-shadow 0.45s ease, border-color 0.3s ease;
   cursor: pointer;
   text-decoration: none;
-  display: block;
 }
 
 .asset-card.full-width {
   grid-column: span 2;
+  min-height: 390px;
 }
 
-.asset-card:hover {
-  border-bottom-color: var(--gold);
+/* Images remain visible at all times, including before hover. */
+.asset-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 0.5s ease, transform 0.8s ease;
+  z-index: -2;
+}
+
+.asset-card.full-width .asset-bg {
+  object-position: 75% 50%;
+}
+
+/* The portrait source is presented as a polished landscape composition: a soft,
+   full-bleed motion background with the original footage kept intact at centre. */
+.asset-video-shell {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+  z-index: -2;
   background: var(--navy);
 }
 
-.asset-card:hover .asset-icon {
+.asset-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.asset-video-backdrop {
+  object-fit: cover;
+  filter: blur(18px) saturate(0.8) brightness(0.58);
+  transform: scale(1.12);
+}
+
+.asset-video-foreground {
+  object-fit: contain;
+  filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.38));
+}
+
+.asset-video-label {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  padding: 6px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(11, 21, 38, 0.55);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Navy overlay keeps the text readable over the photo */
+.asset-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(11, 21, 38, 0.92) 0%,
+    rgba(11, 21, 38, 0.6) 55%,
+    rgba(11, 21, 38, 0.25) 100%
+  );
+  opacity: 1;
+  transition: opacity 0.4s ease;
+  z-index: -1;
+}
+
+.asset-content {
+  position: relative;
+}
+
+.asset-card:hover,
+.asset-card:focus-visible {
+  border-bottom-color: var(--gold);
+  background: var(--navy);
+  transform: translateY(-5px);
+  box-shadow: 0 16px 30px rgba(11, 21, 38, 0.22);
+}
+
+.asset-card:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: -2px;
+}
+
+.asset-card:hover .asset-bg,
+.asset-card:focus-visible .asset-bg {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.asset-card:hover .asset-video-shell,
+.asset-card:focus-visible .asset-video-shell {
+  opacity: 1;
+}
+
+.asset-card:hover::after,
+.asset-card:focus-visible::after {
+  opacity: 1;
+}
+
+.asset-card:hover .asset-icon,
+.asset-card:focus-visible .asset-icon {
   color: var(--gold);
 }
 
-.asset-card:hover .asset-name {
+.asset-card:hover .asset-name,
+.asset-card:focus-visible .asset-name {
   color: var(--white);
 }
 
-.asset-card:hover .asset-desc {
-  color: rgba(255, 255, 255, 0.5);
+.asset-card:hover .asset-desc,
+.asset-card:focus-visible .asset-desc {
+  color: rgba(255, 255, 255, 0.85);
 }
 
-.asset-card:hover .asset-link {
-  color: var(--gold);
+.asset-card:hover .asset-link,
+.asset-card:focus-visible .asset-link {
+  color: var(--gold-light);
 }
 
 .asset-icon {
-  font-size: 28px;
+  font-size: 32px;
   margin-bottom: 20px;
-  color: var(--navy-light);
+  color: var(--gold);
   transition: color 0.3s;
 }
 
 .asset-name {
   font-family: var(--font-serif);
-  font-size: 22px;
-  font-weight: 600;
-  color: var(--text-dark);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--white);
   margin-bottom: 10px;
   transition: color 0.3s;
 }
 
 .asset-desc {
-  font-size: 13px;
-  color: var(--text-mid);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.88);
+  font-weight: 500;
   line-height: 1.7;
   margin-bottom: 20px;
   transition: color 0.3s;
 }
 
 .asset-link {
-  font-size: 11px;
-  font-weight: 500;
+  font-size: 15px;
+  font-weight: 700;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--gold);
   text-decoration: none;
 }
 
+/* Client-demo refinements: stronger card typography and always-visible imagery. */
+.ecosystem .section-eyebrow-text {
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.ecosystem-desc {
+  font-weight: 500;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .asset-bg,
+  .asset-card::after,
+  .asset-video-shell {
+    transition: none;
+  }
+}
+
+/* Premium featured-project animation, using the supplied ecosystem photos. */
+.projects-grid {
+  gap: 18px;
+  perspective: 1200px;
+}
+
+.project-card {
+  isolation: isolate;
+  min-height: 468px;
+  border: 1px solid rgba(220, 190, 124, 0.25);
+  border-radius: 22px;
+  box-shadow: 0 18px 45px rgba(3, 12, 24, 0.22);
+  transform: translateZ(0);
+  transition: transform .65s cubic-bezier(.2,.8,.2,1), box-shadow .65s ease, border-color .45s ease;
+}
+
+.project-card::before {
+  content: '';
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(125deg, transparent 0%, transparent 35%, rgba(220,190,124,.15) 48%, rgba(255,255,255,.23) 50%, rgba(220,190,124,.08) 52%, transparent 66%, transparent 100%);
+  transform: translateX(-130%);
+  transition: transform .9s cubic-bezier(.18,.7,.2,1);
+}
+
+.project-card:hover,
+.project-card:focus-within {
+  transform: translateY(-11px) rotateX(1.2deg) rotateY(-1.2deg);
+  border-color: rgba(231, 201, 137, .75);
+  box-shadow: 0 30px 65px rgba(0,0,0,.34), 0 0 0 1px rgba(215,181,109,.08);
+}
+
+.project-card:hover::before,
+.project-card:focus-within::before { transform: translateX(130%); }
+
+.project-img {
+  height: 205px;
+  background-size: cover;
+  background-position: center;
+}
+
+.project-img::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(9,19,33,.08), rgba(11,23,39,.8));
+  transition: background .45s ease;
+}
+
+.project-card:hover .project-img::after { background: linear-gradient(180deg, rgba(9,19,33,.02), rgba(11,23,39,.58)); }
+.project-card:hover .project-img { background-position: 55% center; }
+.project-img-visual { opacity: 0; }
+.proj-real-estate { background-image: url('../../../assets/ecosystem/real-estate.jpg'); }
+.proj-fuel { background-image: url('../../../assets/ecosystem/fuel-energy.jpg'); }
+.proj-farmland { background-image: url('../../../assets/ecosystem/farmland.jpg'); }
+.proj-commercial { background-image: url('../../../assets/ecosystem/commercial.jpg'); }
+
+.project-body { display: flex; flex-direction: column; min-height: 262px; }
+.proj-tag { z-index: 4; font-weight: 700; }
+.project-name { font-weight: 700; }
+.project-location { font-weight: 500; }
+.ret-label { font-weight: 700; }
+.ret-value { font-weight: 700; }
+.project-cta { font-weight: 700; transition: background .35s ease, color .35s ease, transform .45s cubic-bezier(.2,.8,.2,1); }
+.project-card:hover .project-cta { transform: translateY(-2px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .project-card, .project-card::before, .project-img::after, .project-cta { transition: none !important; }
+}
+
 /* FEATURED PROJECTS */
 .projects-section {
   background: var(--navy);
-  scroll-margin-top: 75px;
 }
 
 .projects-header {
@@ -392,7 +601,7 @@ section {
 }
 
 .view-all {
-  font-size: 11px;
+  font-size: 15px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--gold);
@@ -402,58 +611,18 @@ section {
   gap: 8px;
 }
 
-.projects-header-actions {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-}
-
-.project-carousel-controls {
-  display: flex;
-  gap: 8px;
-}
-
-.project-carousel-controls button {
-  display: grid;
-  width: 38px;
-  height: 38px;
-  place-items: center;
-  border: 1px solid rgba(201, 168, 76, 0.45);
-  border-radius: 3px;
-  background: transparent;
-  color: var(--gold-light);
-  font: inherit;
-  font-size: 20px;
-  cursor: pointer;
-}
-
-.project-carousel-controls button:hover {
-  background: var(--gold);
-  color: var(--navy);
-}
-
 .projects-grid {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: 2px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  scroll-snap-type: x mandatory;
-  overscroll-behavior-inline: contain;
-}
-
-.projects-grid::-webkit-scrollbar {
-  display: none;
 }
 
 .project-card {
-  flex: 0 0 calc((100% - 6px) / 4);
-  min-width: 0;
   background: var(--navy-mid);
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.3s;
   position: relative;
-  scroll-snap-align: start;
 }
 
 .project-card:hover {
@@ -474,14 +643,6 @@ section {
   width: 100%;
   height: 100%;
   position: relative;
-}
-
-.project-img-photo {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 }
 
 .proj-real-estate {
@@ -506,7 +667,7 @@ section {
   left: 16px;
   background: var(--gold);
   color: var(--navy);
-  font-size: 9px;
+  font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -519,14 +680,14 @@ section {
 
 .project-name {
   font-family: var(--font-serif);
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 600;
   color: var(--white);
   margin-bottom: 4px;
 }
 
 .project-location {
-  font-size: 12px;
+  font-size: 16px;
   color: var(--gold-light);
   margin-bottom: 20px;
   display: flex;
@@ -543,7 +704,7 @@ section {
 }
 
 .ret-label {
-  font-size: 10px;
+  font-size: 14px;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.35);
@@ -552,7 +713,7 @@ section {
 
 .ret-value {
   font-family: var(--font-serif);
-  font-size: 20px;
+  font-size: 24px;
   color: var(--gold-light);
 }
 
@@ -563,7 +724,7 @@ section {
   background: transparent;
   border: 1px solid rgba(201, 168, 76, 0.3);
   color: var(--gold);
-  font-size: 10px;
+  font-size: 14px;
   font-weight: 500;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -575,173 +736,6 @@ section {
 .project-cta:hover {
   background: var(--gold);
   color: var(--navy);
-}
-
-.signup-steps-backdrop {
-  position: fixed;
-  z-index: 1200;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  padding: 20px;
-  background: rgba(7, 19, 39, 0.78);
-}
-
-.signup-steps-dialog {
-  width: min(100%, 560px);
-  max-height: min(760px, calc(100vh - 40px));
-  overflow-y: auto;
-  padding: 30px;
-  border: 1px solid rgba(214, 178, 83, 0.42);
-  border-radius: 8px;
-  background: #101e35;
-  color: #fff;
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.38);
-}
-
-.invest-hint-dialog {
-  position: relative;
-  width: min(100%, 480px);
-  padding: 30px;
-  border: 1px solid rgba(214, 178, 83, 0.42);
-  border-radius: 8px;
-  background: #101e35;
-  color: #fff;
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.38);
-}
-
-.invest-hint-dialog .signup-steps-close {
-  position: absolute;
-  top: 18px;
-  right: 18px;
-}
-
-.invest-hint-dialog h2 {
-  margin: 0;
-  color: #fff;
-  font-family: var(--font-serif);
-  font-size: 26px;
-}
-
-.invest-hint-steps {
-  margin-top: 10px;
-}
-
-.signup-steps-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 20px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.signup-steps-eyebrow {
-  margin: 0 0 8px;
-  color: var(--gold);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-}
-
-.signup-steps-header h2 {
-  margin: 0;
-  color: #fff;
-  font-family: var(--font-serif);
-  font-size: 26px;
-}
-
-.signup-steps-close {
-  width: 36px;
-  height: 36px;
-  flex: 0 0 auto;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 4px;
-  background: transparent;
-  color: #fff;
-  font: inherit;
-  font-size: 24px;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.signup-steps-list {
-  display: grid;
-  gap: 0;
-  margin: 0;
-  padding: 8px 0;
-  list-style: none;
-}
-
-.signup-steps-list li {
-  display: grid;
-  grid-template-columns: 40px minmax(0, 1fr);
-  gap: 14px;
-  padding: 14px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.signup-steps-list li > span {
-  display: grid;
-  width: 34px;
-  height: 34px;
-  place-items: center;
-  border: 1px solid rgba(214, 178, 83, 0.55);
-  border-radius: 50%;
-  color: var(--gold-light);
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.signup-steps-list strong {
-  color: #fff;
-  font-size: 14px;
-}
-
-.signup-steps-list p {
-  margin: 4px 0 0;
-  color: rgba(255, 255, 255, 0.62);
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-.signup-steps-cta {
-  width: 100%;
-  min-height: 46px;
-  margin-top: 18px;
-  border: 1px solid var(--gold);
-  border-radius: 4px;
-  background: var(--gold);
-  color: var(--navy);
-  font: inherit;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  cursor: pointer;
-}
-
-.signup-steps-cta:hover {
-  background: var(--gold-light);
-}
-
-@media (max-width: 480px) {
-  .signup-steps-dialog {
-    padding: 22px 18px;
-  }
-
-  .invest-hint-dialog {
-    padding: 24px 18px;
-  }
-
-  .signup-steps-header h2 {
-    font-size: 23px;
-  }
-
-  .invest-hint-dialog h2 {
-    padding-right: 32px;
-    font-size: 23px;
-  }
 }
 
 /* WHY US */
@@ -757,7 +751,7 @@ section {
 }
 
 .why-desc {
-  font-size: 15px;
+  font-size: 19px;
   color: var(--text-mid);
   line-height: 1.9;
   margin: 28px 0 40px;
@@ -777,7 +771,7 @@ section {
 
 .pillar-num {
   font-family: var(--font-serif);
-  font-size: 36px;
+  font-size: 40px;
   color: rgba(201, 168, 76, 0.25);
   font-weight: 600;
   line-height: 1;
@@ -786,14 +780,14 @@ section {
 
 .pillar-title {
   font-family: var(--font-serif);
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 600;
   color: var(--text-dark);
   margin-bottom: 4px;
 }
 
 .pillar-desc {
-  font-size: 13px;
+  font-size: 17px;
   color: var(--text-mid);
   line-height: 1.7;
 }
@@ -828,14 +822,14 @@ section {
 
 .wn-num {
   font-family: var(--font-serif);
-  font-size: 48px;
+  font-size: 52px;
   font-weight: 600;
   color: var(--gold-light);
   line-height: 1;
 }
 
 .wn-label {
-  font-size: 11px;
+  font-size: 15px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.4);
@@ -859,7 +853,7 @@ section {
 
 .about-strip-title {
   font-family: var(--font-serif);
-  font-size: 44px;
+  font-size: 48px;
   font-weight: 300;
   color: var(--white);
   line-height: 1.1;
@@ -872,7 +866,7 @@ section {
 }
 
 .about-strip-text {
-  font-size: 14px;
+  font-size: 18px;
   color: rgba(255, 255, 255, 0.5);
   line-height: 1.9;
   margin-bottom: 36px;
@@ -908,7 +902,7 @@ section {
   transition: all 0.3s;
   z-index: 2;
   color: var(--gold);
-  font-size: 20px;
+  font-size: 24px;
 }
 
 .play-btn:hover {
@@ -925,7 +919,7 @@ section {
 
 .press-label {
   text-align: center;
-  font-size: 10px;
+  font-size: 14px;
   letter-spacing: 0.3em;
   text-transform: uppercase;
   color: var(--text-light);
@@ -942,7 +936,7 @@ section {
 
 .press-logo {
   font-family: var(--font-serif);
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 600;
   color: var(--text-light);
   opacity: 0.5;
@@ -966,14 +960,14 @@ section {
 
 .cta-title {
   font-family: var(--font-serif);
-  font-size: 44px;
+  font-size: 48px;
   font-weight: 600;
   color: var(--navy);
   line-height: 1.1;
 }
 
 .cta-sub {
-  font-size: 14px;
+  font-size: 18px;
   color: rgba(11, 21, 38, 0.6);
   margin-top: 10px;
 }
@@ -989,7 +983,7 @@ section {
   color: var(--gold);
   padding: 16px 36px;
   font-family: var(--font-sans);
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -1009,7 +1003,7 @@ section {
   color: var(--navy);
   padding: 16px 36px;
   font-family: var(--font-sans);
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -1104,7 +1098,7 @@ section {
   }
 
   .hero-sub {
-    font-size: 14px;
+    font-size: 18px;
     margin: 20px 0 32px;
   }
 
@@ -1124,7 +1118,7 @@ section {
   }
 
   .stat-number {
-    font-size: 28px;
+    font-size: 32px;
   }
 
   .ecosystem-inner {
@@ -1136,21 +1130,26 @@ section {
     grid-template-columns: 1fr;
   }
 
+  .asset-card.full-width {
+    grid-column: auto;
+  }
+
   .asset-card {
     padding: 32px 28px;
   }
 
   .asset-icon {
-    font-size: 24px;
+    font-size: 28px;
     margin-bottom: 16px;
   }
 
   .asset-name {
-    font-size: 18px;
+    font-size: 22px;
   }
 
-  .project-card {
-    flex-basis: calc((100% - 2px) / 2);
+  .projects-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
   }
 
   .why-inner {
@@ -1179,7 +1178,7 @@ section {
   }
 
   .cta-title {
-    font-size: 36px;
+    font-size: 40px;
   }
 
   .cta-actions {
@@ -1189,10 +1188,6 @@ section {
 }
 
 @media (max-width: 768px) {
-  body {
-    margin-top: 72px;
-  }
-
   section {
     padding: 50px 24px;
   }
@@ -1220,11 +1215,11 @@ section {
   }
 
   .hero-eyebrow-text {
-    font-size: 10px;
+    font-size: 14px;
   }
 
   .hero-sub {
-    font-size: 13px;
+    font-size: 17px;
     line-height: 1.7;
     margin: 16px 0 28px;
     max-width: 100%;
@@ -1238,12 +1233,12 @@ section {
   .btn-primary,
   .btn-dark {
     padding: 14px 28px;
-    font-size: 11px;
+    font-size: 15px;
     flex-grow: 1;
   }
 
   .btn-ghost {
-    font-size: 12px;
+    font-size: 16px;
   }
 
   .stats-bar {
@@ -1266,11 +1261,11 @@ section {
   }
 
   .stat-number {
-    font-size: 24px;
+    font-size: 28px;
   }
 
   .stat-label {
-    font-size: 9px;
+    font-size: 13px;
   }
 
   .section-eyebrow {
@@ -1282,7 +1277,7 @@ section {
   }
 
   .ecosystem-desc {
-    font-size: 14px;
+    font-size: 18px;
     margin-top: 20px;
     max-width: 100%;
   }
@@ -1292,33 +1287,29 @@ section {
   }
 
   .asset-icon {
-    font-size: 22px;
+    font-size: 26px;
     margin-bottom: 14px;
   }
 
   .asset-name {
-    font-size: 16px;
+    font-size: 20px;
     margin-bottom: 8px;
   }
 
   .asset-desc {
-    font-size: 12px;
+    font-size: 19px;
     margin-bottom: 16px;
   }
 
   .asset-link {
-    font-size: 10px;
+    font-size: 14px;
   }
 
   .projects-header {
     flex-direction: column;
+    align-items: flex-start;
     gap: 12px;
     margin-bottom: 40px;
-  }
-
-  .projects-header-actions {
-    align-self: stretch;
-    justify-content: space-between;
   }
 
   .projects-title {
@@ -1326,11 +1317,11 @@ section {
   }
 
   .view-all {
-    font-size: 10px;
+    font-size: 14px;
   }
 
-  .project-card {
-    flex-basis: 100%;
+  .projects-grid {
+    grid-template-columns: 1fr;
   }
 
   .project-img {
@@ -1342,12 +1333,12 @@ section {
   }
 
   .project-name {
-    font-size: 18px;
+    font-size: 22px;
     margin-bottom: 4px;
   }
 
   .project-location {
-    font-size: 11px;
+    font-size: 15px;
     margin-bottom: 16px;
   }
 
@@ -1357,21 +1348,21 @@ section {
   }
 
   .ret-label {
-    font-size: 9px;
+    font-size: 13px;
   }
 
   .ret-value {
-    font-size: 16px;
+    font-size: 20px;
   }
 
   .project-cta {
-    font-size: 9px;
+    font-size: 13px;
     padding: 10px;
     margin-top: 12px;
   }
 
   .why-desc {
-    font-size: 14px;
+    font-size: 18px;
     margin: 20px 0 32px;
   }
 
@@ -1384,16 +1375,16 @@ section {
   }
 
   .pillar-num {
-    font-size: 28px;
+    font-size: 32px;
     min-width: 36px;
   }
 
   .pillar-title {
-    font-size: 16px;
+    font-size: 20px;
   }
 
   .pillar-desc {
-    font-size: 12px;
+    font-size: 16px;
   }
 
   .why-number-card {
@@ -1401,11 +1392,11 @@ section {
   }
 
   .wn-num {
-    font-size: 36px;
+    font-size: 40px;
   }
 
   .wn-label {
-    font-size: 10px;
+    font-size: 14px;
     margin-top: 8px;
   }
 
@@ -1418,13 +1409,13 @@ section {
   }
 
   .about-strip-title {
-    font-size: 32px;
+    font-size: 36px;
     line-height: 1.15;
     margin-bottom: 16px;
   }
 
   .about-strip-text {
-    font-size: 13px;
+    font-size: 17px;
     line-height: 1.8;
     margin-bottom: 24px;
   }
@@ -1436,7 +1427,7 @@ section {
   .play-btn {
     width: 60px;
     height: 60px;
-    font-size: 16px;
+    font-size: 20px;
   }
 
   .press-section {
@@ -1444,7 +1435,7 @@ section {
   }
 
   .press-label {
-    font-size: 9px;
+    font-size: 13px;
     margin-bottom: 32px;
   }
 
@@ -1453,7 +1444,7 @@ section {
   }
 
   .press-logo {
-    font-size: 18px;
+    font-size: 22px;
   }
 
   .cta-banner {
@@ -1461,16 +1452,16 @@ section {
   }
 
   .cta-title {
-    font-size: 28px;
+    font-size: 32px;
   }
 
   .cta-sub {
-    font-size: 13px;
+    font-size: 17px;
   }
 
   .btn-outline-dark {
     padding: 14px 28px;
-    font-size: 11px;
+    font-size: 15px;
   }
 
   .navbar {
@@ -1488,11 +1479,11 @@ section {
   }
 
   .nav-logo-text {
-    font-size: 13px;
+    font-size: 17px;
   }
 
   .nav-logo-sub {
-    font-size: 9px;
+    font-size: 13px;
   }
 }
 
@@ -1520,12 +1511,12 @@ section {
   }
 
   .hero-eyebrow-text {
-    font-size: 9px;
+    font-size: 13px;
     letter-spacing: 2px;
   }
 
   .hero-sub {
-    font-size: 12px;
+    font-size: 16px;
     margin: 12px 0 24px;
   }
 
@@ -1536,7 +1527,7 @@ section {
   .btn-primary,
   .btn-dark {
     padding: 12px 24px;
-    font-size: 10px;
+    font-size: 14px;
     flex-grow: 1;
   }
 
@@ -1556,11 +1547,11 @@ section {
   }
 
   .stat-number {
-    font-size: 22px;
+    font-size: 26px;
   }
 
   .stat-label {
-    font-size: 8px;
+    font-size: 12px;
     margin-top: 4px;
   }
 
@@ -1569,7 +1560,7 @@ section {
   }
 
   .section-eyebrow-text {
-    font-size: 9px;
+    font-size: 13px;
   }
 
   .ecosystem-left {
@@ -1577,7 +1568,7 @@ section {
   }
 
   .ecosystem-desc {
-    font-size: 13px;
+    font-size: 17px;
     line-height: 1.6;
     margin-top: 16px;
   }
@@ -1587,21 +1578,21 @@ section {
   }
 
   .asset-icon {
-    font-size: 20px;
+    font-size: 24px;
     margin-bottom: 12px;
   }
 
   .asset-name {
-    font-size: 15px;
+    font-size: 19px;
   }
 
   .asset-desc {
-    font-size: 11px;
+    font-size: 17px;
     line-height: 1.6;
   }
 
   .asset-link {
-    font-size: 9px;
+    font-size: 13px;
   }
 
   .projects-title {
@@ -1609,7 +1600,7 @@ section {
   }
 
   .view-all {
-    font-size: 9px;
+    font-size: 13px;
   }
 
   .project-img {
@@ -1621,11 +1612,11 @@ section {
   }
 
   .project-name {
-    font-size: 16px;
+    font-size: 20px;
   }
 
   .project-location {
-    font-size: 10px;
+    font-size: 14px;
   }
 
   .project-returns {
@@ -1634,21 +1625,21 @@ section {
   }
 
   .ret-label {
-    font-size: 8px;
+    font-size: 12px;
   }
 
   .ret-value {
-    font-size: 14px;
+    font-size: 18px;
   }
 
   .project-cta {
-    font-size: 8px;
+    font-size: 12px;
     padding: 8px;
     margin-top: 10px;
   }
 
   .why-desc {
-    font-size: 13px;
+    font-size: 17px;
     margin: 16px 0 24px;
   }
 
@@ -1657,15 +1648,15 @@ section {
   }
 
   .pillar-num {
-    font-size: 24px;
+    font-size: 28px;
   }
 
   .pillar-title {
-    font-size: 15px;
+    font-size: 19px;
   }
 
   .pillar-desc {
-    font-size: 11px;
+    font-size: 15px;
   }
 
   .why-number-card {
@@ -1673,11 +1664,11 @@ section {
   }
 
   .wn-num {
-    font-size: 32px;
+    font-size: 36px;
   }
 
   .wn-label {
-    font-size: 9px;
+    font-size: 13px;
   }
 
   .about-left-strip {
@@ -1685,11 +1676,11 @@ section {
   }
 
   .about-strip-title {
-    font-size: 26px;
+    font-size: 30px;
   }
 
   .about-strip-text {
-    font-size: 12px;
+    font-size: 16px;
     margin-bottom: 20px;
   }
 
@@ -1700,7 +1691,7 @@ section {
   .play-btn {
     width: 52px;
     height: 52px;
-    font-size: 14px;
+    font-size: 18px;
   }
 
   .press-section {
@@ -1716,7 +1707,7 @@ section {
   }
 
   .press-logo {
-    font-size: 16px;
+    font-size: 20px;
   }
 
   .cta-banner {
@@ -1724,11 +1715,11 @@ section {
   }
 
   .cta-title {
-    font-size: 24px;
+    font-size: 28px;
   }
 
   .cta-sub {
-    font-size: 12px;
+    font-size: 16px;
     margin-top: 6px;
   }
 
@@ -1768,12 +1759,12 @@ section {
   }
 
   .hero-eyebrow-text {
-    font-size: 8px;
+    font-size: 12px;
     letter-spacing: 1.5px;
   }
 
   .hero-sub {
-    font-size: 11px;
+    font-size: 15px;
     margin: 10px 0 20px;
   }
 
@@ -1785,7 +1776,7 @@ section {
   .btn-primary,
   .btn-dark {
     padding: 10px 20px;
-    font-size: 9px;
+    font-size: 13px;
     flex-basis: calc(50% - 4px);
   }
 
@@ -1804,11 +1795,11 @@ section {
   }
 
   .stat-number {
-    font-size: 20px;
+    font-size: 24px;
   }
 
   .stat-label {
-    font-size: 7px;
+    font-size: 11px;
   }
 
   .section-title {
@@ -1825,11 +1816,11 @@ section {
   }
 
   .section-eyebrow-text {
-    font-size: 8px;
+    font-size: 12px;
   }
 
   .ecosystem-desc {
-    font-size: 12px;
+    font-size: 16px;
     margin-top: 12px;
   }
 
@@ -1842,22 +1833,22 @@ section {
   }
 
   .asset-icon {
-    font-size: 18px;
+    font-size: 22px;
     margin-bottom: 10px;
   }
 
   .asset-name {
-    font-size: 14px;
+    font-size: 18px;
     margin-bottom: 6px;
   }
 
   .asset-desc {
-    font-size: 10px;
+    font-size: 16px;
     margin-bottom: 12px;
   }
 
   .asset-link {
-    font-size: 8px;
+    font-size: 12px;
   }
 
   .project-img {
@@ -1869,11 +1860,11 @@ section {
   }
 
   .project-name {
-    font-size: 14px;
+    font-size: 18px;
   }
 
   .project-location {
-    font-size: 9px;
+    font-size: 13px;
     gap: 3px;
   }
 
@@ -1883,21 +1874,21 @@ section {
   }
 
   .ret-label {
-    font-size: 7px;
+    font-size: 11px;
   }
 
   .ret-value {
-    font-size: 12px;
+    font-size: 16px;
   }
 
   .project-cta {
-    font-size: 7px;
+    font-size: 11px;
     padding: 6px;
     margin-top: 8px;
   }
 
   .why-desc {
-    font-size: 12px;
+    font-size: 16px;
     margin: 12px 0 20px;
     line-height: 1.6;
   }
@@ -1911,16 +1902,16 @@ section {
   }
 
   .pillar-num {
-    font-size: 20px;
+    font-size: 24px;
     min-width: 28px;
   }
 
   .pillar-title {
-    font-size: 14px;
+    font-size: 18px;
   }
 
   .pillar-desc {
-    font-size: 10px;
+    font-size: 14px;
   }
 
   .why-number-card {
@@ -1928,11 +1919,11 @@ section {
   }
 
   .wn-num {
-    font-size: 28px;
+    font-size: 32px;
   }
 
   .wn-label {
-    font-size: 8px;
+    font-size: 12px;
     margin-top: 6px;
   }
 
@@ -1941,12 +1932,12 @@ section {
   }
 
   .about-strip-title {
-    font-size: 22px;
+    font-size: 26px;
     margin-bottom: 12px;
   }
 
   .about-strip-text {
-    font-size: 11px;
+    font-size: 15px;
     margin-bottom: 16px;
   }
 
@@ -1957,7 +1948,7 @@ section {
   .play-btn {
     width: 48px;
     height: 48px;
-    font-size: 12px;
+    font-size: 16px;
   }
 
   .press-section {
@@ -1973,7 +1964,7 @@ section {
   }
 
   .press-logo {
-    font-size: 14px;
+    font-size: 18px;
   }
 
   .cta-banner {
@@ -1982,11 +1973,11 @@ section {
   }
 
   .cta-title {
-    font-size: 20px;
+    font-size: 24px;
   }
 
   .cta-sub {
-    font-size: 11px;
+    font-size: 15px;
   }
 
   .cta-actions {
@@ -1998,7 +1989,7 @@ section {
   .btn-outline-dark {
     width: 100%;
     padding: 12px 16px;
-    font-size: 10px;
+    font-size: 14px;
   }
 
   .navbar {
@@ -2012,11 +2003,11 @@ section {
   }
 
   .nav-logo-text {
-    font-size: 11px;
+    font-size: 15px;
   }
 
   .nav-logo-sub {
-    font-size: 8px;
+    font-size: 12px;
   }
 
   .corner-accent {
@@ -2085,14 +2076,14 @@ section {
 
 .nav-logo-text {
   color: white;
-  font-size: 15px;
+  font-size: 19px;
   font-weight: 600;
   letter-spacing: 1px;
 }
 
 .nav-logo-sub {
   color: var(--gold);
-  font-size: 10px;
+  font-size: 14px;
   text-transform: uppercase;
 }
 
@@ -2106,7 +2097,7 @@ section {
 .nav-links a {
   text-decoration: none;
   color: rgba(255, 255, 255, 0.75);
-  font-size: 13px;
+  font-size: 17px;
   transition: 0.3s;
 }
 
@@ -2124,7 +2115,7 @@ section {
 
   text-decoration: none;
 
-  font-size: 12px;
+  font-size: 16px;
 
   text-transform: uppercase;
 
@@ -2198,14 +2189,14 @@ section {
 
 .hero-eyebrow-text {
   color: var(--gold);
-  font-size: 12px;
+  font-size: 16px;
   letter-spacing: 3px;
   text-transform: uppercase;
 }
 
 .hero-h1 {
   color: white;
-  font-size: 70px;
+  font-size: 74px;
   font-weight: 300;
   line-height: 1.1;
 }
@@ -2245,7 +2236,7 @@ section {
 
   text-decoration: none;
 
-  font-size: 12px;
+  font-size: 16px;
 
   text-transform: uppercase;
 
@@ -2358,7 +2349,7 @@ section {
 }
 
 .stat-number {
-  font-size: 30px;
+  font-size: 34px;
   font-weight: bold;
 
   color: var(--navy);
@@ -2367,7 +2358,7 @@ section {
 .stat-label {
   margin-top: 8px;
 
-  font-size: 11px;
+  font-size: 15px;
 
   text-transform: uppercase;
 
@@ -2379,4 +2370,348 @@ section {
     38,
     0.7
   );
+}
+
+/* Final featured-card image treatment — kept last to override the base gradients. */
+.projects-section .proj-real-estate { background-image: url('../../../assets/ecosystem/real-estate.jpg'); }
+.projects-section .proj-fuel { background-image: url('../../../assets/ecosystem/fuel-energy.jpg'); }
+.projects-section .proj-farmland { background-image: url('../../../assets/ecosystem/farmland.jpg'); }
+.projects-section .proj-commercial { background-image: url('../../../assets/ecosystem/commercial.jpg'); }
+.projects-section .project-img { background-size: cover; background-position: center; }
+
+/* Final client-demo adjustments: Our Ecosystem paragraph and featured imagery. */
+.ecosystem .ecosystem-desc {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 27px;
+  font-weight: 600;
+  line-height: 1.65;
+}
+
+/* Fit the real-estate photo within the same featured-image frame as the other cards. */
+.projects-section .proj-real-estate {
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+
+/* ===== Hero image collage ===== */
+.hero-collage {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.hc-main, .hc-card {
+  position: absolute;
+  overflow: hidden;
+  border: 1px solid rgba(201,168,76,0.55);
+  box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+}
+.hc-main img, .hc-card img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  transition: transform .8s ease;
+}
+.hc-main:hover img, .hc-card:hover img { transform: scale(1.06); }
+.hc-main {
+  top: 12%; right: 9%; width: 62%; height: 68%;
+  border-radius: 6px;
+}
+.hc-main::after, .hc-card::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(11,21,38,0) 50%, rgba(11,21,38,0.75) 100%);
+}
+.hc-card { width: 38%; aspect-ratio: 16 / 9; border-radius: 6px; animation: hcFloat 6s ease-in-out infinite; }
+.hc-card-1 { left: 6%; bottom: 14%; z-index: 2; }
+.hc-card-2 { right: 5%; bottom: 6%; z-index: 2; animation-delay: -3s; }
+.hc-card-3 { left: 2%; bottom: 40%; z-index: 2; animation-delay: -1.5s; }
+.hc-tag {
+  position: absolute; left: 12px; bottom: 10px; z-index: 1;
+  color: var(--gold-light); font-size: 15px; letter-spacing: 2px; text-transform: uppercase;
+}
+.hc-badge {
+  position: absolute; top: 6%; left: 8%; z-index: 3;
+  background: rgba(11,21,38,0.75); backdrop-filter: blur(8px);
+  border: 1px solid var(--gold); padding: 14px 18px; color: #fff;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.hc-badge strong { font-family: var(--font-serif); font-size: 22px; color: var(--gold-light); }
+.hc-badge span { font-size: 14px; color: rgba(255,255,255,0.75); }
+@keyframes hcFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+@media (max-width: 900px) {
+  .hero-right { min-height: 460px; }
+  .hc-main { top: 10%; right: 6%; width: 78%; height: 62%; }
+  .hc-card { width: 46%; }
+  .hc-card-1 { left: 4%; bottom: 8%; }
+  .hc-card-2 { right: 4%; bottom: 4%; }
+  .hc-card-3 { left: 2%; bottom: 36%; width: 40%; }
+}
+@media (max-width: 520px) {
+  .hero-right { min-height: 380px; }
+  .hc-badge strong { font-size: 18px; }
+  .hc-tag { font-size: 12px; }
+}
+
+/* Featured project data carousel and onboarding modal */
+.projects-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.project-carousel-controls {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 10px;
+}
+
+.project-carousel-controls button {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  border: 1px solid rgba(201, 168, 76, 0.65);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--gold-light);
+  font: inherit;
+  font-size: 23px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.project-carousel-controls button:hover,
+.project-carousel-controls button:focus-visible {
+  background: var(--gold);
+  color: var(--navy);
+}
+
+.project-carousel-controls button:focus-visible,
+.project-cta:focus-visible,
+.signup-steps-dialog button:focus-visible {
+  outline: 2px solid var(--gold-light);
+  outline-offset: 3px;
+}
+
+.projects-grid {
+  display: flex;
+  gap: 18px;
+  overflow-x: auto;
+  padding: 4px 2px 18px;
+  scrollbar-width: none;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-inline: contain;
+  perspective: none;
+}
+
+.projects-grid::-webkit-scrollbar {
+  display: none;
+}
+
+.projects-grid .project-card {
+  flex: 0 0 calc((100% - 54px) / 4);
+  min-width: 0;
+  scroll-snap-align: start;
+}
+
+.projects-grid .project-img {
+  position: relative;
+  isolation: isolate;
+}
+
+.project-img-photo {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.projects-grid .project-img-visual {
+  position: relative;
+  z-index: 0;
+  opacity: 1;
+}
+
+.projects-grid .project-img::after {
+  z-index: 1;
+}
+
+.projects-grid .proj-tag {
+  z-index: 2;
+}
+
+.projects-grid .project-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.projects-grid .project-cta {
+  margin-top: auto;
+}
+
+.projects-carousel-state {
+  min-height: 80px;
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, 0.75);
+  text-align: center;
+}
+
+.signup-steps-backdrop {
+  position: fixed;
+  z-index: 5000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow-y: auto;
+  padding: 24px;
+  background: rgba(3, 10, 21, 0.78);
+  backdrop-filter: blur(5px);
+}
+
+.signup-steps-dialog {
+  width: min(100%, 620px);
+  max-height: min(90vh, 820px);
+  overflow-y: auto;
+  padding: 32px;
+  border: 1px solid rgba(232, 201, 122, 0.38);
+  border-radius: 18px;
+  background: #101d32;
+  color: var(--white);
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.45);
+}
+
+.signup-steps-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.signup-steps-eyebrow {
+  margin: 0 0 8px;
+  color: var(--gold-light);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+
+.signup-steps-header h2 {
+  margin: 0;
+  color: var(--white);
+  font-family: var(--font-serif);
+  font-size: clamp(26px, 4vw, 36px);
+  font-weight: 600;
+}
+
+.signup-steps-close {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--white);
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.signup-steps-list {
+  display: grid;
+  gap: 16px;
+  margin: 28px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.signup-steps-list li {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  align-items: start;
+  gap: 14px;
+}
+
+.signup-steps-list li > span {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid rgba(232, 201, 122, 0.45);
+  border-radius: 50%;
+  color: var(--gold-light);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.signup-steps-list strong {
+  color: var(--white);
+  font-size: 15px;
+}
+
+.signup-steps-list p {
+  margin: 4px 0 0;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.signup-steps-cta {
+  width: 100%;
+  padding: 14px 20px;
+  border: 0;
+  border-radius: 5px;
+  background: var(--gold);
+  color: var(--navy);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.signup-steps-cta:hover {
+  background: var(--gold-light);
+}
+
+@media (max-width: 1000px) {
+  .projects-grid .project-card {
+    flex-basis: calc((100% - 18px) / 2);
+  }
+}
+
+@media (max-width: 600px) {
+  .projects-header-actions {
+    width: 100%;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .projects-grid .project-card {
+    flex-basis: 86%;
+  }
+
+  .signup-steps-backdrop {
+    align-items: end;
+    padding: 12px;
+  }
+
+  .signup-steps-dialog {
+    max-height: 92vh;
+    padding: 24px 20px;
+    border-radius: 16px;
+  }
+}
+
+/* Keep featured project ROI and tenure values aligned in one row. */
+.projects-grid .project-returns > div {
+  min-width: 0;
+}
+
+.projects-grid .ret-label {
+  min-height: 2.5em;
+  line-height: 1.25;
+}
+
+.projects-grid .ret-value {
+  white-space: nowrap;
 }

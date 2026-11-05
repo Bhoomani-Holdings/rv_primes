@@ -48,6 +48,31 @@
             "EMAIL"
         ]
     },
+    {
+        "label": "Password",
+        "type": "password",
+        "placeholder": "Create a strong password",
+        "name": "password",
+        "notes": "At least 8 characters with an uppercase letter, lowercase letter, number, and symbol",
+        "value": "",
+        "error": "",
+        "validationRules": [
+            "REQUIRED",
+            "PASSWORD"
+        ]
+    },
+    {
+        "label": "Confirm Password",
+        "type": "password",
+        "placeholder": "Re-enter your password",
+        "name": "confirmPassword",
+        "value": "",
+        "error": "",
+        "validationRules": [
+            "REQUIRED",
+            "MATCH_PASSWORD"
+        ]
+    },
 {
         "label": "Date of Birth",
         "type": "date",

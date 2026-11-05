@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../routes/routesPath";
+import bhoomaniLogo from "../../assets/bhoomani-logo.png";
 import "./Header.css";
 import Navigation from "../navigation/Navigation.jsx";
 
@@ -10,7 +11,7 @@ function Header() {
         <header className="site-header">
             <div className="header-container">
                 <div className="logo-wrapper">
-                    <div className="logo-icon"></div>
+                    <img className="logo-icon" src={bhoomaniLogo} alt="Bhoomani Holdings logo" />
                     <div className="logo-text">
                         <h2 className="logo-title">BHOOMANI HOLDINGS</h2>
                         <p className="logo-subtitle">PRIVATE LIMITED</p>

@@ -1,0 +1,119 @@
+.admin-settings-page {
+  min-height: calc(100vh - 72px);
+  padding: 32px;
+  background: #f4f6f9;
+}
+
+.admin-settings-card {
+  width: min(100%, 840px);
+  margin: 0 auto;
+  padding: 32px;
+  border: 1px solid #e1e6ed;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(20, 39, 65, 0.07);
+}
+
+.admin-settings-heading {
+  margin-bottom: 28px;
+}
+
+.admin-settings-heading p {
+  margin: 0 0 7px;
+  color: #a47a19;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.admin-settings-heading h1 {
+  margin: 0 0 8px;
+  color: #172333;
+  font-size: 26px;
+}
+
+.admin-settings-heading span {
+  color: #647184;
+  font-size: 14px;
+}
+
+.admin-settings-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 20px;
+}
+
+.admin-settings-form label {
+  align-self: end;
+  color: #344054;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.admin-settings-form input {
+  width: 100%;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid #d5dce5;
+  border-radius: 7px;
+  color: #172333;
+  font: inherit;
+}
+
+.admin-settings-form input:focus {
+  border-color: #155ac7;
+  outline: 3px solid rgba(21, 90, 199, 0.12);
+}
+
+.admin-settings-form input[readonly] {
+  background: #f4f6f9;
+  color: #647184;
+}
+
+.admin-settings-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.admin-settings-actions button {
+  min-height: 44px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: 7px;
+  background: #155ac7;
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-settings-actions button:hover {
+  background: #104ca9;
+}
+
+.admin-settings-actions span {
+  color: #16834a;
+  font-size: 14px;
+}
+
+@media (max-width: 700px) {
+  .admin-settings-page {
+    padding: 20px 14px;
+  }
+
+  .admin-settings-card {
+    padding: 22px 18px;
+  }
+
+  .admin-settings-form {
+    grid-template-columns: 1fr;
+    gap: 9px;
+  }
+
+  .admin-settings-form label:not(:first-child) {
+    margin-top: 9px;
+  }
+}

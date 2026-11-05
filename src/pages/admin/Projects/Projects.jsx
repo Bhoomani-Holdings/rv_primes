@@ -3,6 +3,15 @@ import { useNavigate, useParams } from "react-router-dom";
 import ProjectOverview from "../../../components/ProjectOverview/ProjectOverview";
 import { createProject, getProjects, updateProject } from "../../../services/dashboardService";
 import { ROUTES } from "../../../routes/routesPath";
+import {
+  AREA_UNITS,
+  buildUnitList,
+  calculateForUnits,
+  filterUnitList,
+  getAreaPerUnit,
+  parsePositive,
+  sanitizeNumberInput
+} from "./landCalculator";
 import "./projects.css";
 
 const emptyForm = {
@@ -26,6 +35,10 @@ const emptyForm = {
   city: "",
   pincode: ""
 };
+
+const formatNumber = (value, digits = 4) => (
+  Number.isFinite(value) ? new Intl.NumberFormat("en-IN", { maximumFractionDigits: digits }).format(value) : "-"
+);
 
 const formatINR = (value) => new Intl.NumberFormat("en-IN", {
   style: "currency",
@@ -107,6 +120,11 @@ function ProjectsPage({ mode = "list", onProjectCreated, onProjectUpdated }) {
     previewUrls.current.forEach((url) => URL.revokeObjectURL(url));
   }, []);
 
+  const [purchaseUnits, setPurchaseUnits] = useState("1");
+  const [landWanted, setLandWanted] = useState("");
+  const [tableFilter, setTableFilter] = useState("");
+  const [addedUnits, setAddedUnits] = useState([]);
+
   const updateField = (event) => {
     setForm((current) => ({ ...current, [event.target.name]: event.target.value }));
   };
@@ -120,6 +138,34 @@ function ProjectsPage({ mode = "list", onProjectCreated, onProjectUpdated }) {
   const totalLandArea = Number(form.totalLandArea);
   const pricePerUnit = totalUnits > 0 && currentValue >= 0 ? currentValue / totalUnits : null;
   const unitsPerArea = totalLandArea > 0 && totalUnits > 0 ? totalUnits / totalLandArea : null;
+  const areaPerUnit = getAreaPerUnit(totalLandArea, totalUnits);
+
+  // Land calculator: units -> land, and land -> units. Any number is accepted.
+  const buyUnits = parsePositive(purchaseUnits);
+  const buyResult = areaPerUnit !== null && buyUnits !== null
+    ? calculateForUnits({ count: buyUnits, areaPerUnit, landAreaUnit: form.landAreaUnit, pricePerUnit })
+    : null;
+  const buyOverLimit = buyResult !== null && totalUnits > 0 && buyUnits > totalUnits;
+  const ownershipPercent = buyResult !== null ? (buyUnits / totalUnits) * 100 : null;
+
+  const landWantedValue = parsePositive(landWanted);
+  const unitsForLand = areaPerUnit !== null && landWantedValue !== null ? landWantedValue / areaPerUnit : null;
+  const landWantedCost = unitsForLand !== null && pricePerUnit !== null ? unitsForLand * pricePerUnit : null;
+
+  const tableCounts = areaPerUnit === null ? [] : filterUnitList(
+    buildUnitList(totalUnits, [...addedUnits, ...(buyUnits !== null ? [buyUnits] : [])]),
+    tableFilter
+  );
+  const tableRows = tableCounts.map((count) => calculateForUnits({
+    count, areaPerUnit, landAreaUnit: form.landAreaUnit, pricePerUnit
+  }));
+
+  const addUnitsToTable = () => {
+    if (buyUnits !== null) {
+      setAddedUnits((current) => (current.includes(buyUnits) ? current : [...current, buyUnits]));
+    }
+  };
+  const removeAddedUnits = (count) => setAddedUnits((current) => current.filter((item) => item !== count));
 
   const addMedia = (event, mediaType) => {
     const selectedFiles = Array.from(event.target.files || []);
@@ -263,7 +309,15 @@ function ProjectsPage({ mode = "list", onProjectCreated, onProjectUpdated }) {
                 Cancel
               </button>
             </header>
-            <form className="project-editor-form" onSubmit={handleSubmit}>
+            <form
+              className="project-editor-form"
+              onSubmit={handleSubmit}
+              onWheelCapture={(event) => {
+                if (event.target instanceof HTMLInputElement && event.target.type === "number") {
+                  event.target.blur();
+                }
+              }}
+            >
               {mode === "create" && <fieldset className="project-media-section">
                 <legend>Project Photos &amp; Videos</legend>
                 <label>
@@ -480,11 +534,180 @@ function ProjectsPage({ mode = "list", onProjectCreated, onProjectUpdated }) {
                 <label>
                   Units / Area
                   <input
-                    value={unitsPerArea === null ? "" : `${Number(unitsPerArea.toFixed(6))} units/${form.landAreaUnit}`}
-                    readOnly
+                    type="text"
+                    inputMode="decimal"
+                    name="unitsAreaInput"
+                    autoComplete="off"
+                    placeholder={unitsPerArea === null ? "Type number of units" : `Type units (auto: ${Number(unitsPerArea.toFixed(6))} units/${form.landAreaUnit})`}
+                    value={purchaseUnits}
+                    onChange={(event) => setPurchaseUnits(sanitizeNumberInput(event.target.value))}
                   />
+                  <small className="units-area-hint">
+                    {buyResult
+                      ? `${formatNumber(buyUnits, 4)} unit${buyUnits === 1 ? "" : "s"} = ${formatNumber(buyResult.land, 4)} ${form.landAreaUnit}`
+                      : areaPerUnit === null
+                        ? "Enter Total Units and Total Land Area to see the land for these units."
+                        : "Type any number of units to see the land area."}
+                  </small>
                 </label>
               </div>
+              <section className="land-calculator" aria-label="Land area calculator">
+                <div className="land-calculator-header">
+                  <h4>Land Area Calculator</h4>
+                  <span>Uses the number typed in the Units / Area field above</span>
+                </div>
+                {areaPerUnit === null ? (
+                  <p className="land-calculator-note">Fill in Total Units and Total Land Area above to start the calculation.</p>
+                ) : null}
+                <div className="project-form-row">
+                  <label>
+                    Area per 1 Unit
+                    <input
+                      value={areaPerUnit === null ? "" : `${formatNumber(areaPerUnit, 6)} ${form.landAreaUnit}`}
+                      readOnly
+                    />
+                  </label>
+                  <div className="land-calculator-addrow">
+                    <span>Units entered above: <strong>{buyUnits === null ? "-" : formatNumber(buyUnits, 4)}</strong></span>
+                    <button type="button" className="land-calculator-add" onClick={addUnitsToTable} disabled={buyResult === null}>
+                      Add to table
+                    </button>
+                  </div>
+                </div>
+                <div className="land-calculator-chips">
+                  {[1, 10, 50, 100, 200, 500, 1000].map((count) => (
+                    <button
+                      type="button"
+                      key={count}
+                      className={buyUnits === count ? "active" : ""}
+                      onClick={() => setPurchaseUnits(String(count))}
+                    >
+                      {count}
+                    </button>
+                  ))}
+                </div>
+                {buyOverLimit ? (
+                  <p className="land-calculator-warning">
+                    Units purchased ({formatNumber(buyUnits, 0)}) exceed Total Units ({formatNumber(totalUnits, 0)}).
+                  </p>
+                ) : null}
+                <div className="land-calculator-results">
+                  <div>
+                    <small>Land Area Received</small>
+                    <strong>{buyResult ? `${formatNumber(buyResult.land, 4)} ${form.landAreaUnit}` : "-"}</strong>
+                  </div>
+                  <div>
+                    <small>Units / Area (this purchase)</small>
+                    <strong>{buyResult ? `${formatNumber(buyResult.unitsPerArea, 6)} units/${form.landAreaUnit}` : "-"}</strong>
+                  </div>
+                  <div>
+                    <small>Ownership Share</small>
+                    <strong>{buyResult ? `${formatNumber(ownershipPercent, 4)}%` : "-"}</strong>
+                  </div>
+                  <div>
+                    <small>Investment Amount</small>
+                    <strong>{buyResult && buyResult.cost !== null ? formatINR(buyResult.cost) : "-"}</strong>
+                  </div>
+                </div>
+
+                {buyResult ? (
+                  <div className="land-calculator-steps">
+                    <strong>How it is calculated</strong>
+                    <ol>
+                      <li>
+                        Area per unit = {formatNumber(totalLandArea, 4)} {form.landAreaUnit} &divide; {formatNumber(totalUnits, 0)} units
+                        = {formatNumber(areaPerUnit, 6)} {form.landAreaUnit}
+                      </li>
+                      <li>
+                        Land received = {formatNumber(buyUnits, 4)} units &times; {formatNumber(areaPerUnit, 6)} {form.landAreaUnit}
+                        = {formatNumber(buyResult.land, 4)} {form.landAreaUnit}
+                      </li>
+                      <li>
+                        Units / Area = {formatNumber(buyUnits, 4)} units &divide; {formatNumber(buyResult.land, 4)} {form.landAreaUnit}
+                        = {formatNumber(buyResult.unitsPerArea, 6)} units/{form.landAreaUnit}
+                      </li>
+                      {pricePerUnit !== null ? (
+                        <>
+                          <li>
+                            Price per unit = {formatINR(currentValue)} &divide; {formatNumber(totalUnits, 0)} = {formatINR(pricePerUnit)}
+                          </li>
+                          <li>
+                            Investment = {formatNumber(buyUnits, 4)} &times; {formatINR(pricePerUnit)} = {formatINR(buyResult.cost)}
+                          </li>
+                        </>
+                      ) : null}
+                    </ol>
+                  </div>
+                ) : null}
+
+                <div className="land-calculator-reverse">
+                  <label>
+                    Reverse: Land Area wanted ({form.landAreaUnit})
+                    <input
+                      type="text"
+                      inputMode="decimal"
+                      placeholder={`e.g. 500 ${form.landAreaUnit}`}
+                      value={landWanted}
+                      onChange={(event) => setLandWanted(sanitizeNumberInput(event.target.value))}
+                      disabled={areaPerUnit === null}
+                    />
+                  </label>
+                  <p className="land-calculator-note">
+                    {unitsForLand !== null
+                      ? `${formatNumber(landWantedValue, 4)} ${form.landAreaUnit} \u00F7 ${formatNumber(areaPerUnit, 6)} = ${formatNumber(unitsForLand, 4)} units${landWantedCost !== null ? ` (${formatINR(landWantedCost)})` : ""}`
+                      : "Type a land area to find how many units are needed."}
+                  </p>
+                </div>
+
+                {areaPerUnit !== null ? (
+                  <div className="land-calculator-table-wrap">
+                    <div className="land-calculator-table-tools">
+                      <strong>Units table (small to big)</strong>
+                      <input
+                        type="text"
+                        inputMode="decimal"
+                        placeholder="Filter / add units, e.g. 2 or 333"
+                        value={tableFilter}
+                        onChange={(event) => setTableFilter(sanitizeNumberInput(event.target.value))}
+                        aria-label="Filter units table"
+                      />
+                    </div>
+                    {addedUnits.length ? (
+                      <div className="land-calculator-chips">
+                        {[...addedUnits].sort((x, y) => x - y).map((count) => (
+                          <button type="button" key={count} onClick={() => removeAddedUnits(count)} title="Remove from table">
+                            {formatNumber(count, 4)} &times;
+                          </button>
+                        ))}
+                      </div>
+                    ) : null}
+                    <div className="land-calculator-scroll">
+                      <table className="land-calculator-table">
+                        <thead>
+                          <tr>
+                            <th>Units</th>
+                            {AREA_UNITS.map((unit) => <th key={unit}>{unit}</th>)}
+                            <th>Units / {form.landAreaUnit}</th>
+                            <th>Investment</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {tableRows.length ? tableRows.map((row) => (
+                            <tr key={row.count} className={row.count === buyUnits ? "selected" : ""}>
+                              <td>{formatNumber(row.count, 4)}</td>
+                              {AREA_UNITS.map((unit) => <td key={unit}>{formatNumber(row.byUnit[unit], 4)}</td>)}
+                              <td>{formatNumber(row.unitsPerArea, 6)}</td>
+                              <td>{row.cost === null ? "-" : formatINR(row.cost)}</td>
+                            </tr>
+                          )) : (
+                            <tr><td colSpan={AREA_UNITS.length + 3}>No matching units.</td></tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                ) : null}
+              </section>
               <label>
                 Status
                 <select name="status" value={form.status} onChange={updateField}>

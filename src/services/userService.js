@@ -6,7 +6,7 @@ export const getUsers = async () => {
   return response.json();
 };
 
-export const createUser = async (basicInfo, addressInfo) => {
+export const createUser = async (basicInfo, addressInfo, credentials) => {
   const registrationDetails = {
     firstname: basicInfo.firstname,
     lastname: basicInfo.lastname,
@@ -18,7 +18,7 @@ export const createUser = async (basicInfo, addressInfo) => {
   const response = await fetch(`${API_URL}/users`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ basicInfo: registrationDetails, addressInfo })
+    body: JSON.stringify({ basicInfo: registrationDetails, addressInfo, credentials })
   });
   const result = await response.json();
   if (!response.ok) throw new Error(result.message || "Unable to save user");
@@ -44,6 +44,17 @@ export const updateUserRegistrationDetails = async (email, nomineeInfo, bankInfo
   });
   const result = await response.json();
   if (!response.ok) throw new Error(result.message || "Unable to save registration details");
+  return result;
+};
+
+export const updateUserNomineeDetails = async (email, nomineeInfo) => {
+  const response = await fetch(`${API_URL}/users/registration-details`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, nomineeInfo })
+  });
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.message || "Unable to save nominee details");
   return result;
 };
 

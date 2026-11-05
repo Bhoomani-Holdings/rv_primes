@@ -52,6 +52,50 @@
   outline-offset: 1px;
 }
 
+.login-password-field {
+  position: relative;
+}
+
+.login-password-field input {
+  padding-right: 48px;
+}
+
+.login-form .login-password-toggle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 10px;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  min-height: 0;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: #526176;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.login-form .login-password-toggle:hover {
+  background: #f0f2f5;
+  color: #0b1526;
+}
+
+.login-password-toggle svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
 .login-form button {
   min-height: 46px;
   margin-top: 14px;
@@ -66,6 +110,11 @@
 
 .login-form button:hover {
   background: #1e2e4a;
+}
+
+.login-form button:disabled {
+  cursor: wait;
+  opacity: 0.7;
 }
 
 .login-message {
@@ -86,6 +135,44 @@
   font-weight: 700;
   text-decoration: underline;
   text-underline-offset: 3px;
+}
+
+.login-popup-backdrop {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(11, 21, 38, 0.52);
+}
+
+.login-popup {
+  width: min(100%, 420px);
+  padding: 28px;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 18px 50px rgba(11, 21, 38, 0.24);
+  text-align: center;
+}
+
+.login-popup p {
+  margin: 0 0 22px;
+  color: #172335;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.login-popup button {
+  min-width: 88px;
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 5px;
+  background: #0b1526;
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 @media (max-width: 480px) {

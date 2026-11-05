@@ -3,6 +3,7 @@ import config from './kycdetailsconfigurations.json'
 import { Input } from '../../../components/forms/Input/Input'
 import { validateField } from '../KYCDetails/kycfieldvalidate.js'
 import { useNavigate } from 'react-router-dom'
+import { ROUTES } from '../../../routes/routesPath'
 import { validateForm } from '../../Registration/formvalidation.js'
 import { uploadToCloudinary } from '../../../services/fileUploading/FileUpload'
 import { useSelector, useDispatch } from 'react-redux'
@@ -10,7 +11,7 @@ import { saveKycInfo } from '../../../store/slices/RegistartionSlice.js'
 import { submitUserKyc } from '../../../services/userService.js'
 import styles from './KycDetails.module.css'
 
-export const KycDetails = () => {
+export const KycDetails = ({ investorMode = false, onCancel, onInvestorKycSubmitted }) => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
@@ -18,6 +19,14 @@ export const KycDetails = () => {
         state => state.registration?.kycInfo || {}
     )
     const basicInfo = useSelector(state => state.registration?.basicInfo || {})
+    const [investorEmail] = useState(() => {
+        if (!investorMode) return ""
+        try {
+            return JSON.parse(sessionStorage.getItem("investorSession") || "{}").email || ""
+        } catch {
+            return ""
+        }
+    })
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [submitError, setSubmitError] = useState("")
 
@@ -35,17 +44,18 @@ export const KycDetails = () => {
             value:
                 field.type === "file"
                     ? null
-                    : savedData[field.name] || field.value || "",
+                    : investorMode
+                        ? field.value || ""
+                        : savedData[field.name] || field.value || "",
 
             preview:
                 field.type === "file"
-                    ? savedData[field.name] || ""
+                    ? investorMode ? "" : savedData[field.name] || ""
                     : ""
         }))
     })
     useEffect(() => {
-
-        if (Object.keys(savedData).length > 0) {
+        if (!investorMode && Object.keys(savedData).length > 0) {
 
             const updatedData = config.map(field => ({
                 ...field,
@@ -64,15 +74,27 @@ export const KycDetails = () => {
             setFormData(updatedData)
         }
 
-    }, [savedData])
+    }, [investorMode, savedData])
 
     const handleChange = (event) => {
         validateField(event, formData, setFormData)
 
     }
 
+    const handleRemoveFile = (fieldName) => {
+        setFormData(current => current.map(item =>
+            item.name === fieldName
+                ? { ...item, value: null, preview: "", error: "" }
+                : item
+        ))
+    }
+
     const handlePrev = () => {
-        navigate("/basic_details");
+        if (investorMode) {
+            onCancel?.()
+            return
+        }
+        navigate(ROUTES.BASIC_INFO);
 
     }
     // const handleSubmit = async () => {
@@ -196,12 +218,20 @@ export const KycDetails = () => {
                 selfiephoto: selfieUrl
             };
 
-            console.log("Final Data", finalData);
+            const email = investorMode ? investorEmail : basicInfo.email
+            if (!email) throw new Error("Unable to identify the signed-in investor. Please sign in again.")
 
             dispatch(saveKycInfo(finalData));
-            await submitUserKyc(basicInfo.email, finalData)
+            const updatedInvestor = await submitUserKyc(email, finalData)
 
-            navigate("/nominee_info");
+            if (investorMode) {
+                const savedInvestor = JSON.parse(sessionStorage.getItem("investorSession") || "{}")
+                const investorSession = { ...savedInvestor, ...updatedInvestor }
+                sessionStorage.setItem("investorSession", JSON.stringify(investorSession))
+                onInvestorKycSubmitted?.(investorSession)
+            } else {
+                navigate("/nominee_info");
+            }
 
         } catch (error) {
 
@@ -235,29 +265,10 @@ export const KycDetails = () => {
                             <Input
                                 {...item}
                                 handleChange={handleChange}
+                                onRemove={item.type === "file"
+                                    ? () => handleRemoveFile(item.name)
+                                    : undefined}
                             />
-
-                            {item.type === "file" &&
-                                item.preview && (
-                                    <div className={styles.filePreview}>
-
-                                        {item.preview.includes(".pdf")
-                                            ? (
-                                                <iframe
-                                                    src={item.preview}
-                                                    title="pdf-preview"
-                                                    className={styles.previewPdf}
-                                                />
-                                            )
-                                            : (
-                                                <img
-                                                    src={item.preview}
-                                                    alt="preview"
-                                                    className={styles.previewImage}
-                                                />
-                                            )}
-                                    </div>
-                                )}
                         </div>
                     ))}
                 </div>
@@ -268,7 +279,7 @@ export const KycDetails = () => {
                     className={styles.prevBtn}
                     onClick={handlePrev}
                 >
-                    Previous
+                    {investorMode ? "Back" : "Previous"}
                 </button>
 
                 <button
