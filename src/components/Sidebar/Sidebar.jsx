@@ -7,7 +7,7 @@ function Sidebar({ activePage, onNavigate }) {
     { name: "Units", icon: "▣" },
     { name: "Pricing Management", icon: "▤" },
     { name: "Users", icon: "♙" },
-    { name: "Managers", icon: "♙" },
+    { name: "Employees", icon: "♙" },
     { name: "Careers", icon: "▣" },
     { name: "KYC Approvals", icon: "✓" },
     { name: "Transactions", icon: "▤" },

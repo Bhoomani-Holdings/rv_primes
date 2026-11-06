@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import basicInfoConfig from "./basicinfoconfigurations.json";
@@ -10,7 +10,7 @@ import { Select } from "../../../components/forms/Select/Select.jsx";
 import TextArea from "../../../components/forms/TextArea/TextArea.jsx";
 import { useCountries } from "../../../hooks/useCountries.js";
 import { useStates } from "../../../hooks/useStates.js";
-import { createUser } from "../../../services/userService.js";
+import { checkUserEmail, createUser } from "../../../services/userService.js";
 import { ROUTES } from "../../../routes/routesPath.js";
 import { resetRegistration } from "../../../store/slices/RegistartionSlice.js";
 import styles from "./BasicInfo.module.css";
@@ -93,6 +93,7 @@ export default function BasicInfo() {
   const [saved, setSaved] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const emailCheckSequence = useRef(0);
   const countries = useCountries();
 
   useEffect(() => {
@@ -131,11 +132,45 @@ export default function BasicInfo() {
   const handleBasicChange = (event) => validateField(event, formData, setFormData);
   const handleAddressChange = (event) => validateField(event, addressData, setAddressData);
 
+  const focusRegistrationField = (fieldName) => {
+    if (!fieldName) return;
+    window.requestAnimationFrame(() => {
+      const field = document.getElementById(fieldName);
+      if (!field) return;
+      field.scrollIntoView({ behavior: "smooth", block: "center" });
+      field.focus({ preventScroll: true });
+    });
+  };
+
+  const handleEmailBlur = async (event) => {
+    const email = event.currentTarget.value.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return;
+    const sequence = ++emailCheckSequence.current;
+    try {
+      const available = await checkUserEmail(email);
+      if (sequence !== emailCheckSequence.current) return;
+      setFormData((current) => current.map((field) => field.name === "email"
+        ? { ...field, error: available ? (field.error === "This email is already registered." ? "" : field.error) : "This email is already registered." }
+        : field));
+    } catch {
+      if (sequence !== emailCheckSequence.current) return;
+      setFormData((current) => current.map((field) => field.name === "email"
+        ? { ...field, error: "Unable to verify this email right now. Please try again." }
+        : field));
+    }
+  };
+
   const handleSave = async () => {
+    const emailField = formData.find((field) => field.name === "email");
+    if (emailField?.error === "This email is already registered.") {
+      focusRegistrationField("email");
+      return;
+    }
     const { isFormvalid, dataObj, updatedFormData } = validateForm([...formData, ...addressData]);
     if (!isFormvalid) {
       setFormData(updatedFormData.slice(0, formData.length));
       setAddressData(updatedFormData.slice(formData.length));
+      focusRegistrationField(updatedFormData.find((field) => field.error)?.name);
       return;
     }
 
@@ -164,7 +199,14 @@ export default function BasicInfo() {
       setSaved(true);
       setShowSuccessPopup(true);
     } catch (error) {
-      setSubmitError(error.message || "Unable to save registration details");
+      if (error.message === "This email is already registered.") {
+        setFormData((current) => current.map((field) => field.name === "email"
+          ? { ...field, error: "This email is already registered." }
+          : field));
+        focusRegistrationField("email");
+      } else {
+        setSubmitError(error.message || "Unable to save registration details");
+      }
     } finally {
       setSaving(false);
     }
@@ -205,7 +247,7 @@ export default function BasicInfo() {
             if (item.tag === "select") {
               return <Select key={item.name} {...item} handleChange={handleBasicChange} />;
             }
-            return <Input key={item.name} {...item} handleChange={handleBasicChange} />;
+            return <Input key={item.name} {...item} handleChange={handleBasicChange} onBlur={item.name === "email" ? handleEmailBlur : undefined} />;
           })}
         </div>
       </div>

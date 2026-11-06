@@ -11,7 +11,6 @@ const emptyApplication = {
   experience: "",
   currentCTC: "",
   linkedin: "",
-  coverLetter: "",
   resume: null
 };
 
@@ -160,10 +159,7 @@ export default function Careers() {
         >
           <section className="career-application-dialog" role="dialog" aria-modal="true" aria-labelledby="career-application-title">
             <div className="career-application-heading">
-              <div>
-                <p className="public-careers-eyebrow">APPLICATION</p>
-                <h2 id="career-application-title">Apply for {selectedCareer.title}</h2>
-              </div>
+              <h2 id="career-application-title">Apply for {selectedCareer.title}</h2>
               <button className="career-application-close" type="button" onClick={closeApplication} aria-label="Close application form">×</button>
             </div>
 
@@ -191,7 +187,19 @@ export default function Careers() {
                 <div className="career-application-row">
                   <label>
                     Experience (years)
-                    <input name="experience" type="number" min="0" step="0.5" value={application.experience} onChange={updateApplication} required />
+                    <input
+                      name="experience"
+                      type="number"
+                      min="0"
+                      step="0.5"
+                      value={application.experience}
+                      onChange={updateApplication}
+                      onWheel={(event) => {
+                        event.preventDefault();
+                        event.currentTarget.blur();
+                      }}
+                      required
+                    />
                   </label>
                   <label>
                     Current CTC
@@ -205,10 +213,6 @@ export default function Careers() {
                 <label>
                   Resume <span className="career-application-optional">(PDF, DOC, or DOCX; up to 5 MB)</span>
                   <input name="resume" type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={updateApplication} required />
-                </label>
-                <label>
-                  Cover Letter <span className="career-application-optional">(optional)</span>
-                  <textarea name="coverLetter" rows="4" value={application.coverLetter} onChange={updateApplication} />
                 </label>
                 {applicationError && <p className="career-application-error" role="alert">{applicationError}</p>}
                 <div className="career-application-actions">

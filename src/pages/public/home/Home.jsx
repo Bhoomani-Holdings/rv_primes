@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../routes/routesPath';
 import { getProjects } from '../../../services/dashboardService';
 import './Home.css';
@@ -106,12 +106,21 @@ function ProjectArtwork({ category }) {
 
 export default function Home() {
   const navigate = useNavigate();
+  const location = useLocation();
   const videoRefs = useRef({});
   const projectsViewportRef = useRef(null);
   const [projects, setProjects] = useState([]);
   const [projectsLoading, setProjectsLoading] = useState(true);
   const [projectsError, setProjectsError] = useState('');
   const [isSignupStepsOpen, setIsSignupStepsOpen] = useState(false);
+  const [signupPopupMode, setSignupPopupMode] = useState('onboarding');
+
+  useEffect(() => {
+    if (!location.state?.showInvestHint) return;
+    setSignupPopupMode('guide');
+    setIsSignupStepsOpen(true);
+    navigate(`${location.pathname}${location.search}${location.hash}`, { replace: true, state: null });
+  }, [location.hash, location.pathname, location.search, location.state, navigate]);
 
   useEffect(() => {
     let cancelled = false;
@@ -453,7 +462,7 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
-                    <button className="project-cta" type="button" onClick={() => setIsSignupStepsOpen(true)}>
+                    <button className="project-cta" type="button" onClick={() => navigate(ROUTES.BASIC_INFO)}>
                       Invest Now
                     </button>
                   </div>
@@ -468,26 +477,43 @@ export default function Home() {
         <div className="signup-steps-backdrop" onMouseDown={(event) => {
           if (event.target === event.currentTarget) setIsSignupStepsOpen(false);
         }}>
-          <section className="signup-steps-dialog" role="dialog" aria-modal="true" aria-labelledby="signup-steps-title">
+          <section className={`signup-steps-dialog${signupPopupMode === 'guide' ? ' is-guide' : ''}`} role="dialog" aria-modal="true" aria-labelledby="signup-steps-title">
             <div className="signup-steps-header">
               <div>
-                <p className="signup-steps-eyebrow">INVESTOR ONBOARDING</p>
-                <h2 id="signup-steps-title">How to get started</h2>
+                <p className="signup-steps-eyebrow">{signupPopupMode === 'guide' ? 'INVESTOR SIGN UP' : 'INVESTOR ONBOARDING'}</p>
+                <h2 id="signup-steps-title">{signupPopupMode === 'guide' ? 'Start with a featured project' : 'How to get started'}</h2>
               </div>
               <button className="signup-steps-close" type="button" aria-label="Close signup steps" onClick={() => setIsSignupStepsOpen(false)}>
                 ×
               </button>
             </div>
-            <ol className="signup-steps-list">
-              <li><span>01</span><div><strong>Basic Details</strong><p>Enter your personal and contact information.</p></div></li>
-              <li><span>02</span><div><strong>Address Information</strong><p>Add your residential address.</p></div></li>
-              <li><span>03</span><div><strong>KYC Verification</strong><p>Provide your PAN and Aadhaar details and upload documents.</p></div></li>
-              <li><span>04</span><div><strong>Nominee and Bank Details</strong><p>Add your nominee and payment information.</p></div></li>
-              <li><span>05</span><div><strong>Earning Preference</strong><p>Choose how you would like to receive earnings.</p></div></li>
-            </ol>
-            <button className="signup-steps-cta" type="button" onClick={() => navigate(ROUTES.BASIC_INFO)}>
-              Start Basic Details
-            </button>
+            {signupPopupMode === 'guide' ? (
+              <>
+                <p className="signup-steps-intro">To sign up as an investor, choose a project in <strong>Featured Projects</strong>, then click its <strong>Invest Now</strong> button.</p>
+                <ol className="signup-steps-list">
+                  <li><span>01</span><div><strong>Choose a project</strong><p>Browse the featured projects and select one you are interested in.</p></div></li>
+                  <li><span>02</span><div><strong>Click Invest Now</strong><p>Use the button on that project's card to begin investor signup.</p></div></li>
+                  <li><span>03</span><div><strong>Complete registration</strong><p>Follow the steps to enter your details and submit your investor application.</p></div></li>
+                </ol>
+                <button className="signup-steps-cta" type="button" onClick={() => { setIsSignupStepsOpen(false); document.getElementById('featured-projects')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>
+                  View Featured Projects
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="signup-steps-intro">Complete these steps to create your investor account:</p>
+                <ol className="signup-steps-list">
+                  <li><span>01</span><div><strong>Basic Details</strong><p>Enter your personal and contact information.</p></div></li>
+                  <li><span>02</span><div><strong>Address Information</strong><p>Add your residential address.</p></div></li>
+                  <li><span>03</span><div><strong>KYC Verification</strong><p>Provide your PAN and Aadhaar details and upload documents.</p></div></li>
+                  <li><span>04</span><div><strong>Nominee and Bank Details</strong><p>Add your nominee and payment information.</p></div></li>
+                  <li><span>05</span><div><strong>Earning Preference</strong><p>Choose how you would like to receive earnings.</p></div></li>
+                </ol>
+                <button className="signup-steps-cta" type="button" onClick={() => navigate(ROUTES.BASIC_INFO)}>
+                  Start Basic Details
+                </button>
+              </>
+            )}
           </section>
         </div>
       )}

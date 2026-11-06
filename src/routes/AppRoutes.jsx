@@ -30,6 +30,19 @@ function AppRoutes() {
   const { pathname } = useLocation();
 
   useEffect(() => {
+    const preventWheelNumberChange = (event) => {
+      const input = event.target;
+      if (input instanceof HTMLInputElement && input.type === 'number' && document.activeElement === input) {
+        event.preventDefault();
+        input.blur();
+      }
+    };
+
+    document.addEventListener('wheel', preventWheelNumberChange, { capture: true, passive: false });
+    return () => document.removeEventListener('wheel', preventWheelNumberChange, true);
+  }, []);
+
+  useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
@@ -174,8 +187,23 @@ function AppRoutes() {
         />
 
         <Route
+          path="employees/new"
+          element={<AdminDashboard initialPage="Add Employee" />}
+        />
+
+        <Route
+          path="employees"
+          element={<AdminDashboard initialPage="Employees" />}
+        />
+
+        <Route
           path="careers"
           element={<AdminDashboard initialPage="Careers" />}
+        />
+
+        <Route
+          path="careers/:careerId/applicants"
+          element={<AdminDashboard initialPage="Career Applicants" />}
         />
 
         <Route

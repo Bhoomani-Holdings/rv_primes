@@ -30,6 +30,14 @@ export default function KycReview() {
     return status || "Pending for Approval";
   };
 
+  const getKycStatusClass = (status, documentsSubmitted) => {
+    const label = getKycStatusLabel(status, documentsSubmitted).toLowerCase();
+    if (label === "approved") return "is-approved";
+    if (label === "rejected") return "is-rejected";
+    if (label === "pending for approval") return "is-pending";
+    return "is-neutral";
+  };
+
   useEffect(() => {
     let cancelled = false;
 
@@ -97,20 +105,11 @@ export default function KycReview() {
                       <td>{details?.pancardnumber || "-"}</td>
                       <td>{details?.aadhaarnumber || "-"}</td>
                       <td>
-                        {documentsSubmitted ? (
-                          <div className="kyc-document-links">
-                            <span className="kyc-documents-submitted">Submitted</span>
-                            {documentLinks.map(([field, label]) => details[field] && (
-                              <a key={field} href={details[field]} target="_blank" rel="noreferrer">
-                                {label}
-                              </a>
-                            ))}
-                          </div>
-                        ) : (
-                          <span className="kyc-review-secondary">Not submitted</span>
-                        )}
+                        {documentsSubmitted
+                          ? <span className="kyc-documents-submitted">Submitted</span>
+                          : <span className="kyc-review-secondary">Not submitted</span>}
                       </td>
-                      <td><span className="kyc-status-label">{getKycStatusLabel(user.kycStatus, documentsSubmitted)}</span></td>
+                      <td><span className={`kyc-status-label ${getKycStatusClass(user.kycStatus, documentsSubmitted)}`}>{getKycStatusLabel(user.kycStatus, documentsSubmitted)}</span></td>
                     </tr>
                   );
                 })}

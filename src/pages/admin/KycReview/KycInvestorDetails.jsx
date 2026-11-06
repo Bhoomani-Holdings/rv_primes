@@ -37,6 +37,7 @@ export default function KycInvestorDetails({ userId }) {
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [saving, setSaving] = useState(false);
+  const [pendingKycStatus, setPendingKycStatus] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -60,16 +61,17 @@ export default function KycInvestorDetails({ userId }) {
     };
   }, [userId]);
 
-  const changeKycStatus = async (kycStatus) => {
+  const changeKycStatus = async () => {
+    if (!pendingKycStatus) return;
     setSaving(true);
     setError("");
     setNotice("");
     try {
-      const updatedUser = await updateUserKycStatus(user.id, kycStatus);
-      setUser(updatedUser);
-      setNotice(`KYC ${kycStatus.toLowerCase()}.`);
+      await updateUserKycStatus(user.id, pendingKycStatus);
+      navigate(ROUTES.ADMIN_KYC_APPROVALS);
     } catch (updateError) {
       setError(updateError.message || "Unable to update KYC status");
+      setPendingKycStatus("");
     } finally {
       setSaving(false);
     }
@@ -93,21 +95,20 @@ export default function KycInvestorDetails({ userId }) {
 
   return (
     <section className="kyc-investor-details">
-      <button
-        className="kyc-investor-back"
-        type="button"
-        onClick={() => navigate(ROUTES.ADMIN_KYC_APPROVALS)}
-      >
-        Back to KYC Approvals
-      </button>
-
       <header className="kyc-investor-header">
+        <button
+          className="kyc-investor-back"
+          type="button"
+          onClick={() => navigate(ROUTES.ADMIN_KYC_APPROVALS)}
+        >
+          Back to KYC Approvals
+        </button>
         <div>
           <span>{user.investorId || "Investor"}</span>
           <h1>{user.fullName || "Investor details"}</h1>
           <p>{user.email || ""}</p>
         </div>
-        <strong className="kyc-investor-status">KYC: {status}</strong>
+        <strong className={`kyc-investor-status ${status === "Approved" ? "is-approved" : status === "Rejected" ? "is-rejected" : status === "Pending for Approval" ? "is-pending" : "is-neutral"}`}>KYC: {status}</strong>
       </header>
 
       {error && <p className="kyc-investor-error" role="alert">{error}</p>}
@@ -184,7 +185,7 @@ export default function KycInvestorDetails({ userId }) {
           className="kyc-investor-reject"
           type="button"
           disabled={saving || !documentsSubmitted}
-          onClick={() => changeKycStatus("Rejected")}
+          onClick={() => setPendingKycStatus("Rejected")}
         >
           Reject KYC
         </button>
@@ -192,11 +193,39 @@ export default function KycInvestorDetails({ userId }) {
           className="kyc-investor-approve"
           type="button"
           disabled={saving || !documentsSubmitted}
-          onClick={() => changeKycStatus("Approved")}
+          onClick={() => setPendingKycStatus("Approved")}
         >
           Approve KYC
         </button>
       </div>
+      {pendingKycStatus && (
+        <div
+          className="kyc-confirm-backdrop"
+          role="presentation"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget && !saving) setPendingKycStatus("");
+          }}
+        >
+          <section
+            className="kyc-confirm-dialog"
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="kyc-confirm-title"
+            aria-describedby="kyc-confirm-message"
+          >
+            <h2 id="kyc-confirm-title">Confirm KYC {pendingKycStatus}</h2>
+            <p id="kyc-confirm-message">
+              Are you sure you want to {pendingKycStatus.toLowerCase()} {user.fullName || "this investor"}'s KYC application?
+            </p>
+            <div className="kyc-confirm-actions">
+              <button type="button" className="kyc-confirm-cancel" disabled={saving} onClick={() => setPendingKycStatus("")}>Cancel</button>
+              <button type="button" className={`kyc-confirm-submit ${pendingKycStatus === "Rejected" ? "is-reject" : "is-approve"}`} disabled={saving} onClick={changeKycStatus}>
+                {saving ? "Saving..." : `Yes, ${pendingKycStatus}`}
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
     </section>
   );
 }

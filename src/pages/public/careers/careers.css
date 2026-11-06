@@ -223,28 +223,30 @@
 }
 
 .career-application-heading {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
   gap: 18px;
   margin-bottom: 22px;
   padding-bottom: 18px;
   border-bottom: 1px solid #e6e9ee;
 }
 
-.career-application-heading .public-careers-eyebrow {
-  margin-bottom: 6px;
-}
-
 .career-application-heading h2 {
+  grid-column: 2;
+  grid-row: 1;
   margin: 0;
   color: #07152b;
   font-family: Georgia, "Times New Roman", serif;
   font-size: 25px;
   font-weight: 500;
+  text-align: center;
 }
 
 .career-application-close {
+  grid-column: 3;
+  grid-row: 1;
+  justify-self: end;
   flex-shrink: 0;
   width: 36px;
   height: 36px;
@@ -281,6 +283,17 @@
   color: #161616;
   font: inherit;
   font-size: 14px;
+}
+
+.career-application-form input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.career-application-form input[type="number"]::-webkit-inner-spin-button,
+.career-application-form input[type="number"]::-webkit-outer-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
 }
 
 .career-application-form input[type="file"] {
@@ -344,9 +357,10 @@
 
 .career-application-success {
   display: grid;
-  justify-items: start;
+  justify-items: center;
   gap: 18px;
   color: #25855a;
+  text-align: center;
 }
 
 @media (max-width: 700px) {

@@ -294,20 +294,10 @@ function ProjectsPage({ mode = "list", onProjectCreated, onProjectUpdated }) {
       ) : (
         <section className="project-editor-page">
             <header className="project-editor-header">
-              <div>
-                <button className="project-back-button" type="button" onClick={() => navigate(ROUTES.ADMIN_PROJECTS)}>
-                  Back to Projects
-                </button>
-                <h2>{mode === "edit" ? "Edit Project" : "Add Project"}</h2>
-              </div>
-              <button
-                className="project-cancel-button"
-                type="button"
-                disabled={saving}
-                onClick={() => navigate(ROUTES.ADMIN_PROJECTS)}
-              >
-                Cancel
+              <button className="project-back-button" type="button" onClick={() => navigate(ROUTES.ADMIN_PROJECTS)}>
+                Back to Projects
               </button>
+              <h2>{mode === "edit" ? "Edit Project" : "Add Project"}</h2>
             </header>
             <form
               className="project-editor-form"
