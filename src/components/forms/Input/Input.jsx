@@ -168,6 +168,7 @@ export const Input = ({
     error,
     preview,
     handleChange,
+    onBlur,
     onRemove,
     validationRules = []
 }) => {
@@ -252,6 +253,7 @@ export const Input = ({
                             onChange={
                                 handleChange
                             }
+                            onBlur={onBlur}
                         />
                     );
 
@@ -265,6 +267,7 @@ export const Input = ({
                             name={name}
                             value={value}
                             onChange={handleChange}
+                            onBlur={onBlur}
                         />
                     );
 
@@ -409,6 +412,7 @@ export const Input = ({
             placeholder,
             name,
             handleChange,
+            onBlur,
             onRemove,
             label,
             showPassword,

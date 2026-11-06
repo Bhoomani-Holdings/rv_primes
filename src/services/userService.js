@@ -6,6 +6,13 @@ export const getUsers = async () => {
   return response.json();
 };
 
+export const checkUserEmail = async (email) => {
+  const response = await fetch(`${API_URL}/users/check-email?email=${encodeURIComponent(email)}`);
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.message || "Unable to check email availability");
+  return result.available;
+};
+
 export const createUser = async (basicInfo, addressInfo, credentials) => {
   const registrationDetails = {
     firstname: basicInfo.firstname,

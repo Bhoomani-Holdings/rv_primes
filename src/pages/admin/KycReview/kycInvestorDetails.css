@@ -5,6 +5,9 @@
 }
 
 .kyc-investor-back {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: center;
   justify-self: start;
   border: 0;
   padding: 0;
@@ -16,12 +19,18 @@
 }
 
 .kyc-investor-header {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  justify-content: space-between;
   gap: 18px;
   padding-bottom: 18px;
   border-bottom: 1px solid #e1e5eb;
+}
+
+.kyc-investor-header > div {
+  grid-column: 2;
+  grid-row: 1;
+  text-align: center;
 }
 
 .kyc-investor-header span {
@@ -41,9 +50,18 @@
 }
 
 .kyc-investor-status {
-  color: #26364d;
+  grid-column: 3;
+  grid-row: 1;
+  justify-self: end;
+  padding: 6px 10px;
+  border-radius: 20px;
   font-size: 14px;
 }
+
+.kyc-investor-status.is-approved { background: #e8f7ee; color: #16834a; }
+.kyc-investor-status.is-pending { background: #fff5e6; color: #9a6200; }
+.kyc-investor-status.is-rejected { background: #fdecec; color: #c93636; }
+.kyc-investor-status.is-neutral { background: #eef2f6; color: #647184; }
 
 .kyc-investor-section {
   padding: 18px 0;
@@ -140,14 +158,102 @@
   font-weight: 600;
 }
 
+.kyc-confirm-backdrop {
+  position: fixed;
+  z-index: 5000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(11, 21, 38, 0.55);
+}
+
+.kyc-confirm-dialog {
+  width: min(100%, 440px);
+  padding: 24px;
+  border: 1px solid #e1e5eb;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 18px 50px rgba(11, 21, 38, 0.22);
+}
+
+.kyc-confirm-dialog h2 {
+  margin: 0 0 10px;
+  color: #17212e;
+  font-size: 20px;
+}
+
+.kyc-confirm-dialog p {
+  margin: 0;
+  color: #536174;
+  line-height: 1.5;
+}
+
+.kyc-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.kyc-confirm-actions button {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.kyc-confirm-actions button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.kyc-confirm-cancel {
+  border-color: #cbd3dd !important;
+  background: #fff;
+  color: #344054;
+}
+
+.kyc-confirm-submit.is-approve {
+  background: #16834a;
+  color: #fff;
+}
+
+.kyc-confirm-submit.is-reject {
+  background: #c93636;
+  color: #fff;
+}
+
 @media (max-width: 700px) {
   .kyc-investor-details {
     padding: 14px;
   }
 
   .kyc-investor-header {
-    align-items: flex-start;
-    flex-direction: column;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+  }
+
+  .kyc-investor-header > div,
+  .kyc-investor-status {
+    grid-column: 1;
+    justify-self: center;
+  }
+
+  .kyc-investor-header > div {
+    grid-row: 2;
+  }
+
+  .kyc-investor-status {
+    grid-row: 3;
+  }
+
+  .kyc-investor-back {
+    grid-row: 1;
+    align-self: start;
   }
 
   .kyc-investor-section dl {

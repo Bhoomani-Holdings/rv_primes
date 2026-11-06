@@ -15,10 +15,12 @@ import QuickActions from "../../../components/QuickActions/QuickActions";
 import ProjectsPage from "../Projects/Projects";
 import ProjectManagementPage from "../ProjectManagement/ProjectManagement";
 import UsersPage from "../Users/Users";
+import EmployeesPage from "../Employees/Employees";
 import KycReviewPage from "../KycReview/KycReview";
 import KycInvestorDetailsPage from "../KycReview/KycInvestorDetails";
 import UserDetailsPage from "../Users/UserDetails";
 import CareersPage from "../Careers/Careers";
+import CareerApplicantsPage from "../Careers/CareerApplicants";
 import AdminSettingsPage from "../Settings/AdminSettings";
 
 import "./admindashboard.css";
@@ -28,7 +30,7 @@ function AdminDashboard({ initialPage = "Dashboard" }) {
   const { userId } = useParams();
   const isProjectEditor = initialPage === "Add Project" || initialPage === "Edit Project";
   const isKycInvestorDetails = initialPage === "KYC Investor Details";
-  const skipDashboardLoad = isProjectEditor || isKycInvestorDetails;
+  const skipDashboardLoad = isProjectEditor || isKycInvestorDetails || initialPage === "Career Applicants" || initialPage === "Add Employee";
   const [dashboard, setDashboard] = useState(null);
   const [loading, setLoading] = useState(!skipDashboardLoad);
   const [error, setError] = useState("");
@@ -92,13 +94,14 @@ function AdminDashboard({ initialPage = "Dashboard" }) {
     <div className="admin-layout">
 
       <Sidebar
-        activePage={activePage === "User Details" ? "Users" : activePage === "KYC Investor Details" ? "KYC Approvals" : activePage}
+        activePage={activePage === "User Details" ? "Users" : activePage === "KYC Investor Details" ? "KYC Approvals" : activePage === "Add Employee" ? "Employees" : activePage}
         onNavigate={(page) => {
-          if (["Dashboard", "Projects", "Units", "Pricing Management", "Users", "Careers", "KYC Approvals", "Settings"].includes(page)) {
+          if (["Dashboard", "Projects", "Units", "Pricing Management", "Users", "Employees", "Careers", "KYC Approvals", "Settings"].includes(page)) {
             setActivePage(page);
             if (page === "Dashboard") navigate(ROUTES.ADMIN_DASHBOARD);
             if (page === "Projects") navigate(ROUTES.ADMIN_PROJECTS);
             if (page === "Users") navigate(ROUTES.ADMIN_USERS);
+            if (page === "Employees") navigate(ROUTES.ADMIN_EMPLOYEES);
             if (page === "Careers") navigate(ROUTES.ADMIN_CAREERS);
             if (page === "KYC Approvals") navigate(ROUTES.ADMIN_KYC_APPROVALS);
             if (page === "Settings") navigate(ROUTES.ADMIN_SETTINGS);
@@ -112,6 +115,10 @@ function AdminDashboard({ initialPage = "Dashboard" }) {
 
         {activePage === "Users" ? (
           <UsersPage />
+        ) : activePage === "Employees" ? (
+          <EmployeesPage />
+        ) : activePage === "Add Employee" ? (
+          <EmployeesPage mode="create" />
         ) : activePage === "User Details" ? (
           <UserDetailsPage userId={userId} />
         ) : activePage === "KYC Approvals" ? (
@@ -120,6 +127,8 @@ function AdminDashboard({ initialPage = "Dashboard" }) {
           <KycInvestorDetailsPage userId={userId} />
         ) : activePage === "Careers" ? (
           <CareersPage />
+        ) : activePage === "Career Applicants" ? (
+          <CareerApplicantsPage />
         ) : activePage === "Settings" ? (
           <AdminSettingsPage />
         ) : activePage === "Projects" ? (

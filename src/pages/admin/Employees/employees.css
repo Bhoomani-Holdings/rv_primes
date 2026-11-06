@@ -1,0 +1,195 @@
+.employees-content {
+  padding: 24px;
+}
+
+.employees-card {
+  width: 100%;
+}
+
+.employees-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.employees-heading h1 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.employee-back-button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #155ac7;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.employees-create-content .employees-card {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.employees-create-content .employees-heading {
+  position: relative;
+  min-height: 32px;
+  justify-content: flex-start;
+}
+
+.employees-create-content .employees-heading h1 {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+.employee-add-button,
+.employee-cancel-button {
+  min-height: 40px;
+  padding: 0 15px;
+  border: 1px solid #155ac7;
+  border-radius: 5px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.employee-add-button {
+  background: #155ac7;
+  color: #fff;
+}
+
+.employee-add-button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.employee-cancel-button {
+  background: #fff;
+  color: #344054;
+  border-color: #cbd3dd;
+}
+
+.employee-form {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  max-width: 1000px;
+  margin: 0 auto 22px;
+  padding: 18px;
+  border: 1px solid #e1e5eb;
+  border-radius: 7px;
+  background: #f9fafc;
+}
+
+.employee-payroll-heading {
+  grid-column: 1 / -1;
+  margin: 4px 0 -2px;
+  padding-top: 14px;
+  border-top: 1px solid #e1e5eb;
+  color: #17212e;
+  font-size: 16px;
+}
+
+.employee-form label {
+  display: grid;
+  gap: 7px;
+  color: #344054;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.employee-form input {
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 1px solid #cbd3dd;
+  border-radius: 5px;
+  background: #fff;
+  color: #17212e;
+  font: inherit;
+  font-weight: 400;
+}
+
+.employee-form select {
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 1px solid #cbd3dd;
+  border-radius: 5px;
+  background: #fff;
+  color: #17212e;
+  font: inherit;
+  font-weight: 400;
+}
+
+.employee-form-actions {
+  display: flex;
+  grid-column: 1 / -1;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.employees-table-wrap table {
+  min-width: 1600px;
+}
+
+.employees-table-wrap a {
+  color: #155ac7;
+}
+
+.employees-empty {
+  padding: 22px 12px;
+  color: #647184;
+  text-align: center;
+}
+
+.employee-status {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 20px;
+  background: #eaf8f1;
+  color: #25855a;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.employee-error {
+  margin: 0 0 14px;
+  color: #b42318;
+  font-size: 13px;
+}
+
+@media (max-width: 800px) {
+  .employee-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .employees-content {
+    padding: 14px;
+  }
+
+  .employees-create-content .employees-heading {
+    min-height: 60px;
+  }
+
+  .employees-create-content .employees-heading h1 {
+    top: 30px;
+  }
+
+  .employee-form {
+    grid-template-columns: 1fr;
+  }
+
+  .employee-form-actions {
+    grid-column: auto;
+  }
+}

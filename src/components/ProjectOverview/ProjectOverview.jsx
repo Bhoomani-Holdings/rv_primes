@@ -40,7 +40,6 @@ function ProjectOverview({ projects, title = "Project Overview", onViewAll, onPr
                 key={project.id}
                 className={onProjectOpen ? "project-table-row" : undefined}
                 tabIndex={onProjectOpen ? 0 : undefined}
-                title={onProjectOpen ? "Double-click to edit project" : undefined}
                 onDoubleClick={onProjectOpen ? () => onProjectOpen(project) : undefined}
                 onKeyDown={onProjectOpen ? (event) => {
                   if (event.key === "Enter") onProjectOpen(project);

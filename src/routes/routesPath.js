@@ -42,6 +42,7 @@ export const ROUTES = {
     ADMIN: "/admin",
     ADMIN_DASHBOARD: "/admin/admindashboard",
     ADMIN_USERS: "/admin/users",
+    ADMIN_EMPLOYEES: "/admin/employees",
     ADMIN_PROJECTS: "/admin/projects",
     ADMIN_CAREERS: "/admin/careers",
     ADMIN_KYC_APPROVALS: "/admin/kyc-approvals",

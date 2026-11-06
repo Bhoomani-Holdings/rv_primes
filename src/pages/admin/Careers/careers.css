@@ -24,6 +24,81 @@
   font-size: 14px;
 }
 
+.career-heading-centered {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: start;
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.career-heading-centered > .career-back-button {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: start;
+}
+
+.career-form-title {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.career-heading-centered p {
+  margin-bottom: 0;
+}
+
+.career-back-button,
+.career-add-button {
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid #155ac7;
+  border-radius: 6px;
+  background: #fff;
+  color: #155ac7;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.career-back-button {
+  min-height: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  text-align: left;
+}
+
+.career-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  width: 100%;
+  max-width: 900px;
+  margin: 4px auto 0;
+}
+
+.career-form-actions .career-submit {
+  justify-self: auto;
+}
+
+.career-back-button:hover {
+  background: transparent;
+  text-decoration: underline;
+}
+
+.career-add-button {
+  border-color: #155ac7;
+  background: #155ac7;
+  color: #fff;
+}
+
+.career-add-button:hover {
+  background: #104ca9;
+}
+
 .career-form {
   display: grid;
   max-width: 900px;
@@ -127,6 +202,12 @@
   gap: 14px;
 }
 
+.career-list-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .career-list-heading span {
   display: grid;
   min-width: 28px;
@@ -148,6 +229,18 @@
   padding: 16px;
   border: 1px solid #e1e5eb;
   border-radius: 6px;
+}
+
+.career-item-editable {
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.career-item-editable:hover,
+.career-item-editable:focus-visible {
+  border-color: #155ac7;
+  box-shadow: 0 0 0 2px rgba(21, 90, 199, 0.1);
+  outline: none;
 }
 
 .career-item h3 {
@@ -172,6 +265,195 @@
   color: #25855a;
   font-size: 12px;
   font-weight: 600;
+}
+
+.career-status.is-closed {
+  background: #f1f3f6;
+  color: #596575;
+}
+
+.career-item-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.career-applicants-button {
+  min-height: 36px;
+  padding: 0 13px;
+  border: 1px solid #155ac7;
+  border-radius: 5px;
+  background: #fff;
+  color: #155ac7;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.career-applicants-button:hover {
+  background: #eef4ff;
+}
+
+.applicants-heading > div {
+  display: block;
+}
+
+.career-list-heading.applicants-heading {
+  position: relative;
+  display: block;
+  min-height: 82px;
+}
+
+.applicants-heading h2 {
+  position: absolute;
+  top: 38px;
+  left: 50%;
+  margin: 0;
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+.applicants-heading > span {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.applicants-table-wrap {
+  overflow-x: auto;
+  border: 1px solid #e1e5eb;
+  border-radius: 6px;
+}
+
+.applicants-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
+}
+
+.applicants-table th,
+.applicants-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #e9edf2;
+  vertical-align: top;
+}
+
+.applicants-table th {
+  background: #f6f8fb;
+  color: #435064;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.applicants-table .applicants-empty {
+  padding: 20px 14px;
+  color: #657184;
+  text-align: center;
+}
+
+.applicants-table td > span {
+  display: block;
+  margin-top: 5px;
+  color: #657184;
+}
+
+.applicants-table a {
+  color: #155ac7;
+}
+
+.applicant-cover-letter {
+  max-width: 260px;
+  white-space: pre-wrap;
+}
+
+.career-close-button {
+  min-height: 36px;
+  padding: 0 13px;
+  border: 1px solid #c93636;
+  border-radius: 5px;
+  background: #fff;
+  color: #b42318;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.career-close-button:hover:not(:disabled) {
+  background: #fff2f0;
+}
+
+.career-close-button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.career-confirm-backdrop {
+  position: fixed;
+  z-index: 5000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(11, 21, 38, 0.55);
+}
+
+.career-confirm-dialog {
+  width: min(100%, 420px);
+  padding: 24px;
+  border: 1px solid #e1e5eb;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 18px 50px rgba(11, 21, 38, 0.22);
+}
+
+.career-confirm-dialog h2 {
+  margin: 0 0 10px;
+  color: #17212e;
+  font-size: 20px;
+}
+
+.career-confirm-dialog p {
+  margin: 0;
+  color: #536174;
+  line-height: 1.5;
+}
+
+.career-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.career-confirm-actions button {
+  min-width: 76px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.career-confirm-no {
+  border-color: #cbd3dd !important;
+  background: #fff;
+  color: #344054;
+}
+
+.career-confirm-yes {
+  background: #b42318;
+  color: #fff;
+}
+
+.career-confirm-actions button:disabled {
+  cursor: wait;
+  opacity: 0.65;
 }
 
 .career-meta {
@@ -214,6 +496,15 @@
     gap: 14px;
   }
 
+  .career-list-heading {
+    align-items: flex-start;
+  }
+
+  .career-list-actions {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
   .career-item {
     padding: 13px;
   }
@@ -235,6 +526,35 @@
 
   .career-heading p {
     margin-bottom: 16px;
+  }
+
+  .career-form-actions {
+    gap: 10px;
+  }
+
+  .career-heading-centered {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .career-heading-centered > .career-back-button,
+  .career-form-title {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .career-form-title {
+    justify-self: center;
+  }
+
+  .career-form-actions .career-back-button,
+  .career-form-actions .career-submit {
+    min-height: 38px;
+    padding-inline: 12px;
+  }
+
+  .career-form-actions .career-submit {
+    width: auto;
   }
 
   .career-form {

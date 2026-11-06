@@ -30,9 +30,28 @@ const dashboardSchema = new mongoose.Schema({
   revenueOverview: { type: mongoose.Schema.Types.Mixed, default: {} },
   careerPosts: { type: [mongoose.Schema.Types.Mixed], default: [] },
   careerApplications: { type: [mongoose.Schema.Types.Mixed], default: [] },
+  employees: { type: [mongoose.Schema.Types.Mixed], default: [] },
   users: { type: [mongoose.Schema.Types.Mixed], default: [] }
 }, { collection: "dashboard", versionKey: false });
 const Dashboard = mongoose.model("Dashboard", dashboardSchema);
+const employeeSchema = new mongoose.Schema({
+  id: { type: Number, required: true, unique: true },
+  fullName: { type: String, required: true, trim: true },
+  email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+  passwordHash: { type: String, required: true, select: false },
+  phone: { type: String, required: true, trim: true },
+  userRole: { type: String, required: true, enum: ["manager", "employee"] },
+  department: { type: String, required: true, trim: true },
+  designation: { type: String, required: true, trim: true },
+  joiningDate: { type: String, required: true },
+  bankName: { type: String, required: true, trim: true },
+  accountHolderName: { type: String, required: true, trim: true },
+  accountNumber: { type: String, required: true, trim: true },
+  ifscCode: { type: String, required: true, trim: true, uppercase: true },
+  bankBranch: { type: String, required: true, trim: true },
+  status: { type: String, default: "Active" }
+}, { collection: "employees", timestamps: true, versionKey: false });
+const Employee = mongoose.model("Employee", employeeSchema);
 const userCredentialSchema = new mongoose.Schema({
   userId: { type: Number, required: true },
   email: { type: String, required: true, unique: true },
@@ -63,7 +82,7 @@ const initializeDatabase = async () => {
   const existingData = await readDashboard();
   if (existingData) {
     const completedData = { ...initialData, ...existingData };
-    const missingFields = ["stats", "projects", "salesOverview", "kycApprovals", "transactions", "revenueOverview", "careerPosts", "careerApplications", "users"]
+    const missingFields = ["stats", "projects", "salesOverview", "kycApprovals", "transactions", "revenueOverview", "careerPosts", "careerApplications", "employees", "users"]
       .filter((field) => existingData[field] === undefined);
     if (missingFields.length > 0) await saveDashboard(completedData);
     return;
@@ -217,6 +236,59 @@ app.post("/api/careers", async (req, res) => {
   }
 });
 
+app.patch("/api/careers/:id", async (req, res) => {
+  const { title, department, location, employmentType, experience, salaryRange, description, requirements } = req.body || {};
+  const requiredFields = { title, department, location, employmentType, description };
+  if (Object.values(requiredFields).some((value) => typeof value !== "string" || !value.trim()) ||
+    (experience !== "" && experience != null && (!Number.isFinite(Number(experience)) || Number(experience) < 0)) ||
+    typeof salaryRange !== "string" || typeof requirements !== "string") {
+    return res.status(400).json({ message: "Complete the required career details" });
+  }
+
+  try {
+    const data = await readDashboard();
+    const career = (data.careerPosts || []).find((item) => String(item.id) === String(req.params.id));
+    if (!career) return res.status(404).json({ message: "Career opening not found" });
+
+    Object.assign(career, {
+      title: title.trim(),
+      department: department.trim(),
+      location: location.trim(),
+      employmentType: employmentType.trim(),
+      experience: experience === "" || experience == null ? null : Number(experience),
+      salaryRange: salaryRange.trim(),
+      description: description.trim(),
+      requirements: requirements.trim()
+    });
+
+    await saveDashboard(data);
+    return res.json(career);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Unable to update career post" });
+  }
+});
+
+app.patch("/api/careers/:id/status", async (req, res) => {
+  const { status } = req.body || {};
+  if (status !== "Closed") {
+    return res.status(400).json({ message: "Invalid career status" });
+  }
+
+  try {
+    const data = await readDashboard();
+    const career = (data.careerPosts || []).find((item) => String(item.id) === String(req.params.id));
+    if (!career) return res.status(404).json({ message: "Career opening not found" });
+
+    career.status = status;
+    await saveDashboard(data);
+    return res.json(career);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Unable to close career position" });
+  }
+});
+
 app.post("/api/careers/:id/applications", (req, res, next) => {
   resumeUpload.single("resume")(req, res, (error) => {
     if (!error) return next();
@@ -286,6 +358,135 @@ app.post("/api/careers/:id/applications", (req, res, next) => {
     console.error(error);
     removeResume();
     return res.status(500).json({ message: "Unable to submit your application. Please try again." });
+  }
+});
+
+app.get("/api/careers/:id/applications", async (req, res) => {
+  try {
+    const data = await readDashboard();
+    const careerId = Number(req.params.id);
+    const career = (data.careerPosts || []).find((item) => Number(item.id) === careerId);
+    if (!career) return res.status(404).json({ message: "Career opening not found" });
+    const applications = (data.careerApplications || [])
+      .filter((application) => Number(application.careerId) === careerId)
+      .sort((first, second) => Date.parse(second.submittedAt || "") - Date.parse(first.submittedAt || ""));
+    return res.json(applications);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Unable to load career applicants" });
+  }
+});
+
+app.get("/api/careers/:careerId/applications/:applicationId/resume", async (req, res) => {
+  try {
+    const data = await readDashboard();
+    const careerId = Number(req.params.careerId);
+    const application = (data.careerApplications || []).find((item) =>
+      Number(item.careerId) === careerId && String(item.id) === String(req.params.applicationId)
+    );
+    if (!application?.resume?.storagePath) {
+      return res.status(404).json({ message: "Resume not found" });
+    }
+
+    const resumePath = path.resolve(__dirname, application.resume.storagePath);
+    const relativePath = path.relative(resumeUploadDirectory, resumePath);
+    if (relativePath.startsWith("..") || path.isAbsolute(relativePath) || !fs.existsSync(resumePath)) {
+      return res.status(404).json({ message: "Resume file is unavailable" });
+    }
+
+    const contentType = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"]
+      .includes(application.resume.contentType) ? application.resume.contentType : "application/octet-stream";
+    const filename = path.basename(application.resume.originalName || "resume");
+    res.setHeader("Content-Type", contentType);
+    res.setHeader("Content-Disposition", `inline; filename*=UTF-8''${encodeURIComponent(filename)}`);
+    return res.sendFile(resumePath);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Unable to open resume" });
+  }
+});
+
+app.get("/api/employees", async (req, res) => {
+  try {
+    const data = await readDashboard();
+    for (const legacyEmployee of data.employees || []) {
+      await Employee.updateOne(
+        { email: legacyEmployee.email },
+        { $setOnInsert: legacyEmployee },
+        { upsert: true }
+      );
+    }
+    const employees = await Employee.find().select("+passwordHash").sort({ createdAt: -1, id: -1 }).lean();
+    return res.json(employees.map((employee) => {
+      const hasPassword = Boolean(employee.passwordHash);
+      delete employee.passwordHash;
+      return { ...employee, hasPassword };
+    }));
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Unable to load employees" });
+  }
+});
+
+app.post("/api/employees", async (req, res) => {
+  const { fullName, email, password, phone, userRole, department, designation, joiningDate, bankName, accountHolderName, accountNumber, ifscCode, bankBranch } = req.body || {};
+  const fields = [fullName, email, password, phone, userRole, department, designation, joiningDate, bankName, accountHolderName, accountNumber, ifscCode, bankBranch];
+  if (fields.some((value) => typeof value !== "string" || !value.trim()) ||
+    !["manager", "employee"].includes(userRole) ||
+    password.length < 8 ||
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()) ||
+    !/^[0-9+() .-]{7,24}$/.test(phone.trim())) {
+    return res.status(400).json({ message: "Enter valid employee, contact, joining date, and salary bank details." });
+  }
+
+  try {
+    const normalizedEmail = email.trim().toLowerCase();
+    const highestId = await Employee.findOne().sort({ id: -1 }).select({ id: 1 }).lean();
+    const employee = {
+      id: (highestId?.id || 0) + 1,
+      fullName: fullName.trim(),
+      email: normalizedEmail,
+      passwordHash: (() => {
+        const salt = crypto.randomBytes(16).toString("hex");
+        const hash = crypto.scryptSync(password, salt, 64).toString("hex");
+        return `scrypt$${salt}$${hash}`;
+      })(),
+      phone: phone.trim(),
+      userRole,
+      department: department.trim(),
+      designation: designation.trim(),
+      joiningDate,
+      bankName: bankName.trim(),
+      accountHolderName: accountHolderName.trim(),
+      accountNumber: accountNumber.trim(),
+      ifscCode: ifscCode.trim().toUpperCase(),
+      bankBranch: bankBranch.trim(),
+      status: "Active"
+    };
+    const savedEmployee = await Employee.create(employee);
+    const result = savedEmployee.toObject();
+    delete result.passwordHash;
+    return res.status(201).json({ ...result, hasPassword: true });
+  } catch (error) {
+    if (error.code === 11000) return res.status(409).json({ message: "An employee with this email already exists." });
+    console.error(error);
+    return res.status(500).json({ message: "Unable to add employee" });
+  }
+});
+
+app.get("/api/users/check-email", async (req, res) => {
+  const email = typeof req.query.email === "string" ? req.query.email.trim().toLowerCase() : "";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ message: "Enter a valid email address." });
+  }
+  try {
+    const data = await readDashboard();
+    const existsInInvestors = (data.users || []).some((user) => String(user.email || "").trim().toLowerCase() === email);
+    const existsInCredentials = await UserCredential.exists({ email });
+    return res.json({ available: !existsInInvestors && !existsInCredentials });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Unable to check email availability" });
   }
 });
 
@@ -378,8 +579,8 @@ app.post("/api/users", async (req, res) => {
     const data = await readDashboard();
     data.users = Array.isArray(data.users) ? data.users : [];
     const email = basicInfo.email.trim().toLowerCase();
-    if (data.users.some((user) => user.email.toLowerCase() === email) || await UserCredential.exists({ email })) {
-      return res.status(409).json({ message: "A user with this email already exists" });
+    if (data.users.some((user) => String(user.email || "").trim().toLowerCase() === email) || await UserCredential.exists({ email })) {
+      return res.status(409).json({ message: "This email is already registered." });
     }
 
     const firstName = basicInfo.firstname.trim();
@@ -417,7 +618,7 @@ app.post("/api/users", async (req, res) => {
     } catch (error) {
       if (savedCredential) await UserCredential.deleteOne({ _id: savedCredential._id });
       if (error.code === 11000) {
-        return res.status(409).json({ message: "A user with this email already exists" });
+        return res.status(409).json({ message: "This email is already registered." });
       }
       throw error;
     }

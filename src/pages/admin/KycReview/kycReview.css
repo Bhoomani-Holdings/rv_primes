@@ -86,9 +86,30 @@
 
 .kyc-status-label {
   display: inline-block;
-  color: #26364d;
+  padding: 5px 9px;
+  border-radius: 20px;
   font-size: 13px;
   font-weight: 600;
+}
+
+.kyc-status-label.is-approved {
+  background: #e8f7ee;
+  color: #16834a;
+}
+
+.kyc-status-label.is-pending {
+  background: #fff5e6;
+  color: #9a6200;
+}
+
+.kyc-status-label.is-rejected {
+  background: #fdecec;
+  color: #c93636;
+}
+
+.kyc-status-label.is-neutral {
+  background: #eef2f6;
+  color: #647184;
 }
 
 .kyc-review-error {

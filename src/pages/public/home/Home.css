@@ -2517,6 +2517,10 @@ section {
 .projects-grid .project-img {
   position: relative;
   isolation: isolate;
+  width: 100%;
+  height: 250px;
+  flex: 0 0 250px;
+  overflow: hidden;
 }
 
 .project-img-photo {
@@ -2526,6 +2530,7 @@ section {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
 }
 
 .projects-grid .project-img-visual {
@@ -2549,6 +2554,24 @@ section {
 
 .projects-grid .project-cta {
   margin-top: auto;
+}
+
+.projects-grid .project-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.projects-grid .project-body {
+  flex: 1 1 auto;
+}
+
+.projects-grid .project-name {
+  min-height: 2.4em;
+  line-height: 1.2;
+}
+
+.projects-grid .project-location {
+  min-height: 1.5em;
 }
 
 .projects-carousel-state {
@@ -2584,10 +2607,16 @@ section {
 }
 
 .signup-steps-header {
+  position: relative;
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
+  justify-content: center;
   gap: 20px;
+  text-align: center;
+}
+
+.signup-steps-header > div {
+  text-align: center;
 }
 
 .signup-steps-eyebrow {
@@ -2606,7 +2635,27 @@ section {
   font-weight: 600;
 }
 
+.signup-steps-dialog.is-guide .signup-steps-header {
+  position: relative;
+  justify-content: center;
+  text-align: center;
+}
+
+.signup-steps-dialog.is-guide .signup-steps-header h2 {
+  white-space: nowrap;
+  font-size: clamp(18px, 3vw, 28px);
+}
+
+.signup-steps-dialog.is-guide .signup-steps-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
 .signup-steps-close {
+  position: absolute;
+  top: 0;
+  right: 0;
   width: 38px;
   height: 38px;
   flex: 0 0 auto;
@@ -2616,6 +2665,17 @@ section {
   color: var(--white);
   font-size: 24px;
   cursor: pointer;
+}
+
+.signup-steps-intro {
+  margin: 20px 0 0;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.signup-steps-intro strong {
+  color: var(--gold-light);
 }
 
 .signup-steps-list {
@@ -2714,4 +2774,26 @@ section {
 
 .projects-grid .ret-value {
   white-space: nowrap;
+}
+
+@media (min-width: 601px) and (max-width: 1350px) {
+  .projects-grid .project-body {
+    padding: 22px 20px;
+  }
+
+  .projects-grid .project-returns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .projects-grid .ret-label {
+    min-height: 2.5em;
+    font-size: 11px;
+    letter-spacing: 0.07em;
+    line-height: 1.25;
+  }
+
+  .projects-grid .ret-value {
+    font-size: 22px;
+  }
 }

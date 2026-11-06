@@ -30,7 +30,12 @@ export const getCareerPosts = async () => {
     throw new Error(message);
   }
 
-  return response.json();
+  const careers = await response.json();
+  return [...careers].sort((first, second) => {
+    const firstCreated = Date.parse(first.createdAt || "") || 0;
+    const secondCreated = Date.parse(second.createdAt || "") || 0;
+    return secondCreated - firstCreated || Number(second.id || 0) - Number(first.id || 0);
+  });
 };
 
 export const createCareerPost = async (career) => {
@@ -52,6 +57,41 @@ export const createCareerPost = async (career) => {
   return result;
 };
 
+export const updateCareerPost = async (careerId, career) => {
+  const response = await fetch(`${API_URL}/careers/${careerId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(career)
+  });
+
+  const contentType = response.headers.get("content-type") || "";
+  const result = contentType.includes("application/json") ? await response.json() : {};
+  if (!response.ok) {
+    const message = response.status === 404
+      ? result.message || "Career opening not found."
+      : result.message || "Failed to update career post";
+    throw new Error(message);
+  }
+
+  return result;
+};
+
+export const closeCareerPost = async (careerId) => {
+  const response = await fetch(`${API_URL}/careers/${careerId}/status`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status: "Closed" })
+  });
+
+  const contentType = response.headers.get("content-type") || "";
+  const result = contentType.includes("application/json") ? await response.json() : {};
+  if (!response.ok) {
+    throw new Error(result.message || "Unable to close career position");
+  }
+
+  return result;
+};
+
 export const createCareerApplication = async (careerId, application) => {
   const formData = new FormData();
   formData.append("fullName", application.fullName);
@@ -60,7 +100,6 @@ export const createCareerApplication = async (careerId, application) => {
   formData.append("experience", application.experience);
   formData.append("currentCTC", application.currentCTC);
   formData.append("linkedin", application.linkedin);
-  formData.append("coverLetter", application.coverLetter);
   formData.append("resume", application.resume);
 
   const response = await fetch(`${API_URL}/careers/${careerId}/applications`, {
@@ -74,6 +113,22 @@ export const createCareerApplication = async (careerId, application) => {
     throw new Error(result.message || `Unable to submit application (${response.status})`);
   }
 
+  return result;
+};
+
+export const getCareerApplications = async (careerId) => {
+  const response = await fetch(`${API_URL}/careers/${careerId}/applications`);
+  const contentType = response.headers.get("content-type") || "";
+  const result = contentType.includes("application/json")
+    ? await response.json()
+    : null;
+  if (!response.ok) {
+    const message = result?.message || (response.status === 404
+      ? "Applicants API route is unavailable. Restart the backend server and try again."
+      : "Unable to load career applicants. Check that the backend server is running.");
+    throw new Error(message);
+  }
+  if (!Array.isArray(result)) throw new Error("The server returned an invalid applicants response.");
   return result;
 };
 
