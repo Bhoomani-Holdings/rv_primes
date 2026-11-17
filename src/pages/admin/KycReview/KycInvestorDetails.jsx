@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../../routes/routesPath";
 import { getUsers, updateUserKycStatus } from "../../../services/userService";
+import { facePhotosFromKyc } from "../../../components/FaceCapture/faceData";
+import { FACE_ANGLES } from "../../../components/FaceCapture/faceAngles";
 import "./kycInvestorDetails.css";
 
 const documentFields = [
   ["uploadpancard", "PAN card"],
-  ["uploadaadhaar", "Aadhaar"],
-  ["uploadaddressproof", "Address proof"],
+  ["uploadaadhaar", "Aadhaar front"],
+  ["uploadaddressproof", "Aadhaar back"],
   ["selfiephoto", "Selfie / photo"]
 ];
 
@@ -30,7 +32,7 @@ function DetailsSection({ title, fields }) {
   );
 }
 
-export default function KycInvestorDetails({ userId }) {
+export default function KycInvestorDetails({ userId, basePath = ROUTES.ADMIN_KYC_APPROVALS } = {}) {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -68,7 +70,7 @@ export default function KycInvestorDetails({ userId }) {
     setNotice("");
     try {
       await updateUserKycStatus(user.id, pendingKycStatus);
-      navigate(ROUTES.ADMIN_KYC_APPROVALS);
+      navigate(basePath);
     } catch (updateError) {
       setError(updateError.message || "Unable to update KYC status");
       setPendingKycStatus("");
@@ -82,6 +84,7 @@ export default function KycInvestorDetails({ userId }) {
   if (!user) return null;
 
   const kycDetails = user.kycDetails || {};
+  const facePhotos = facePhotosFromKyc(kycDetails);
   const nominee = user.nomineeDetails || {};
   const bank = user.bankDetails || {};
   const documentsSubmitted = hasSubmittedKycDocuments(user.kycDetails);
@@ -99,7 +102,7 @@ export default function KycInvestorDetails({ userId }) {
         <button
           className="kyc-investor-back"
           type="button"
-          onClick={() => navigate(ROUTES.ADMIN_KYC_APPROVALS)}
+          onClick={() => navigate(basePath)}
         >
           Back to KYC Approvals
         </button>
@@ -134,6 +137,24 @@ export default function KycInvestorDetails({ userId }) {
           ["KYC status", status]
         ]}
       />
+
+      <section className="kyc-investor-section">
+        <h2>Face Verification</h2>
+        {Object.keys(facePhotos).length > 0 ? (
+          <div className="kyc-face-photos">
+            {FACE_ANGLES.map(({ key, label }) => facePhotos[key] && (
+              <figure className="kyc-face-photo" key={key}>
+                <a href={facePhotos[key].src} target="_blank" rel="noreferrer">
+                  <img src={facePhotos[key].src} alt={`${label} face verification`} />
+                </a>
+                <figcaption>{label}</figcaption>
+              </figure>
+            ))}
+          </div>
+        ) : (
+          <p>Face verification photos not submitted</p>
+        )}
+      </section>
 
       <section className="kyc-investor-section">
         <h2>KYC Documents</h2>

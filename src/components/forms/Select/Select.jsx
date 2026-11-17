@@ -2,12 +2,17 @@ import React from 'react'
 import './Select.css'
 
 export const Select = ({
-    label, name, value, error, handleChange, options=[], values
+    label, name, value, error, handleChange, options=[], values, validationRules = []
 }) => {
+    const isRequired = validationRules.includes("REQUIRED")
+
     return (
         <div className='select-group'>
-            <label htmlFor={name} >{label}</label>
-            <select onChange={handleChange} name={name} value={value}>
+            <label htmlFor={name}>
+                {label}
+                {isRequired && <span className="select-required" aria-hidden="true">*</span>}
+            </label>
+            <select onChange={handleChange} name={name} value={value} required={isRequired}>
                 <option value="">Select</option>
                 {
                     options.map((opt, index) => {

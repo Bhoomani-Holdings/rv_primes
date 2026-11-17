@@ -11,13 +11,59 @@ export const getEmployees = async () => {
   });
 };
 
-export const createEmployee = async (employee) => {
+export const createEmployee = async (employee, files = {}) => {
+  const body = new FormData();
+  Object.entries(employee).forEach(([field, value]) => body.append(field, value));
+  Object.entries(files).forEach(([field, file]) => {
+    if (file) body.append(field, file);
+  });
   const response = await fetch(`${API_URL}/employees`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(employee)
+    body
   });
   const result = await response.json();
   if (!response.ok) throw new Error(result.message || "Unable to add employee");
+  return result;
+};
+
+export const updateEmployee = async (employeeId, updates) => {
+  const response = await fetch(`${API_URL}/employees/${employeeId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(updates)
+  });
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.message || "Unable to update employee");
+  return result;
+};
+
+export const loginEmployee = async (email, password) => {
+  const response = await fetch(`${API_URL}/employees/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password })
+  });
+  const result = await response.json();
+  if (!response.ok) {
+    const error = new Error(result.message || "Unable to sign in");
+    error.status = response.status;
+    throw error;
+  }
+  return {
+    ...result.employee,
+    accessToken: result.accessToken,
+    accessTokenExpiresAt: result.expiresAt
+  };
+};
+
+export const uploadEmployeeProfilePicture = async (employeeId, file) => {
+  const formData = new FormData();
+  formData.append("profilePicture", file);
+  const response = await fetch(`${API_URL}/employees/${employeeId}/profile-picture`, {
+    method: "POST",
+    body: formData
+  });
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.message || "Unable to upload profile picture");
   return result;
 };

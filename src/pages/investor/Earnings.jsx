@@ -1,5 +1,3 @@
-import React from 'react';
+import { InvestorEarningsPage } from "./InvestorPortalPages";
 
-export default function Earnings() {
-  return <div>Investor Earnings</div>;
-}
+export default InvestorEarningsPage;

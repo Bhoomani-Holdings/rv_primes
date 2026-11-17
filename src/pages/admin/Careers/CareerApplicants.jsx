@@ -10,8 +10,9 @@ const formatDate = (value) => {
   return Number.isNaN(date.getTime()) ? "—" : date.toLocaleDateString();
 };
 
-export default function CareerApplicants() {
-  const { careerId } = useParams();
+export default function CareerApplicants({ careerId: careerIdProp, basePath = ROUTES.ADMIN_CAREERS } = {}) {
+  const params = useParams();
+  const careerId = careerIdProp ?? params.careerId;
   const navigate = useNavigate();
   const [career, setCareer] = useState(null);
   const [applicants, setApplicants] = useState([]);
@@ -40,7 +41,7 @@ export default function CareerApplicants() {
       <div className="career-panel career-list-panel">
         <header className="career-list-heading applicants-heading">
           <div>
-            <button className="career-back-button" type="button" onClick={() => navigate(ROUTES.ADMIN_CAREERS)}>
+            <button className="career-back-button" type="button" onClick={() => navigate(basePath)}>
               Back to Openings
             </button>
             <h2>{career ? `${career.title} Applicants` : "Career Applicants"}</h2>

@@ -137,6 +137,19 @@
   text-underline-offset: 3px;
 }
 
+.employee-login-prompt {
+  margin: 10px 0 0;
+  color: #526176;
+  font-size: 14px;
+  text-align: center;
+}
+
+.employee-login-prompt a {
+  color: #155ac7;
+  font-weight: 700;
+  text-underline-offset: 3px;
+}
+
 .login-popup-backdrop {
   position: fixed;
   z-index: 1000;

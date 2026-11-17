@@ -48,9 +48,10 @@ const formatINR = (value) => new Intl.NumberFormat("en-IN", {
 
 const getMediaKey = (file) => `${file.name}:${file.size}:${file.lastModified}`;
 
-function ProjectsPage({ mode = "list", onProjectCreated, onProjectUpdated }) {
+function ProjectsPage({ mode = "list", onProjectCreated = () => {}, onProjectUpdated = () => {}, basePath = ROUTES.ADMIN_PROJECTS, projectId: suppliedProjectId }) {
   const navigate = useNavigate();
-  const { projectId } = useParams();
+  const { projectId: routeProjectId } = useParams();
+  const projectId = suppliedProjectId ?? routeProjectId;
   const isEditor = mode !== "list";
   const [projects, setProjects] = useState([]);
   const [projectsLoading, setProjectsLoading] = useState(mode !== "create");
@@ -260,7 +261,7 @@ function ProjectsPage({ mode = "list", onProjectCreated, onProjectUpdated }) {
       setPhotos([]);
       setVideos([]);
       setMediaError("");
-      navigate(ROUTES.ADMIN_PROJECTS);
+      navigate(basePath);
     } catch (submitError) {
       setError(submitError.message || "Unable to save project");
     } finally {
@@ -278,9 +279,9 @@ function ProjectsPage({ mode = "list", onProjectCreated, onProjectUpdated }) {
         <ProjectOverview
           projects={projects}
           title="Projects"
-          onProjectOpen={(project) => navigate(`${ROUTES.ADMIN_PROJECTS}/${project.id}`)}
+          onProjectOpen={(project) => navigate(`${basePath}/${project.id}`)}
           headerAction={(
-            <button className="add-project-button" onClick={() => navigate(`${ROUTES.ADMIN_PROJECTS}/new`)}>
+            <button className="add-project-button" onClick={() => navigate(`${basePath}/new`)}>
               <span aria-hidden="true">+</span> Add Project
             </button>
           )}
@@ -294,7 +295,7 @@ function ProjectsPage({ mode = "list", onProjectCreated, onProjectUpdated }) {
       ) : (
         <section className="project-editor-page">
             <header className="project-editor-header">
-              <button className="project-back-button" type="button" onClick={() => navigate(ROUTES.ADMIN_PROJECTS)}>
+              <button className="project-back-button" type="button" onClick={() => navigate(basePath)}>
                 Back to Projects
               </button>
               <h2>{mode === "edit" ? "Edit Project" : "Add Project"}</h2>
@@ -769,7 +770,7 @@ function ProjectsPage({ mode = "list", onProjectCreated, onProjectUpdated }) {
                   className="project-cancel-button"
                   type="button"
                   disabled={saving}
-                  onClick={() => navigate(ROUTES.ADMIN_PROJECTS)}
+                  onClick={() => navigate(basePath)}
                 >
                   Cancel
                 </button>

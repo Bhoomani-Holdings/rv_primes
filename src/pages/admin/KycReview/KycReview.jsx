@@ -14,14 +14,14 @@ const documentLinks = [
 const hasSubmittedKycDocuments = (details) =>
   Boolean(details) && documentLinks.every(([field]) => Boolean(details[field]));
 
-export default function KycReview() {
+export default function KycReview({ basePath = ROUTES.ADMIN_KYC_APPROVALS } = {}) {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   const openInvestorDetails = (userId) =>
-    navigate(`${ROUTES.ADMIN_KYC_APPROVALS}/${userId}`);
+    navigate(`${basePath}/${userId}`);
 
   const getKycStatusLabel = (status, documentsSubmitted) => {
     if (!documentsSubmitted) return "Not submitted";

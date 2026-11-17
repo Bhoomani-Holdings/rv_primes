@@ -1,0 +1,75 @@
+.manager-layout { display: flex; min-height: 100vh; background: #f2f5fb; color: #14213d; font-family: Arial, Helvetica, sans-serif; }
+.manager-layout .sidebar { min-height: 100vh; }
+.manager-main { flex: 1; min-width: 0; }
+.manager-content { padding: 24px; }
+.manager-content > section { padding: 0; }
+.manager-content > .manager-card { padding: 20px; }
+.manager-message button { padding: 9px 13px; border: 1px solid #d6dfed; border-radius: 8px; background: #fff; color: #1a5fd8; font-weight: 600; cursor: pointer; }
+.manager-stats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 18px; margin: 0 0 20px; }
+.manager-stat { min-width: 0; min-height: 128px; padding: 22px; border: 1px solid #dce5f2; border-radius: 15px; background: #fff; }
+.manager-stat span { display: block; color: #52617b; font-size: 15px; font-weight: 600; }
+.manager-stat strong { display: block; margin-top: 14px; overflow-wrap: anywhere; color: #172642; font-size: 26px; }
+.manager-stat.blue { background: #f1f6ff; border-color: #d4e1ff; }
+.manager-stat.orange { background: #fff8ef; border-color: #ffe2be; }
+.manager-stat.purple,.manager-stat.violet { background: #f6f2ff; border-color: #e2d8ff; }
+.manager-stat.green { background: #effaf5; border-color: #cdeedd; }
+.manager-dashboard-grid { display: grid; grid-template-columns: 1.55fr 1fr; gap: 18px; margin: 0 0 18px; }
+.manager-card { min-width: 0; padding: 20px; margin: 0 0 18px; overflow: hidden; border: 1px solid #e1e5eb; border-radius: 10px; background: #fff; }
+.manager-dashboard-grid .manager-card { margin: 0; }
+.manager-card-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 17px; }
+.manager-card-heading h2 { margin: 0; color: #172642; font-size: 20px; }
+.manager-card-heading span { color: #71809a; font-weight: 600; white-space: nowrap; }
+.manager-card-heading button { border: 0; background: transparent; color: #1762df; font: inherit; font-weight: 600; cursor: pointer; }
+.manager-table-wrap { width: 100%; overflow-x: auto; border: 1px solid #e0e7f2; border-radius: 11px; }
+.manager-table-wrap table { width: 100%; border-collapse: collapse; white-space: nowrap; }
+.manager-table-wrap th,.manager-table-wrap td { padding: 13px 14px; border-bottom: 1px solid #e3e9f3; text-align: left; font-size: 14px; }
+.manager-table-wrap th { background: #f8fafd; color: #43516c; font-weight: 600; }
+.manager-table-wrap tbody tr:last-child td { border-bottom: 0; }
+.manager-empty { padding: 22px !important; color: #71809a; text-align: center !important; }
+.manager-bars { display: flex; align-items: flex-end; justify-content: space-around; gap: 10px; height: 230px; padding: 20px 10px 0; border-bottom: 1px solid #dce4f0; background: repeating-linear-gradient(to bottom, transparent 0, transparent 32px, #eef2f7 33px); }
+.manager-bar-item { display: flex; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: flex-end; gap: 8px; color: #65728a; font-size: 12px; }
+.manager-bar { width: min(34px, 70%); min-height: 4px; border-radius: 6px 6px 0 0; background: #2464df; }
+.manager-message { margin: 48px auto; padding: 28px; border: 1px solid #e0e7f2; border-radius: 10px; background: #fff; text-align: center; color: #53617a; }
+.manager-error { color: #a3293c; }
+.manager-project-list-card p { margin: 0; color: #53617a; }
+.manager-profile-details { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 24px; margin: 0; }
+.manager-profile-details > div { padding: 15px 0; border-bottom: 1px solid #e8edf4; }
+.manager-profile-details dt { margin-bottom: 6px; color: #71809a; font-size: 13px; font-weight: 600; }
+.manager-profile-details dd { margin: 0; color: #172642; font-size: 15px; overflow-wrap: anywhere; }
+.manager-profile-note { margin: 18px 0 0; color: #71809a; font-size: 13px; }
+.manager-actions-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 12px; }
+.manager-action { display: flex; min-width: 0; min-height: 92px; flex-direction: column; align-items: center; justify-content: center; gap: 9px; padding: 12px 8px; border: 1px solid #e3e7ed; border-radius: 8px; background: #fff; color: #172642; font: inherit; font-size: 13px; text-align: center; cursor: pointer; }
+.manager-action:hover:not(:disabled) { border-color: #2166d1; background: #f8fbff; }
+.manager-action:disabled { color: #8894a5; background: #fafbfc; cursor: not-allowed; }
+.manager-action-icon { color: #2166d1; font-size: 25px; line-height: 1; }
+
+@media (max-width: 1200px) { .manager-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 1100px) { .manager-actions-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 900px) { .manager-dashboard-grid { grid-template-columns: 1fr; } }
+@media (max-width: 768px) { .manager-layout .sidebar { width: 70px; } }
+@media (max-width: 600px) {
+  .manager-layout { flex-direction: column; }
+  .manager-layout .sidebar { width: 100%; min-height: auto; }
+  .manager-layout .sidebar .logo { height: 62px; justify-content: flex-start; padding: 8px 16px; }
+  .manager-layout .sidebar .logo-main { font-size: 22px; }
+  .manager-layout .sidebar .logo-text { display: inline; }
+  .manager-layout .sidebar nav { display: flex; gap: 4px; padding: 0 8px 8px; overflow-x: auto; }
+  .manager-layout .sidebar .menu-item { width: auto; min-width: max-content; min-height: 40px; justify-content: flex-start; padding: 0 10px; border-radius: 7px; }
+  .manager-layout .sidebar .menu-item span:not(.menu-icon) { display: inline; }
+  .manager-layout .sidebar .menu-icon { font-size: 16px; }
+  .manager-layout .sidebar .logout { margin: 0 0 0 auto; }
+  .manager-content { padding: 14px 12px 24px; }
+  .manager-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; margin-bottom: 14px; }
+  .manager-stat { min-height: 100px; padding: 14px; border-radius: 12px; }
+  .manager-stat span { font-size: 12px; }
+  .manager-stat strong { margin-top: 10px; font-size: 20px; }
+  .manager-dashboard-grid { gap: 14px; margin-bottom: 14px; }
+  .manager-card { padding: 18px 14px; margin-bottom: 14px; border-radius: 13px; }
+  .manager-content > .manager-card { padding: 18px 14px; }
+  .manager-card-heading { align-items: flex-start; }
+  .manager-card-heading h2 { font-size: 18px; }
+  .manager-table-wrap th,.manager-table-wrap td { padding: 11px 12px; font-size: 13px; }
+  .manager-bars { height: 190px; }
+  .manager-actions-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .manager-profile-details { grid-template-columns: 1fr; }
+}

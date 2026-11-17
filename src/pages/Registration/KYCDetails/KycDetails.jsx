@@ -8,7 +8,9 @@ import { validateForm } from '../../Registration/formvalidation.js'
 import { uploadToCloudinary } from '../../../services/fileUploading/FileUpload'
 import { useSelector, useDispatch } from 'react-redux'
 import { saveKycInfo } from '../../../store/slices/RegistartionSlice.js'
-import { submitUserKyc } from '../../../services/userService.js'
+import { getUsers, submitUserKyc, uploadFacePhoto, faceImageUrl } from '../../../services/userService.js'
+import FaceCapture from '../../../components/FaceCapture/FaceCapture'
+import { FACE_ANGLES } from '../../../components/FaceCapture/faceAngles'
 import styles from './KycDetails.module.css'
 
 export const KycDetails = ({ investorMode = false, onCancel, onInvestorKycSubmitted }) => {
@@ -19,6 +21,14 @@ export const KycDetails = ({ investorMode = false, onCancel, onInvestorKycSubmit
         state => state.registration?.kycInfo || {}
     )
     const basicInfo = useSelector(state => state.registration?.basicInfo || {})
+    const [investorKycData] = useState(() => {
+        if (!investorMode) return {}
+        try {
+            return JSON.parse(sessionStorage.getItem("investorSession") || "{}").kycDetails || {}
+        } catch {
+            return {}
+        }
+    })
     const [investorEmail] = useState(() => {
         if (!investorMode) return ""
         try {
@@ -29,6 +39,66 @@ export const KycDetails = ({ investorMode = false, onCancel, onInvestorKycSubmit
     })
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [submitError, setSubmitError] = useState("")
+
+    // Face photos: { front|left|right: { src, blob?, url?, capturedAt } }
+    const [faces, setFaces] = useState(() => {
+        const saved = investorMode ? investorKycData.facePhotos || {} : savedData.facePhotos || {}
+        return Object.fromEntries(
+            FACE_ANGLES.filter(angle => saved[angle.key]?.url).map(angle => [
+                angle.key,
+                { src: faceImageUrl(saved[angle.key].url), url: saved[angle.key].url, capturedAt: saved[angle.key].capturedAt }
+            ])
+        )
+    })
+    const [faceError, setFaceError] = useState("")
+
+    useEffect(() => {
+        if (!investorMode || !investorEmail) return undefined
+
+        let cancelled = false
+        getUsers()
+            .then(users => {
+                if (cancelled) return
+                const savedKyc = users.find(
+                    user => user.email?.toLowerCase() === investorEmail.toLowerCase()
+                )?.kycDetails
+                const savedPhotos = savedKyc?.facePhotos
+                if (!savedPhotos) return
+
+                const restoredFaces = Object.fromEntries(
+                    FACE_ANGLES.filter(angle => savedPhotos[angle.key]?.url).map(angle => [
+                        angle.key,
+                        {
+                            src: faceImageUrl(savedPhotos[angle.key].url),
+                            url: savedPhotos[angle.key].url,
+                            capturedAt: savedPhotos[angle.key].capturedAt
+                        }
+                    ])
+                )
+                if (Object.keys(restoredFaces).length === 0) return
+
+                setFaces(current => ({ ...restoredFaces, ...current }))
+                setFaceError("")
+            })
+            .catch(error => {
+                if (!cancelled) {
+                    setFaceError(`Saved live photo captures could not be loaded: ${error.message}`)
+                }
+            })
+
+        return () => {
+            cancelled = true
+        }
+    }, [investorMode, investorEmail])
+
+    // Called by the camera window when the user confirms a photo
+    const handleFaceCapture = async (angleKey, { blob, url }) => {
+        setFaces(current => ({
+            ...current,
+            [angleKey]: { src: url, blob, capturedAt: new Date().toISOString() }
+        }))
+        setFaceError("")
+    }
 
     // const [formData, setFormData] = useState(config)
     // const [formData, setFormData] = useState(() => {
@@ -45,12 +115,12 @@ export const KycDetails = ({ investorMode = false, onCancel, onInvestorKycSubmit
                 field.type === "file"
                     ? null
                     : investorMode
-                        ? field.value || ""
+                    ? investorKycData[field.name] || field.value || ""
                         : savedData[field.name] || field.value || "",
 
             preview:
                 field.type === "file"
-                    ? investorMode ? "" : savedData[field.name] || ""
+                    ? investorMode ? investorKycData[field.name] || "" : savedData[field.name] || ""
                     : ""
         }))
     })
@@ -152,7 +222,12 @@ export const KycDetails = ({ investorMode = false, onCancel, onInvestorKycSubmit
             updatedFormData
         } = validateForm(formData);
 
-        if (!isFormvalid) {
+        const missingFace = FACE_ANGLES.filter(angle => !faces[angle.key])
+        if (missingFace.length > 0) {
+            setFaceError(`Please capture your ${missingFace.map(angle => angle.label.toLowerCase()).join(", ")} photo${missingFace.length > 1 ? "s" : ""}.`)
+        }
+
+        if (!isFormvalid || missingFace.length > 0) {
             setFormData(updatedFormData);
             return;
         }
@@ -202,10 +277,17 @@ export const KycDetails = ({ investorMode = false, onCancel, onInvestorKycSubmit
 
             const selfieUrl =
                 selfieField?.value
-                    ? await uploadToCloudinary(
-                        selfieField.value
-                    )
+                    ? await uploadToCloudinary(selfieField.value)
                     : selfieField?.preview || "";
+
+            // Face photos: new captures go to our own server, earlier ones are reused
+            const facePhotosPayload = {}
+            for (const angle of FACE_ANGLES) {
+                const face = faces[angle.key]
+                facePhotosPayload[angle.key] = face.blob
+                    ? await uploadFacePhoto(face.blob)
+                    : { url: face.url, capturedAt: face.capturedAt }
+            }
 
             // Final Payload
             const finalData = {
@@ -215,7 +297,8 @@ export const KycDetails = ({ investorMode = false, onCancel, onInvestorKycSubmit
                 uploadpancard: panUrl,
                 uploadaadhaar: aadhaarUrl,
                 uploadaddressproof: addressUrl,
-                selfiephoto: selfieUrl
+                selfiephoto: selfieUrl,
+                facePhotos: facePhotosPayload
             };
 
             const email = investorMode ? investorEmail : basicInfo.email
@@ -226,7 +309,14 @@ export const KycDetails = ({ investorMode = false, onCancel, onInvestorKycSubmit
 
             if (investorMode) {
                 const savedInvestor = JSON.parse(sessionStorage.getItem("investorSession") || "{}")
-                const investorSession = { ...savedInvestor, ...updatedInvestor }
+                const investorSession = {
+                    ...savedInvestor,
+                    ...updatedInvestor,
+                    kycDetails: {
+                        ...(updatedInvestor.kycDetails || {}),
+                        facePhotos: facePhotosPayload
+                    }
+                }
                 sessionStorage.setItem("investorSession", JSON.stringify(investorSession))
                 onInvestorKycSubmitted?.(investorSession)
             } else {
@@ -271,6 +361,21 @@ export const KycDetails = ({ investorMode = false, onCancel, onInvestorKycSubmit
                             />
                         </div>
                     ))}
+                </div>
+            </div>
+
+            <div className={`${styles.kycSection} ${styles.faceSection}`}>
+                <div className={styles.sectionHeader}>
+                    Face Verification
+                </div>
+                <div className={styles.faceBody}>
+                    <FaceCapture
+                        title="Live photo capture"
+                        photos={faces}
+                        onCapture={handleFaceCapture}
+                        error={faceError}
+                    />
+                    <p className={styles.faceConsent}>By continuing, you confirm that you are capturing your own images and consent to their use for this KYC review.</p>
                 </div>
             </div>
 

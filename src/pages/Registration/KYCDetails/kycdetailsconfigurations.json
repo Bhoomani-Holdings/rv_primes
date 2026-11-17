@@ -29,7 +29,16 @@
     "validationRules": ["REQUIRED",  "FILE_UPLOAD"]
   },
   {
-    "label": "Upload Aadhaar",
+    "label": "Selfie / Photo Upload",
+    "name": "selfiephoto",
+    "type": "file",
+    "tag": "input",
+    "value": "",
+    "error": "",
+    "validationRules": ["REQUIRED",  "FILE_UPLOAD"]
+  },
+  {
+    "label": "Upload Aadhaar Front",
     "name": "uploadaadhaar",
     "type": "file",
     "tag": "input",
@@ -38,17 +47,8 @@
     "validationRules": ["REQUIRED",  "FILE_UPLOAD"]
   },
   {
-    "label": "Upload Address Proof",
+    "label": "Upload Aadhaar Back",
     "name": "uploadaddressproof",
-    "type": "file",
-    "tag": "input",
-    "value": "",
-    "error": "",
-    "validationRules": ["REQUIRED",  "FILE_UPLOAD"]
-  },
-  {
-    "label": "Selfie / Photo Upload",
-    "name": "selfiephoto",
     "type": "file",
     "tag": "input",
     "value": "",

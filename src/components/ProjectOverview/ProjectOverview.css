@@ -5,6 +5,20 @@
   justify-content: flex-start;
 }
 
+/* Keep the dashboard overview card separate from the public project-card hover styling. */
+.dashboard-card.project-card,
+.dashboard-card.project-card:hover,
+.dashboard-card.project-card:focus-within {
+  transform: none;
+  border-color: #e1e5eb;
+  box-shadow: none;
+  transition: none;
+}
+
+.dashboard-card.project-card::before {
+  display: none;
+}
+
 .project-card .card-header {
   display: flex;
   justify-content: space-between;
