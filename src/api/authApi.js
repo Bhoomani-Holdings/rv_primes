@@ -16,6 +16,15 @@ export const authApi = {
     return result;
   },
   logout: async () => {
-    // implement logout request
+    const session = JSON.parse(sessionStorage.getItem("investorSession") || "null");
+    if (!session?.accessToken) return;
+    const response = await fetch(`${API_URL}/investor/session`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${session.accessToken}` }
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(result.message || "Unable to end investor session");
+    }
   },
 };

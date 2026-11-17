@@ -14,6 +14,11 @@
     font-family: "Roboto";
 }
 
+.select-required {
+    margin-left: 3px;
+    color: #d32f2f;
+}
+
 /* Select Box */
 .select-group select {
     width: 100%;

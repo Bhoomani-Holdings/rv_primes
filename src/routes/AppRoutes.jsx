@@ -12,9 +12,18 @@ import PublicInfoPage from '../pages/public/publicinfo/PublicInfoPage';
 import Sitemap from '../pages/public/sitemap/Sitemap';
 import LegalPage from '../pages/public/legal/LegalPage';
 import Careers from '../pages/public/careers/careers';
+import {
+  InvestorDocumentsPage,
+  InvestorNotificationsPage,
+  InvestorSupportPage,
+  InvestorTransactionsPage,
+  InvestorWithdrawalsPage
+} from '../pages/investor/InvestorPortalPages';
+import InvestorInvestments from '../pages/investor/InvestorInvestments';
 import Wallet from '../pages/investor/Wallet';
 import Earnings from '../pages/investor/Earnings';
-import InvestorDashboard from '../pages/investor/Dashboard';
+import InvestorDashboard from '../pages/investor/investordashboard/investordashboard';
+import InvestorProfile from '../pages/investor/InvestorProfile';
 import InvestorKycApprovals from '../pages/investor/kycapproval/KycApprovals';
 
 import AdminDashboard from '../pages/admin/AdminDashboard/admindashboard';
@@ -25,6 +34,9 @@ import NomineeInfo from '../pages/Registration/NomineeInfo/NomineeInfo';
 import { BankDetails } from '../pages/Registration/BankDetails/BankDetails';
 import EarningPreference from '../pages/Registration/EarningPreference/EarningPreference';
 import Login from '../pages/public/login/login';
+import EmployeeLogin from '../pages/employee/EmployeeLogin';
+import EmployeeDashboard from '../pages/employee/employeedashboard/employeedashboard';
+import ManagerDashboard from '../pages/manager/managerdashboard/ManagerDashboard';
 
 function AppRoutes() {
   const { pathname } = useLocation();
@@ -81,6 +93,9 @@ function AppRoutes() {
       />
 
       <Route path={ROUTES.LOGIN} element={<Login />} />
+      <Route path={ROUTES.EMPLOYEE_LOGIN} element={<EmployeeLogin />} />
+      <Route path={`${ROUTES.EMPLOYEE_DASHBOARD}/*`} element={<EmployeeDashboard />} />
+      <Route path={`${ROUTES.MANAGER}/*`} element={<ManagerDashboard />} />
       <Route
         path={ROUTES.SIGNUP}
         element={<Navigate to={ROUTES.BASIC_INFO} replace />}
@@ -130,6 +145,21 @@ function AppRoutes() {
         />
 
         <Route
+          path="investments"
+          element={<InvestorInvestments />}
+        />
+
+        <Route
+          path="projects"
+          element={<InvestorDashboard projectOnly />}
+        />
+
+        <Route
+          path="profile"
+          element={<InvestorProfile />}
+        />
+
+        <Route
           path="wallet"
           element={<Wallet />}
         />
@@ -137,6 +167,31 @@ function AppRoutes() {
         <Route
           path="earnings"
           element={<Earnings />}
+        />
+
+        <Route
+          path="withdrawals"
+          element={<InvestorWithdrawalsPage />}
+        />
+
+        <Route
+          path="transactions"
+          element={<InvestorTransactionsPage />}
+        />
+
+        <Route
+          path="documents"
+          element={<InvestorDocumentsPage />}
+        />
+
+        <Route
+          path="notifications"
+          element={<InvestorNotificationsPage />}
+        />
+
+        <Route
+          path="support"
+          element={<InvestorSupportPage />}
         />
 
         <Route
@@ -192,6 +247,11 @@ function AppRoutes() {
         />
 
         <Route
+          path="employees/:employeeId"
+          element={<AdminDashboard initialPage="Employee Details" />}
+        />
+
+        <Route
           path="employees"
           element={<AdminDashboard initialPage="Employees" />}
         />
@@ -219,6 +279,11 @@ function AppRoutes() {
         <Route
           path="settings"
           element={<AdminDashboard initialPage="Settings" />}
+        />
+
+        <Route
+          path="support"
+          element={<AdminDashboard initialPage="Support" />}
         />
       </Route>
 

@@ -81,7 +81,15 @@ function NomineeInfo({ investorMode = false, onCancel, onInvestorNomineeSubmitte
                 const savedInvestor = JSON.parse(sessionStorage.getItem("investorSession") || "{}")
                 if (!savedInvestor.email) throw new Error("Please sign in again to save nominee details.")
                 const updatedInvestor = await updateUserNomineeDetails(savedInvestor.email, dataObj)
-                const investorSession = { ...savedInvestor, ...updatedInvestor }
+                const investorSession = {
+                    ...savedInvestor,
+                    ...updatedInvestor,
+                    kycDetails: {
+                        ...(savedInvestor.kycDetails || {}),
+                        ...(updatedInvestor.kycDetails || {}),
+                        facePhotos: savedInvestor.kycDetails?.facePhotos || updatedInvestor.kycDetails?.facePhotos
+                    }
+                }
                 sessionStorage.setItem("investorSession", JSON.stringify(investorSession))
                 onInvestorNomineeSubmitted?.(investorSession)
             } catch (error) {
@@ -145,15 +153,13 @@ function NomineeInfo({ investorMode = false, onCancel, onInvestorNomineeSubmitte
 
             <div className={styles.buttonContainer}>
 
-                {!investorMode && (
-                    <button
-                        className={styles.prevBtn}
-                        type="button"
-                        onClick={handlePrev}
-                    >
-                        Previous
-                    </button>
-                )}
+                <button
+                    className={styles.prevBtn}
+                    type="button"
+                    onClick={handlePrev}
+                >
+                    {investorMode ? "Back" : "Previous"}
+                </button>
 
                 <button
                     type="submit"

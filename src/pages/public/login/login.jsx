@@ -24,7 +24,11 @@ export default function Login() {
         username: email,
         password: formData.get("password")
       });
-      sessionStorage.setItem("investorSession", JSON.stringify(result.user));
+      sessionStorage.setItem("investorSession", JSON.stringify({
+        ...result.user,
+        accessToken: result.accessToken,
+        accessTokenExpiresAt: result.expiresAt
+      }));
       const kycStatus = String(result.user?.kycStatus || "Not Submitted").trim().toLowerCase();
       navigate(kycStatus === "approved" || kycStatus === "accept"
         ? ROUTES.INVESTOR
@@ -102,6 +106,9 @@ export default function Login() {
 
         <p className="signup-prompt">
           New user? <a href={`${ROUTES.HOME}#featured-projects`} onClick={handleSignupClick}>Sign up</a>
+        </p>
+        <p className="employee-login-prompt">
+          Employee? <a href={ROUTES.EMPLOYEE_LOGIN} onClick={(event) => { event.preventDefault(); navigate(ROUTES.EMPLOYEE_LOGIN); }}>Employee Login</a>
         </p>
       </section>
       {approvalPopup && (

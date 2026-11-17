@@ -28,7 +28,7 @@ function DetailSection({ title, fields }) {
   );
 }
 
-export default function UserDetails({ userId }) {
+export default function UserDetails({ userId, basePath = ROUTES.ADMIN_USERS } = {}) {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -42,7 +42,7 @@ export default function UserDetails({ userId }) {
     try {
       const updatedUser = await updateUserApprovalStatus(userId, approvalStatus);
       setUser(updatedUser);
-      navigate(ROUTES.ADMIN_USERS);
+      navigate(basePath);
     } catch (updateError) {
       setStatusError(updateError.message || "Unable to update approval status");
     } finally {
@@ -81,7 +81,7 @@ export default function UserDetails({ userId }) {
 
   return (
     <section className="user-details-content">
-      <button className="user-details-back" type="button" onClick={() => navigate(ROUTES.ADMIN_USERS)}>
+      <button className="user-details-back" type="button" onClick={() => navigate(basePath)}>
         Back to Users
       </button>
       <header className="user-details-header">

@@ -1,0 +1,235 @@
+.staff-support {
+  min-width: 0;
+  color: #172b3a;
+}
+
+.staff-support--admin {
+  padding: 24px;
+}
+
+.staff-support--employee,
+.staff-support--manager {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.staff-support__heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 22px;
+}
+
+.staff-support__eyebrow {
+  color: #bd8737;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.staff-support__heading h1 {
+  margin: 8px 0 7px;
+  color: #102a43;
+  font-size: 24px;
+  font-weight: 750;
+}
+
+.staff-support__heading p {
+  margin: 0;
+  color: #718096;
+  font-size: 13px;
+}
+
+.staff-support__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.staff-support__refresh {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 7px;
+  background: #2161df;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.staff-support__refresh:disabled {
+  cursor: wait;
+  opacity: .65;
+}
+
+.staff-support__list {
+  display: grid;
+  gap: 14px;
+}
+
+.staff-support__request,
+.staff-support__state {
+  border: 1px solid #e1e8f2;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 3px 12px rgb(15 41 64 / 4%);
+}
+
+.staff-support__request {
+  min-width: 0;
+  padding: 20px;
+}
+
+.staff-support__request-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.staff-support__category {
+  color: #687b91;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.staff-support__request-heading h2 {
+  margin: 6px 0 0;
+  color: #102a43;
+  font-size: 17px;
+  overflow-wrap: anywhere;
+}
+
+.staff-support__status {
+  flex: 0 0 auto;
+  padding: 5px 10px;
+  border-radius: 20px;
+  background: #fff5dc;
+  color: #94620a;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.staff-support__status--resolved {
+  background: #e7f8ef;
+  color: #15803d;
+}
+
+.staff-support__status--in-progress {
+  background: #eff6ff;
+  color: #1d5fbf;
+}
+
+.staff-support__message {
+  margin: 15px 0 18px;
+  color: #334e68;
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.staff-support__request-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 22px;
+  padding-top: 13px;
+  border-top: 1px solid #edf1f6;
+  color: #718096;
+  font-size: 12px;
+}
+
+.staff-support__request-footer > div {
+  display: grid;
+  gap: 3px;
+}
+
+.staff-support__request-footer strong {
+  color: #243b53;
+}
+
+.staff-support__request-footer a,
+.staff-support__request-footer > span {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 7px;
+  color: inherit;
+  overflow-wrap: anywhere;
+  text-decoration: none;
+}
+
+.staff-support__request-footer a:hover {
+  color: #2161df;
+  text-decoration: underline;
+}
+
+.staff-support__state {
+  padding: 34px 20px;
+  color: #718096;
+  font-size: 14px;
+  text-align: center;
+}
+
+.staff-support__error {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 16px;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 12px 14px;
+  background: #fff1f2;
+  color: #991b1b;
+  font-size: 13px;
+}
+
+.staff-support__error button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .staff-support--admin {
+    padding: 16px 14px 24px;
+  }
+
+  .staff-support__heading {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .staff-support__request {
+    padding: 16px;
+  }
+
+  .staff-support__request-heading {
+    flex-direction: column;
+  }
+
+  .staff-support__request-footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .staff-support__error {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

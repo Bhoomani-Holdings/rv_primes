@@ -1,5 +1,3 @@
-import React from 'react';
+import { InvestorWalletPage } from "./InvestorPortalPages";
 
-export default function Wallet() {
-  return <div>Investor Wallet</div>;
-}
+export default InvestorWalletPage;

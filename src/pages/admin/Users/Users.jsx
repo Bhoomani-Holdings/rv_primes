@@ -11,7 +11,7 @@ const getApprovalStatusClass = (status) => {
   return "is-pending";
 };
 
-export default function Users() {
+export default function Users({ basePath = ROUTES.ADMIN_USERS } = {}) {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -38,7 +38,7 @@ export default function Users() {
     };
   }, []);
 
-  const openUserDetails = (userId) => navigate(`${ROUTES.ADMIN_USERS}/${userId}`);
+  const openUserDetails = (userId) => navigate(`${basePath}/${userId}`);
 
   return (
     <section className="users-content">

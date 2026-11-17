@@ -108,6 +108,37 @@
   gap: 12px 20px;
 }
 
+.kyc-face-photos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.kyc-face-photo {
+  width: min(100%, 220px);
+  margin: 0;
+}
+
+.kyc-face-photo a {
+  display: block;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #eef2f6;
+}
+
+.kyc-face-photo img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.kyc-face-photo figcaption {
+  margin-top: 6px;
+  color: #647184;
+  font-size: 13px;
+}
+
 .kyc-investor-actions {
   display: flex;
   align-items: center;

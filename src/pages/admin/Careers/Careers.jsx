@@ -15,7 +15,7 @@ const emptyCareer = {
   requirements: ""
 };
 
-export default function Careers() {
+export default function Careers({ basePath = ROUTES.ADMIN_CAREERS } = {}) {
   const navigate = useNavigate();
   const [careers, setCareers] = useState([]);
   const [form, setForm] = useState(emptyCareer);
@@ -244,7 +244,7 @@ export default function Careers() {
                     <button
                       className="career-applicants-button"
                       type="button"
-                      onClick={() => navigate(`${ROUTES.ADMIN_CAREERS}/${career.id}/applicants`)}
+                      onClick={() => navigate(`${basePath}/${career.id}/applicants`)}
                       onDoubleClick={(event) => event.stopPropagation()}
                     >
                       Show Applicants

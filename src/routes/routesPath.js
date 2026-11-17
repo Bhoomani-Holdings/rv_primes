@@ -34,9 +34,17 @@ export const ROUTES = {
 
     // Investor
     INVESTOR: "/investor",
+    INVESTOR_INVESTMENTS: "/investor/investments",
+    INVESTOR_PROJECTS: "/investor/projects",
     INVESTOR_KYC_APPROVALS: "/investor/kyc-approvals",
+    INVESTOR_PROFILE: "/investor/profile",
     WALLET: "/investor/wallet",
     EARNINGS: "/investor/earnings",
+    INVESTOR_WITHDRAWALS: "/investor/withdrawals",
+    INVESTOR_TRANSACTIONS: "/investor/transactions",
+    INVESTOR_DOCUMENTS: "/investor/documents",
+    INVESTOR_NOTIFICATIONS: "/investor/notifications",
+    INVESTOR_SUPPORT: "/investor/support",
 
     // Admin
     ADMIN: "/admin",
@@ -46,5 +54,13 @@ export const ROUTES = {
     ADMIN_PROJECTS: "/admin/projects",
     ADMIN_CAREERS: "/admin/careers",
     ADMIN_KYC_APPROVALS: "/admin/kyc-approvals",
-    ADMIN_SETTINGS: "/admin/settings"
+    ADMIN_SETTINGS: "/admin/settings",
+    ADMIN_SUPPORT: "/admin/support",
+
+    // Employee
+    EMPLOYEE_LOGIN: "/employee/login",
+    EMPLOYEE_DASHBOARD: "/employee/dashboard",
+
+    // Manager
+    MANAGER: "/manager"
 };

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { getDashboardData } from "../../../services/dashboardService";
+import { endStaffSession, getStaffSession } from "../../../services/staffSupportService";
 
 import { ROUTES } from "../../../routes/routesPath";
 import Sidebar from "../../../components/Sidebar/Sidebar";
@@ -22,15 +23,27 @@ import UserDetailsPage from "../Users/UserDetails";
 import CareersPage from "../Careers/Careers";
 import CareerApplicantsPage from "../Careers/CareerApplicants";
 import AdminSettingsPage from "../Settings/AdminSettings";
+import InvestorSupportRequests from "../Support/InvestorSupportRequests";
 
 import "./admindashboard.css";
 
+const readAdminSession = () => {
+  try {
+    return JSON.parse(sessionStorage.getItem("adminSession") || "null");
+  } catch {
+    return null;
+  }
+};
+
 function AdminDashboard({ initialPage = "Dashboard" }) {
   const navigate = useNavigate();
-  const { userId } = useParams();
+  const { userId, employeeId } = useParams();
+  const [adminSession, setAdminSession] = useState(readAdminSession);
+  const isAuthenticatedAdmin = adminSession?.userRole === "admin" && Boolean(adminSession.accessToken);
+  const [adminAuthStatus, setAdminAuthStatus] = useState(() => isAuthenticatedAdmin ? "checking" : "unauthenticated");
   const isProjectEditor = initialPage === "Add Project" || initialPage === "Edit Project";
   const isKycInvestorDetails = initialPage === "KYC Investor Details";
-  const skipDashboardLoad = isProjectEditor || isKycInvestorDetails || initialPage === "Career Applicants" || initialPage === "Add Employee";
+  const skipDashboardLoad = isProjectEditor || isKycInvestorDetails || initialPage === "Career Applicants" || initialPage === "Add Employee" || initialPage === "Employee Details" || initialPage === "Support";
   const [dashboard, setDashboard] = useState(null);
   const [loading, setLoading] = useState(!skipDashboardLoad);
   const [error, setError] = useState("");
@@ -41,6 +54,31 @@ function AdminDashboard({ initialPage = "Dashboard" }) {
   }, [initialPage]);
 
   useEffect(() => {
+    if (!isAuthenticatedAdmin) return undefined;
+    let active = true;
+    getStaffSession(adminSession.accessToken)
+      .then(({ userRole }) => {
+        if (!active) return;
+        if (userRole !== "admin") {
+          sessionStorage.removeItem("adminSession");
+          setAdminSession(null);
+          setAdminAuthStatus("unauthenticated");
+          return;
+        }
+        setAdminAuthStatus("authenticated");
+      })
+      .catch((sessionError) => {
+        if (!active) return;
+        console.error("Unable to verify admin session:", sessionError);
+        sessionStorage.removeItem("adminSession");
+        setAdminSession(null);
+        setAdminAuthStatus("unauthenticated");
+      });
+    return () => { active = false; };
+  }, [adminSession, isAuthenticatedAdmin]);
+
+  useEffect(() => {
+    if (adminAuthStatus !== "authenticated") return undefined;
     if (skipDashboardLoad) {
       setLoading(false);
       setError("");
@@ -64,7 +102,23 @@ function AdminDashboard({ initialPage = "Dashboard" }) {
     return () => {
       cancelled = true;
     };
-  }, [initialPage, skipDashboardLoad]);
+  }, [adminAuthStatus, initialPage, skipDashboardLoad]);
+
+  const handleLogout = async () => {
+    try {
+      if (adminSession?.accessToken) await endStaffSession(adminSession.accessToken);
+    } catch (logoutError) {
+      console.error("Unable to revoke admin session:", logoutError);
+    } finally {
+      sessionStorage.removeItem("adminSession");
+      setAdminSession(null);
+      setAdminAuthStatus("unauthenticated");
+      navigate(ROUTES.EMPLOYEE_LOGIN, { replace: true });
+    }
+  };
+
+  if (adminAuthStatus === "checking") return <div className="loading">Verifying admin session...</div>;
+  if (adminAuthStatus !== "authenticated") return <Navigate to={ROUTES.EMPLOYEE_LOGIN} replace />;
 
   if (loading && !skipDashboardLoad) {
     return <div className="loading">Loading dashboard...</div>;
@@ -94,9 +148,10 @@ function AdminDashboard({ initialPage = "Dashboard" }) {
     <div className="admin-layout">
 
       <Sidebar
-        activePage={activePage === "User Details" ? "Users" : activePage === "KYC Investor Details" ? "KYC Approvals" : activePage === "Add Employee" ? "Employees" : activePage}
+        activePage={activePage === "User Details" ? "Users" : activePage === "KYC Investor Details" ? "KYC Approvals" : activePage === "Add Employee" || activePage === "Employee Details" ? "Employees" : activePage}
+        onLogout={handleLogout}
         onNavigate={(page) => {
-          if (["Dashboard", "Projects", "Units", "Pricing Management", "Users", "Employees", "Careers", "KYC Approvals", "Settings"].includes(page)) {
+          if (["Dashboard", "Projects", "Units", "Pricing Management", "Users", "Employees", "Careers", "KYC Approvals", "Settings", "Support"].includes(page)) {
             setActivePage(page);
             if (page === "Dashboard") navigate(ROUTES.ADMIN_DASHBOARD);
             if (page === "Projects") navigate(ROUTES.ADMIN_PROJECTS);
@@ -105,13 +160,14 @@ function AdminDashboard({ initialPage = "Dashboard" }) {
             if (page === "Careers") navigate(ROUTES.ADMIN_CAREERS);
             if (page === "KYC Approvals") navigate(ROUTES.ADMIN_KYC_APPROVALS);
             if (page === "Settings") navigate(ROUTES.ADMIN_SETTINGS);
+            if (page === "Support") navigate(ROUTES.ADMIN_SUPPORT);
           }
         }}
       />
 
       <main className="main-content">
 
-        <Header />
+        <Header user={adminSession} />
 
         {activePage === "Users" ? (
           <UsersPage />
@@ -119,6 +175,8 @@ function AdminDashboard({ initialPage = "Dashboard" }) {
           <EmployeesPage />
         ) : activePage === "Add Employee" ? (
           <EmployeesPage mode="create" />
+        ) : activePage === "Employee Details" ? (
+          <EmployeesPage mode="detail" employeeId={employeeId} />
         ) : activePage === "User Details" ? (
           <UserDetailsPage userId={userId} />
         ) : activePage === "KYC Approvals" ? (
@@ -131,6 +189,8 @@ function AdminDashboard({ initialPage = "Dashboard" }) {
           <CareerApplicantsPage />
         ) : activePage === "Settings" ? (
           <AdminSettingsPage />
+        ) : activePage === "Support" ? (
+          <InvestorSupportRequests staffRole="admin" />
         ) : activePage === "Projects" ? (
           <ProjectsPage
             mode="list"

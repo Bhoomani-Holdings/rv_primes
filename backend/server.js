@@ -5,7 +5,7 @@ const path = require("path");
 const crypto = require("crypto");
 const multer = require("multer");
 const mongoose = require("mongoose");
-require("dotenv").config();
+require("dotenv").config({ path: path.join(__dirname, ".env") });
 
 const app = express();
 
@@ -36,6 +36,8 @@ const dashboardSchema = new mongoose.Schema({
 const Dashboard = mongoose.model("Dashboard", dashboardSchema);
 const employeeSchema = new mongoose.Schema({
   id: { type: Number, required: true, unique: true },
+  firstName: { type: String, trim: true, default: "" },
+  lastName: { type: String, trim: true, default: "" },
   fullName: { type: String, required: true, trim: true },
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
   passwordHash: { type: String, required: true, select: false },
@@ -43,12 +45,21 @@ const employeeSchema = new mongoose.Schema({
   userRole: { type: String, required: true, enum: ["manager", "employee"] },
   department: { type: String, required: true, trim: true },
   designation: { type: String, required: true, trim: true },
+  educationalQualifications: { type: String, required: true, trim: true },
+  passportNumber: { type: String, default: "", trim: true },
+  aadhaarNumber: { type: String, required: true, select: false, trim: true },
+  aadhaarFrontDocument: { type: String, required: true, select: false },
+  aadhaarBackDocument: { type: String, required: true, select: false },
+  panNumber: { type: String, required: true, select: false, trim: true, uppercase: true },
+  panDocument: { type: String, required: true, select: false },
+  blankChequeDocument: { type: String, required: true, select: false },
   joiningDate: { type: String, required: true },
   bankName: { type: String, required: true, trim: true },
   accountHolderName: { type: String, required: true, trim: true },
   accountNumber: { type: String, required: true, trim: true },
   ifscCode: { type: String, required: true, trim: true, uppercase: true },
   bankBranch: { type: String, required: true, trim: true },
+  profilePicture: { type: String, default: "" },
   status: { type: String, default: "Active" }
 }, { collection: "employees", timestamps: true, versionKey: false });
 const Employee = mongoose.model("Employee", employeeSchema);
@@ -58,6 +69,78 @@ const userCredentialSchema = new mongoose.Schema({
   passwordHash: { type: String, required: true }
 }, { collection: "usercredentials", timestamps: true, versionKey: false });
 const UserCredential = mongoose.model("UserCredential", userCredentialSchema);
+const kycApprovalSchema = new mongoose.Schema({
+  userId: { type: Number, required: true, unique: true },
+  email: { type: String, required: true, lowercase: true, trim: true },
+  facePhotos: { type: mongoose.Schema.Types.Mixed, required: true },
+  status: { type: String, default: "Pending for Approval" }
+}, { collection: "kycapprovals", timestamps: true, versionKey: false });
+const KycApproval = mongoose.model("KycApproval", kycApprovalSchema);
+const investorSessionSchema = new mongoose.Schema({
+  userId: { type: Number, required: true, index: true },
+  tokenHash: { type: String, required: true, unique: true },
+  expiresAt: { type: Date, required: true }
+}, { collection: "investorsessions", timestamps: true, versionKey: false });
+investorSessionSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+const InvestorSession = mongoose.model("InvestorSession", investorSessionSchema);
+const staffSessionSchema = new mongoose.Schema({
+  subjectId: { type: String, required: true, index: true },
+  userRole: { type: String, required: true, enum: ["admin", "manager", "employee"] },
+  tokenHash: { type: String, required: true, unique: true },
+  expiresAt: { type: Date, required: true }
+}, { collection: "staffsessions", timestamps: true, versionKey: false });
+staffSessionSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+const StaffSession = mongoose.model("StaffSession", staffSessionSchema);
+const investorLedgerEntrySchema = new mongoose.Schema({
+  userId: { type: Number, required: true },
+  type: { type: String, required: true, enum: ["Investment", "Earning", "Deposit", "Withdrawal"] },
+  description: { type: String, required: true, trim: true, maxlength: 200 },
+  projectName: { type: String, default: "", trim: true, maxlength: 120 },
+  amount: { type: Number, required: true, min: 0 },
+  status: { type: String, required: true, enum: ["Pending", "Completed", "Failed"] },
+  reference: { type: String, required: true, trim: true, unique: true }
+}, { collection: "investorledgerentries", timestamps: true, versionKey: false });
+investorLedgerEntrySchema.index({ userId: 1, createdAt: -1 });
+const InvestorLedgerEntry = mongoose.model("InvestorLedgerEntry", investorLedgerEntrySchema);
+const investorHoldingSchema = new mongoose.Schema({
+  userId: { type: Number, required: true },
+  projectName: { type: String, required: true, trim: true, maxlength: 160 },
+  location: { type: String, default: "", trim: true, maxlength: 160 },
+  unit: { type: String, default: "", trim: true, maxlength: 80 },
+  purchasedAt: { type: Date, required: true },
+  units: { type: Number, required: true, min: 0 },
+  investedAmount: { type: Number, required: true, min: 0 },
+  currentValue: { type: Number, required: true, min: 0 },
+  status: { type: String, required: true, enum: ["Active", "Matured", "Pending", "Closed"] }
+}, { collection: "investorholdings", timestamps: true, versionKey: false });
+investorHoldingSchema.index({ userId: 1, purchasedAt: -1 });
+const InvestorHolding = mongoose.model("InvestorHolding", investorHoldingSchema);
+const investorWithdrawalSchema = new mongoose.Schema({
+  userId: { type: Number, required: true },
+  amount: { type: Number, required: true, min: 0 },
+  status: { type: String, required: true, enum: ["Pending", "Approved", "Rejected", "Paid"] },
+  reference: { type: String, required: true, trim: true, unique: true },
+  requestedAt: { type: Date, default: Date.now }
+}, { collection: "investorwithdrawals", timestamps: true, versionKey: false });
+investorWithdrawalSchema.index({ userId: 1, requestedAt: -1 });
+const InvestorWithdrawal = mongoose.model("InvestorWithdrawal", investorWithdrawalSchema);
+const investorNotificationSchema = new mongoose.Schema({
+  userId: { type: Number, required: true },
+  title: { type: String, required: true, trim: true, maxlength: 160 },
+  message: { type: String, required: true, trim: true, maxlength: 1000 },
+  readAt: { type: Date, default: null }
+}, { collection: "investornotifications", timestamps: true, versionKey: false });
+investorNotificationSchema.index({ userId: 1, createdAt: -1 });
+const InvestorNotification = mongoose.model("InvestorNotification", investorNotificationSchema);
+const investorSupportTicketSchema = new mongoose.Schema({
+  userId: { type: Number, required: true },
+  subject: { type: String, required: true, trim: true, maxlength: 120 },
+  category: { type: String, required: true, trim: true, maxlength: 80 },
+  message: { type: String, required: true, trim: true, maxlength: 2000 },
+  status: { type: String, enum: ["Open", "In Progress", "Resolved"], default: "Open" }
+}, { collection: "investorsupporttickets", timestamps: true, versionKey: false });
+investorSupportTicketSchema.index({ userId: 1, createdAt: -1 });
+const InvestorSupportTicket = mongoose.model("InvestorSupportTicket", investorSupportTicketSchema);
 
 const cleanDashboard = (dashboard) => {
   if (!dashboard) return null;
@@ -67,6 +150,21 @@ const cleanDashboard = (dashboard) => {
 };
 
 const readDashboard = async () => cleanDashboard(await Dashboard.findById("primary"));
+const employeeResponse = (employee) => {
+  const result = { ...employee };
+  for (const field of [
+    "passwordHash",
+    "aadhaarNumber",
+    "panNumber",
+    "aadhaarFrontDocument",
+    "aadhaarBackDocument",
+    "panDocument",
+    "blankChequeDocument"
+  ]) {
+    delete result[field];
+  }
+  return result;
+};
 const saveDashboard = async (dashboard) => {
   const saved = await Dashboard.findOneAndReplace(
     { _id: "primary" },
@@ -76,8 +174,117 @@ const saveDashboard = async (dashboard) => {
   return cleanDashboard(saved);
 };
 
+const hashInvestorToken = (token) => crypto.createHash("sha256").update(token).digest("hex");
+const requireInvestor = async (req, res, next) => {
+  const authorization = req.get("authorization") || "";
+  const match = /^Bearer ([A-Za-z0-9_-]+)$/.exec(authorization);
+  if (!match) return res.status(401).json({ message: "Sign in to access investor data." });
+
+  try {
+    const tokenHash = hashInvestorToken(match[1]);
+    const session = await InvestorSession.findOne({
+      tokenHash,
+      expiresAt: { $gt: new Date() }
+    }).lean();
+    if (!session) return res.status(401).json({ message: "Your investor session has expired. Sign in again." });
+
+    const data = await readDashboard();
+    const user = (data?.users || []).find((item) => Number(item.id) === session.userId);
+    if (!user || user.approvalStatus !== "Approved") {
+      await InvestorSession.deleteOne({ _id: session._id });
+      return res.status(401).json({ message: "This investor account is no longer authorized." });
+    }
+
+    req.investor = { userId: session.userId, user, tokenHash };
+    return next();
+  } catch (error) {
+    console.error("Unable to validate investor session:", error);
+    return res.status(500).json({ message: "Unable to validate investor session." });
+  }
+};
+
+const requireStaff = (...allowedRoles) => async (req, res, next) => {
+  const authorization = req.get("authorization") || "";
+  const match = /^Bearer ([A-Za-z0-9_-]+)$/.exec(authorization);
+  if (!match) return res.status(401).json({ message: "Sign in with an authorized staff account." });
+
+  try {
+    const tokenHash = hashInvestorToken(match[1]);
+    const session = await StaffSession.findOne({
+      tokenHash,
+      expiresAt: { $gt: new Date() }
+    }).lean();
+    if (!session) return res.status(401).json({ message: "Your staff session has expired. Sign in again." });
+    if (!allowedRoles.includes(session.userRole)) {
+      return res.status(403).json({ message: "Your account cannot access this staff resource." });
+    }
+
+    if (session.userRole === "admin") {
+      const configuredEmail = String(process.env.ADMIN_EMAIL || "").trim().toLowerCase();
+      if (!configuredEmail || session.subjectId !== configuredEmail) {
+        await StaffSession.deleteOne({ _id: session._id });
+        return res.status(401).json({ message: "This admin session is no longer authorized." });
+      }
+      req.staff = { userRole: "admin", email: configuredEmail, tokenHash };
+      return next();
+    }
+
+    const employee = await Employee.findOne({
+      id: Number(session.subjectId),
+      status: "Active"
+    }).select("id fullName email userRole").lean();
+    if (!employee || employee.userRole !== session.userRole) {
+      await StaffSession.deleteOne({ _id: session._id });
+      return res.status(401).json({ message: "This staff account is no longer authorized." });
+    }
+
+    req.staff = { ...employee, tokenHash };
+    return next();
+  } catch (error) {
+    console.error("Unable to validate staff session:", error);
+    return res.status(500).json({ message: "Unable to validate staff session." });
+  }
+};
+
+const createStaffSession = async (subjectId, userRole) => {
+  const accessToken = crypto.randomBytes(32).toString("base64url");
+  const expiresAt = new Date(Date.now() + 8 * 60 * 60 * 1000);
+  await StaffSession.create({
+    subjectId: String(subjectId),
+    userRole,
+    tokenHash: hashInvestorToken(accessToken),
+    expiresAt
+  });
+  return { accessToken, expiresAt };
+};
+const safeEqualStrings = (first, second) => {
+  const firstHash = crypto.createHash("sha256").update(first).digest();
+  const secondHash = crypto.createHash("sha256").update(second).digest();
+  return first.length === second.length && crypto.timingSafeEqual(firstHash, secondHash);
+};
+
+const ensureInvestorCollections = async () => {
+  for (const model of [
+    InvestorSession,
+    StaffSession,
+    InvestorLedgerEntry,
+    InvestorHolding,
+    InvestorWithdrawal,
+    InvestorNotification,
+    InvestorSupportTicket
+  ]) {
+    try {
+      await model.createCollection();
+    } catch (error) {
+      if (error.code !== 48 && error.codeName !== "NamespaceExists") throw error;
+    }
+    await model.createIndexes();
+  }
+};
+
 const initializeDatabase = async () => {
   await mongoose.connect(MONGODB_URI);
+  await ensureInvestorCollections();
   const initialData = JSON.parse(fs.readFileSync(dashboardFile, "utf-8"));
   const existingData = await readDashboard();
   if (existingData) {
@@ -93,12 +300,16 @@ const initializeDatabase = async () => {
 };
 const uploadDirectory = path.join(__dirname, "uploads");
 const resumeUploadDirectory = path.join(__dirname, "private_uploads", "resumes");
+const employeeDocumentUploadDirectory = path.join(__dirname, "private_uploads", "employee-documents");
+const kycFacePhotoDirectory = path.join(__dirname, "private_uploads", "kyc-face-photos");
 const maxImageSize = 5 * 1024 * 1024;
 const maxVideoSize = 50 * 1024 * 1024;
 const maxResumeSize = 5 * 1024 * 1024;
 
 fs.mkdirSync(uploadDirectory, { recursive: true });
 fs.mkdirSync(resumeUploadDirectory, { recursive: true });
+fs.mkdirSync(employeeDocumentUploadDirectory, { recursive: true });
+fs.mkdirSync(kycFacePhotoDirectory, { recursive: true });
 app.use("/uploads", express.static(uploadDirectory));
 
 const allowedMediaExtensions = {
@@ -138,6 +349,58 @@ const resumeUpload = multer({
     const extension = path.extname(file.originalname).toLowerCase();
     if (!allowedResumeExtensions.has(extension)) {
       return callback(new Error("Upload your resume as a PDF, DOC, or DOCX file."));
+    }
+    callback(null, true);
+  }
+});
+
+const profilePictureUpload = multer({
+  storage: multer.diskStorage({
+    destination: uploadDirectory,
+    filename: (req, file, callback) => {
+      callback(null, `${crypto.randomUUID()}${path.extname(file.originalname).toLowerCase()}`);
+    }
+  }),
+  limits: { fileSize: maxImageSize },
+  fileFilter: (req, file, callback) => {
+    const extension = path.extname(file.originalname).toLowerCase();
+    if (!allowedMediaExtensions.photos.has(extension) || !file.mimetype.startsWith("image/")) {
+      return callback(new Error("Upload a JPG, PNG, or WEBP profile picture."));
+    }
+    callback(null, true);
+  }
+});
+
+const facePhotoUpload = multer({
+  storage: multer.diskStorage({
+    destination: kycFacePhotoDirectory,
+    filename: (req, file, callback) => {
+      callback(null, `${crypto.randomUUID()}${path.extname(file.originalname).toLowerCase()}`);
+    }
+  }),
+  limits: { fileSize: maxImageSize },
+  fileFilter: (req, file, callback) => {
+    const extension = path.extname(file.originalname).toLowerCase();
+    if (!allowedMediaExtensions.photos.has(extension) || !file.mimetype.startsWith("image/")) {
+      return callback(new Error("Upload a JPG, PNG, or WEBP face photo."));
+    }
+    callback(null, true);
+  }
+});
+
+const employeeCreateUpload = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, callback) => callback(null, file.fieldname === "profilePicture" ? uploadDirectory : employeeDocumentUploadDirectory),
+    filename: (req, file, callback) => {
+      callback(null, `${crypto.randomUUID()}${path.extname(file.originalname).toLowerCase()}`);
+    }
+  }),
+  limits: { fileSize: maxImageSize },
+  fileFilter: (req, file, callback) => {
+    const extension = path.extname(file.originalname).toLowerCase();
+    const allowedFields = new Set(["profilePicture", "aadhaarFrontImage", "aadhaarBackImage", "panImage", "blankChequeImage"]);
+    if (!allowedFields.has(file.fieldname) || !allowedMediaExtensions.photos.has(extension) || !file.mimetype.startsWith("image/")) {
+      return callback(new Error("Upload employee documents as JPG, PNG, or WEBP images."));
     }
     callback(null, true);
   }
@@ -418,9 +681,11 @@ app.get("/api/employees", async (req, res) => {
     }
     const employees = await Employee.find().select("+passwordHash").sort({ createdAt: -1, id: -1 }).lean();
     return res.json(employees.map((employee) => {
+      const nameParts = String(employee.fullName || "").trim().split(/\s+/);
+      employee.firstName = employee.firstName || nameParts[0] || "";
+      employee.lastName = employee.lastName || nameParts.slice(1).join(" ");
       const hasPassword = Boolean(employee.passwordHash);
-      delete employee.passwordHash;
-      return { ...employee, hasPassword };
+      return { ...employeeResponse(employee), hasPassword };
     }));
   } catch (error) {
     console.error(error);
@@ -428,15 +693,158 @@ app.get("/api/employees", async (req, res) => {
   }
 });
 
-app.post("/api/employees", async (req, res) => {
-  const { fullName, email, password, phone, userRole, department, designation, joiningDate, bankName, accountHolderName, accountNumber, ifscCode, bankBranch } = req.body || {};
-  const fields = [fullName, email, password, phone, userRole, department, designation, joiningDate, bankName, accountHolderName, accountNumber, ifscCode, bankBranch];
+const updateEmployeeRecord = async (req, res) => {
+ const editableFields = new Set(["firstName", "lastName", "fullName", "email", "phone", "userRole", "department", "designation", "educationalQualifications", "passportNumber", "joiningDate", "bankName", "accountHolderName", "accountNumber", "ifscCode", "bankBranch", "status", "password"]);
+  const updates = req.body;
+  if (!updates || typeof updates !== "object" || Array.isArray(updates)) {
+    return res.status(400).json({ message: "Provide employee details to update." });
+  }
+
+  const fields = Object.keys(updates);
+  if (fields.length === 0 || fields.some((field) => !editableFields.has(field))) {
+    return res.status(400).json({ message: "One or more employee fields cannot be updated." });
+  }
+
+  for (const field of fields) {
+    if (typeof updates[field] !== "string" || (field !== "password" && field !== "passportNumber" && !updates[field].trim())) {
+      return res.status(400).json({ message: "Employee fields cannot be empty." });
+    }
+  }
+
+  const normalizedUpdates = { ...updates };
+  if (normalizedUpdates.fullName) normalizedUpdates.fullName = normalizedUpdates.fullName.trim();
+  for (const field of ["firstName", "lastName"]) {
+    if (normalizedUpdates[field]) normalizedUpdates[field] = normalizedUpdates[field].trim();
+  }
+  if (normalizedUpdates.email) {
+    normalizedUpdates.email = normalizedUpdates.email.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedUpdates.email)) {
+      return res.status(400).json({ message: "Enter a valid email address." });
+    }
+  }
+  if (normalizedUpdates.phone) {
+    normalizedUpdates.phone = normalizedUpdates.phone.trim();
+    if (!/^[0-9+() .-]{7,24}$/.test(normalizedUpdates.phone)) {
+      return res.status(400).json({ message: "Enter a valid phone number." });
+    }
+  }
+  for (const field of ["department", "designation", "educationalQualifications", "passportNumber"]) {
+    if (normalizedUpdates[field]) normalizedUpdates[field] = normalizedUpdates[field].trim();
+  }
+  for (const field of ["bankName", "accountHolderName", "accountNumber", "bankBranch"]) {
+    if (normalizedUpdates[field]) normalizedUpdates[field] = normalizedUpdates[field].trim();
+  }
+  if (normalizedUpdates.ifscCode) normalizedUpdates.ifscCode = normalizedUpdates.ifscCode.trim().toUpperCase();
+  if (normalizedUpdates.userRole && !["manager", "employee"].includes(normalizedUpdates.userRole)) {
+    return res.status(400).json({ message: "Choose a valid user role." });
+  }
+  if (normalizedUpdates.status && !["Active", "Inactive"].includes(normalizedUpdates.status)) {
+    return res.status(400).json({ message: "Choose a valid employee status." });
+  }
+  if (normalizedUpdates.password !== undefined) {
+    if (normalizedUpdates.password.length < 8) {
+      return res.status(400).json({ message: "A new password must be at least 8 characters long." });
+    }
+    const salt = crypto.randomBytes(16).toString("hex");
+    const hash = crypto.scryptSync(normalizedUpdates.password, salt, 64).toString("hex");
+    normalizedUpdates.passwordHash = `scrypt$${salt}$${hash}`;
+    delete normalizedUpdates.password;
+  }
+  if (normalizedUpdates.joiningDate) {
+    const date = new Date(`${normalizedUpdates.joiningDate}T00:00:00Z`);
+    if (Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== normalizedUpdates.joiningDate) {
+      return res.status(400).json({ message: "Enter a valid joining date." });
+    }
+  }
+
+  try {
+    if (normalizedUpdates.firstName !== undefined || normalizedUpdates.lastName !== undefined) {
+      const existingEmployee = await Employee.findOne({ id: Number(req.params.id) }).select("firstName lastName fullName").lean();
+      if (!existingEmployee) return res.status(404).json({ message: "Employee not found." });
+      const existingNameParts = String(existingEmployee.fullName || "").trim().split(/\s+/);
+      const firstName = normalizedUpdates.firstName !== undefined
+        ? normalizedUpdates.firstName
+        : existingEmployee.firstName || existingNameParts[0] || "";
+      const lastName = normalizedUpdates.lastName !== undefined
+        ? normalizedUpdates.lastName
+        : existingEmployee.lastName || existingNameParts.slice(1).join(" ");
+      normalizedUpdates.firstName = firstName;
+      normalizedUpdates.lastName = lastName;
+      normalizedUpdates.fullName = `${firstName} ${lastName}`.trim();
+    } else if (normalizedUpdates.fullName) {
+      const nameParts = normalizedUpdates.fullName.split(/\s+/);
+      normalizedUpdates.firstName = nameParts[0] || "";
+      normalizedUpdates.lastName = nameParts.slice(1).join(" ");
+    }
+    const employee = await Employee.findOneAndUpdate(
+      { id: Number(req.params.id) },
+      { $set: normalizedUpdates },
+      { new: true, runValidators: true }
+    ).lean();
+    if (!employee) return res.status(404).json({ message: "Employee not found." });
+    return res.json(employeeResponse(employee));
+  } catch (error) {
+    if (error.code === 11000) return res.status(409).json({ message: "An employee with this email already exists." });
+    console.error(error);
+    return res.status(500).json({ message: "Unable to update employee." });
+  }
+};
+
+app.patch("/api/employees/:id", updateEmployeeRecord);
+
+app.post("/api/employees/:id/profile-picture", (req, res) => {
+  profilePictureUpload.single("profilePicture")(req, res, async (uploadError) => {
+    if (uploadError) {
+      const message = uploadError.code === "LIMIT_FILE_SIZE"
+        ? "Profile picture must be 5 MB or smaller."
+        : uploadError.message || "Unable to upload profile picture.";
+      return res.status(400).json({ message });
+    }
+    if (!req.file) return res.status(400).json({ message: "Choose a profile picture to upload." });
+    try {
+      const employee = await Employee.findOneAndUpdate(
+        { id: Number(req.params.id) },
+        { profilePicture: `/uploads/${req.file.filename}` },
+        { new: true }
+      ).select("id profilePicture").lean();
+      if (!employee) {
+        fs.unlinkSync(req.file.path);
+        return res.status(404).json({ message: "Employee not found." });
+      }
+      return res.json(employee);
+    } catch (error) {
+      try { fs.unlinkSync(req.file.path); } catch (unlinkError) { if (unlinkError.code !== "ENOENT") console.error(unlinkError); }
+      console.error(error);
+      return res.status(500).json({ message: "Unable to save profile picture." });
+    }
+  });
+});
+
+const createEmployeeRecord = async (req, res) => {
+  const files = req.files || {};
+  const {
+    firstName, lastName, email, password, phone, userRole, department,
+    designation, educationalQualifications, passportNumber = "", joiningDate,
+    bankName, accountHolderName, accountNumber, ifscCode, bankBranch,
+    aadhaarNumber, panNumber
+  } = req.body || {};
+  const getDocument = (field) => req.files?.[field]?.[0];
+  const profilePictureFile = getDocument("profilePicture");
+  const aadhaarFrontDocument = getDocument("aadhaarFrontImage");
+  const aadhaarBackDocument = getDocument("aadhaarBackImage");
+  const panDocument = getDocument("panImage");
+  const blankChequeDocument = getDocument("blankChequeImage");
+  const fields = [firstName, lastName, email, password, phone, userRole, department, designation, educationalQualifications, joiningDate, bankName, accountHolderName, accountNumber, ifscCode, bankBranch, aadhaarNumber, panNumber];
   if (fields.some((value) => typeof value !== "string" || !value.trim()) ||
     !["manager", "employee"].includes(userRole) ||
     password.length < 8 ||
     !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()) ||
-    !/^[0-9+() .-]{7,24}$/.test(phone.trim())) {
-    return res.status(400).json({ message: "Enter valid employee, contact, joining date, and salary bank details." });
+    !/^[0-9+() .-]{7,24}$/.test(phone.trim()) ||
+    !/^\d{12}$/.test(aadhaarNumber.trim()) ||
+    !/^[A-Z]{5}\d{4}[A-Z]$/i.test(panNumber.trim()) ||
+    !aadhaarFrontDocument || !aadhaarBackDocument || !panDocument || !blankChequeDocument) {
+    removeUploadedFiles(files);
+    return res.status(400).json({ message: "Enter valid employee details, Aadhaar and PAN numbers, and upload all required employee documents." });
   }
 
   try {
@@ -444,7 +852,9 @@ app.post("/api/employees", async (req, res) => {
     const highestId = await Employee.findOne().sort({ id: -1 }).select({ id: 1 }).lean();
     const employee = {
       id: (highestId?.id || 0) + 1,
-      fullName: fullName.trim(),
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      fullName: `${firstName.trim()} ${lastName.trim()}`,
       email: normalizedEmail,
       passwordHash: (() => {
         const salt = crypto.randomBytes(16).toString("hex");
@@ -455,23 +865,128 @@ app.post("/api/employees", async (req, res) => {
       userRole,
       department: department.trim(),
       designation: designation.trim(),
+      educationalQualifications: educationalQualifications.trim(),
+      passportNumber: typeof passportNumber === "string" ? passportNumber.trim() : "",
+      aadhaarNumber: aadhaarNumber.trim(),
+      aadhaarFrontDocument: aadhaarFrontDocument.filename,
+      aadhaarBackDocument: aadhaarBackDocument.filename,
+      panNumber: panNumber.trim().toUpperCase(),
+      panDocument: panDocument.filename,
+      blankChequeDocument: blankChequeDocument.filename,
       joiningDate,
       bankName: bankName.trim(),
       accountHolderName: accountHolderName.trim(),
       accountNumber: accountNumber.trim(),
       ifscCode: ifscCode.trim().toUpperCase(),
       bankBranch: bankBranch.trim(),
+      profilePicture: profilePictureFile ? `/uploads/${profilePictureFile.filename}` : "",
       status: "Active"
     };
     const savedEmployee = await Employee.create(employee);
-    const result = savedEmployee.toObject();
-    delete result.passwordHash;
-    return res.status(201).json({ ...result, hasPassword: true });
+    return res.status(201).json({ ...employeeResponse(savedEmployee.toObject()), hasPassword: true });
   } catch (error) {
+    removeUploadedFiles(files);
     if (error.code === 11000) return res.status(409).json({ message: "An employee with this email already exists." });
     console.error(error);
     return res.status(500).json({ message: "Unable to add employee" });
   }
+};
+
+app.post("/api/employees", (req, res) => {
+  employeeCreateUpload.fields([
+      { name: "profilePicture", maxCount: 1 },
+      { name: "aadhaarFrontImage", maxCount: 1 },
+      { name: "aadhaarBackImage", maxCount: 1 },
+      { name: "panImage", maxCount: 1 },
+      { name: "blankChequeImage", maxCount: 1 }
+  ])(req, res, (uploadError) => {
+    if (uploadError) {
+      removeUploadedFiles(req.files);
+      const message = uploadError.code === "LIMIT_FILE_SIZE"
+        ? "Each employee image must be 5 MB or smaller."
+        : uploadError.message || "Unable to upload employee documents.";
+      return res.status(400).json({ message });
+    }
+    return createEmployeeRecord(req, res);
+  });
+});
+
+app.post("/api/employees/login", async (req, res) => {
+  const email = typeof req.body?.email === "string" ? req.body.email.trim().toLowerCase() : "";
+  const password = typeof req.body?.password === "string" ? req.body.password : "";
+  if (!email || !password) return res.status(400).json({ message: "Enter your employee email and password." });
+
+  try {
+    const employee = await Employee.findOne({ email }).select("+passwordHash").lean();
+    if (!employee || employee.status !== "Active" || typeof employee.passwordHash !== "string") {
+      return res.status(401).json({ message: "Invalid employee email or password." });
+    }
+
+    const [scheme, salt, storedHash] = employee.passwordHash.split("$");
+    if (scheme !== "scrypt" || !salt || !storedHash) {
+      return res.status(401).json({ message: "Invalid employee email or password." });
+    }
+    const expectedHash = Buffer.from(storedHash, "hex");
+    const actualHash = crypto.scryptSync(password, salt, expectedHash.length);
+    if (actualHash.length !== expectedHash.length || !crypto.timingSafeEqual(actualHash, expectedHash)) {
+      return res.status(401).json({ message: "Invalid employee email or password." });
+    }
+
+    const session = await createStaffSession(employee.id, employee.userRole);
+    return res.json({
+      ...session,
+      employee: {
+        id: employee.id,
+        firstName: employee.firstName,
+        lastName: employee.lastName,
+        fullName: employee.fullName,
+        email: employee.email,
+        userRole: employee.userRole,
+        profilePicture: employee.profilePicture
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Unable to sign in right now. Please try again." });
+  }
+});
+
+app.post("/api/admin/login", async (req, res) => {
+  const configuredEmail = String(process.env.ADMIN_EMAIL || "").trim().toLowerCase();
+  const configuredPassword = process.env.ADMIN_PASSWORD || "";
+  if (!configuredEmail || !configuredPassword) {
+    return res.status(503).json({ message: "Admin sign-in is not configured. Set ADMIN_EMAIL and ADMIN_PASSWORD in the backend environment." });
+  }
+
+  const email = typeof req.body?.email === "string" ? req.body.email.trim().toLowerCase() : "";
+  const password = typeof req.body?.password === "string" ? req.body.password : "";
+  if (!email || !password ||
+    !safeEqualStrings(email, configuredEmail) ||
+    !safeEqualStrings(password, configuredPassword)) {
+    return res.status(401).json({ message: "Invalid admin email or password." });
+  }
+
+  try {
+    const session = await createStaffSession(configuredEmail, "admin");
+    return res.json({ ...session, admin: { email: configuredEmail, userRole: "admin" } });
+  } catch (error) {
+    console.error("Unable to create admin session:", error);
+    return res.status(500).json({ message: "Unable to sign in right now. Please try again." });
+  }
+});
+
+app.delete("/api/staff/session", requireStaff("admin", "manager", "employee"), async (req, res) => {
+  try {
+    await StaffSession.deleteOne({ tokenHash: req.staff.tokenHash });
+    return res.json({ success: true });
+  } catch (error) {
+    console.error("Unable to end staff session:", error);
+    return res.status(500).json({ message: "Unable to end staff session." });
+  }
+});
+
+app.get("/api/staff/session", requireStaff("admin", "manager", "employee"), (req, res) => {
+  return res.json({ userRole: req.staff.userRole });
 });
 
 app.get("/api/users/check-email", async (req, res) => {
@@ -490,11 +1005,52 @@ app.get("/api/users/check-email", async (req, res) => {
   }
 });
 
+app.post("/api/kyc/face-photo", (req, res) => {
+  facePhotoUpload.single("photo")(req, res, (uploadError) => {
+    if (uploadError) {
+      const message = uploadError.code === "LIMIT_FILE_SIZE"
+        ? "Face photo must be 5 MB or smaller."
+        : uploadError.message || "Unable to upload face photo.";
+      return res.status(400).json({ message });
+    }
+    if (!req.file) return res.status(400).json({ message: "Choose a face photo to upload." });
+
+    return res.status(201).json({
+      url: `/api/kyc/face-photo/${req.file.filename}`,
+      capturedAt: new Date().toISOString()
+    });
+  });
+});
+
+app.get("/api/kyc/face-photo/:filename", (req, res) => {
+  if (!/^[0-9a-f-]{36}\.(jpg|jpeg|png|webp)$/i.test(req.params.filename)) {
+    return res.status(404).json({ message: "Face photo not found" });
+  }
+  const photoPath = path.join(kycFacePhotoDirectory, req.params.filename);
+  return res.sendFile(photoPath, (error) => {
+    if (error && !res.headersSent) {
+      res.status(error.statusCode === 404 ? 404 : 500).json({
+        message: error.statusCode === 404 ? "Face photo not found" : "Unable to open face photo"
+      });
+    }
+  });
+});
+
 app.get("/api/users", async (req, res) => {
   try {
     const data = await readDashboard();
+    const approvals = await KycApproval.find().select("userId facePhotos").lean();
+    const facePhotosByUserId = new Map(approvals.map((approval) => [approval.userId, approval.facePhotos]));
     const newestFirst = [...(data.users || [])]
-      .sort((a, b) => Number(b.id) - Number(a.id));
+      .sort((a, b) => Number(b.id) - Number(a.id))
+      .map((user) => {
+        const facePhotos = facePhotosByUserId.get(Number(user.id));
+        if (!facePhotos) return user;
+        return {
+          ...user,
+          kycDetails: { ...(user.kycDetails || {}), facePhotos }
+        };
+      });
     res.json(newestFirst);
   } catch (error) {
     console.error(error);
@@ -547,17 +1103,283 @@ app.post("/api/auth/login", async (req, res) => {
       return res.status(403).json({ message: "Your account is not approved for login." });
     }
 
+    const accessToken = crypto.randomBytes(32).toString("base64url");
+    const expiresAt = new Date(Date.now() + 8 * 60 * 60 * 1000);
+    await InvestorSession.create({
+      userId: user.id,
+      tokenHash: hashInvestorToken(accessToken),
+      expiresAt
+    });
+
     return res.json({
+      accessToken,
+      expiresAt,
       user: {
         id: user.id,
+        investorId: user.investorId,
         fullName: user.fullName,
         email: user.email,
+        mobileNumber: user.mobileNumber,
+        address: user.address,
+        address1: user.address1,
+        city: user.city,
+        state: user.state,
+        pincode: user.pincode,
+        country: user.country,
+        nomineeDetails: user.nomineeDetails,
+        createdAt: user.createdAt,
         kycStatus: user.kycStatus || "Not Submitted"
       }
     });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Unable to sign in right now. Please try again." });
+  }
+});
+
+const getInvestorLedger = (userId) => InvestorLedgerEntry.find({ userId })
+  .sort({ createdAt: -1 })
+  .lean();
+const sumAmounts = (entries, predicate) => entries
+  .filter((entry) => predicate(entry))
+  .reduce((total, entry) => total + Number(entry.amount || 0), 0);
+const getInvestorWalletSummary = (entries) => ({
+  availableBalance:
+    sumAmounts(entries, (entry) =>
+      ["Deposit", "Earning"].includes(entry.type) && entry.status === "Completed") -
+    sumAmounts(entries, (entry) =>
+      ["Investment", "Withdrawal"].includes(entry.type) && entry.status === "Completed"),
+  earningsReceived: sumAmounts(entries, (entry) =>
+    entry.type === "Earning" && entry.status === "Completed"),
+  pendingEarnings: sumAmounts(entries, (entry) =>
+    entry.type === "Earning" && entry.status === "Pending"),
+  totalInvested: sumAmounts(entries, (entry) =>
+    entry.type === "Investment" && entry.status === "Completed"),
+  totalWithdrawn: sumAmounts(entries, (entry) =>
+    entry.type === "Withdrawal" && entry.status === "Completed")
+});
+
+app.get("/api/investor/investments", requireInvestor, async (req, res) => {
+  try {
+    const holdings = await InvestorHolding.find({ userId: req.investor.userId })
+      .sort({ purchasedAt: -1, createdAt: -1 })
+      .lean();
+    const totalInvested = holdings.reduce((total, holding) => total + Number(holding.investedAmount || 0), 0);
+    const currentPortfolioValue = holdings.reduce((total, holding) => total + Number(holding.currentValue || 0), 0);
+    return res.json({
+      summary: {
+        totalInvested,
+        totalUnits: holdings.reduce((total, holding) => total + Number(holding.units || 0), 0),
+        currentPortfolioValue,
+        appreciationProfit: currentPortfolioValue - totalInvested,
+        holdingsCount: holdings.length
+      },
+      holdings: holdings.map(({ userId, ...holding }) => holding)
+    });
+  } catch (error) {
+    console.error("Unable to load investor holdings:", error);
+    return res.status(500).json({ message: "Unable to load investment data." });
+  }
+});
+
+app.delete("/api/investor/session", requireInvestor, async (req, res) => {
+  try {
+    await InvestorSession.deleteOne({ tokenHash: req.investor.tokenHash });
+    return res.json({ success: true });
+  } catch (error) {
+    console.error("Unable to end investor session:", error);
+    return res.status(500).json({ message: "Unable to end investor session." });
+  }
+});
+
+app.get("/api/investor/wallet", requireInvestor, async (req, res) => {
+  try {
+    const entries = await getInvestorLedger(req.investor.userId);
+    return res.json({ summary: getInvestorWalletSummary(entries) });
+  } catch (error) {
+    console.error("Unable to load investor wallet:", error);
+    return res.status(500).json({ message: "Unable to load wallet data." });
+  }
+});
+
+app.get("/api/investor/earnings", requireInvestor, async (req, res) => {
+  try {
+    const entries = await InvestorLedgerEntry.find({
+      userId: req.investor.userId,
+      type: "Earning"
+    }).sort({ createdAt: -1 }).lean();
+    return res.json({
+      summary: {
+        received: sumAmounts(entries, (entry) => entry.status === "Completed"),
+        pending: sumAmounts(entries, (entry) => entry.status === "Pending"),
+        total: entries.length
+      },
+      entries: entries.map(({ userId, ...entry }) => entry)
+    });
+  } catch (error) {
+    console.error("Unable to load investor earnings:", error);
+    return res.status(500).json({ message: "Unable to load earnings data." });
+  }
+});
+
+app.get("/api/investor/transactions", requireInvestor, async (req, res) => {
+  try {
+    const entries = await getInvestorLedger(req.investor.userId);
+    return res.json({
+      entries: entries.map(({ userId, ...entry }) => entry)
+    });
+  } catch (error) {
+    console.error("Unable to load investor transactions:", error);
+    return res.status(500).json({ message: "Unable to load transactions." });
+  }
+});
+
+app.get("/api/investor/withdrawals", requireInvestor, async (req, res) => {
+  try {
+    const [withdrawals, entries] = await Promise.all([
+      InvestorWithdrawal.find({ userId: req.investor.userId })
+        .sort({ requestedAt: -1 })
+        .lean(),
+      getInvestorLedger(req.investor.userId)
+    ]);
+    return res.json({
+      availableBalance: getInvestorWalletSummary(entries).availableBalance,
+      withdrawals: withdrawals.map(({ userId, ...withdrawal }) => withdrawal)
+    });
+  } catch (error) {
+    console.error("Unable to load investor withdrawals:", error);
+    return res.status(500).json({ message: "Unable to load withdrawal data." });
+  }
+});
+
+app.get("/api/investor/documents", requireInvestor, async (req, res) => {
+  try {
+    const [data, approval] = await Promise.all([
+      readDashboard(),
+      KycApproval.findOne({ userId: req.investor.userId }).select("facePhotos").lean()
+    ]);
+    const user = (data?.users || []).find((item) => Number(item.id) === req.investor.userId);
+    if (!user) return res.status(404).json({ message: "Investor account not found." });
+
+    const kycDetails = user.kycDetails || {};
+    const documentFields = [
+      ["uploadpancard", "PAN Card"],
+      ["selfiephoto", "Selfie"],
+      ["uploadaadhaar", "Aadhaar Front"],
+      ["uploadaddressproof", "Aadhaar Back"]
+    ];
+    const documents = documentFields
+      .map(([field, name]) => ({ name, url: kycDetails[field] }))
+      .filter((document) => typeof document.url === "string" && document.url.trim())
+      .map((document) => ({ ...document, url: document.url.trim() }));
+    const facePhotos = approval?.facePhotos || kycDetails.facePhotos || {};
+    for (const [angle, name] of [["front", "Face Verification - Front"], ["left", "Face Verification - Left"], ["right", "Face Verification - Right"]]) {
+      const photo = facePhotos[angle];
+      const url = typeof photo === "string" ? photo : photo?.url;
+      if (typeof url === "string" && url.trim()) documents.push({ name, url: url.trim() });
+    }
+
+    return res.json({ documents });
+  } catch (error) {
+    console.error("Unable to load investor documents:", error);
+    return res.status(500).json({ message: "Unable to load KYC documents." });
+  }
+});
+
+app.get("/api/investor/notifications", requireInvestor, async (req, res) => {
+  try {
+    const notifications = await InvestorNotification.find({ userId: req.investor.userId })
+      .sort({ createdAt: -1 })
+      .lean();
+    return res.json({
+      unreadCount: notifications.filter((notification) => !notification.readAt).length,
+      notifications: notifications.map(({ userId, ...notification }) => notification)
+    });
+  } catch (error) {
+    console.error("Unable to load investor notifications:", error);
+    return res.status(500).json({ message: "Unable to load notifications." });
+  }
+});
+
+app.patch("/api/investor/notifications/read-all", requireInvestor, async (req, res) => {
+  try {
+    const result = await InvestorNotification.updateMany(
+      { userId: req.investor.userId, readAt: null },
+      { $set: { readAt: new Date() } }
+    );
+    return res.json({ updated: result.modifiedCount });
+  } catch (error) {
+    console.error("Unable to mark investor notifications as read:", error);
+    return res.status(500).json({ message: "Unable to update notifications." });
+  }
+});
+
+app.get("/api/investor/support", requireInvestor, async (req, res) => {
+  try {
+    const tickets = await InvestorSupportTicket.find({ userId: req.investor.userId })
+      .sort({ createdAt: -1 })
+      .lean();
+    return res.json({ tickets: tickets.map(({ userId, ...ticket }) => ticket) });
+  } catch (error) {
+    console.error("Unable to load investor support tickets:", error);
+    return res.status(500).json({ message: "Unable to load support requests." });
+  }
+});
+
+app.post("/api/investor/support", requireInvestor, async (req, res) => {
+  const { subject, category, message } = req.body || {};
+  const allowedCategories = ["Account", "Documents", "Investments", "Payments", "Other"];
+  if (typeof subject !== "string" || subject.trim().length < 3 || subject.trim().length > 120 ||
+    typeof category !== "string" || !allowedCategories.includes(category) ||
+    typeof message !== "string" || message.trim().length < 5 || message.trim().length > 2000) {
+    return res.status(400).json({ message: "Enter a subject, category, and message to submit your request." });
+  }
+
+  try {
+    const ticket = await InvestorSupportTicket.create({
+      userId: req.investor.userId,
+      subject: subject.trim(),
+      category,
+      message: message.trim()
+    });
+    const result = ticket.toObject();
+    delete result.userId;
+    return res.status(201).json({ ticket: result });
+  } catch (error) {
+    console.error("Unable to create investor support ticket:", error);
+    return res.status(500).json({ message: "Unable to submit support request." });
+  }
+});
+
+app.get("/api/staff/support", requireStaff("admin", "manager", "employee"), async (req, res) => {
+  try {
+    const [tickets, dashboard] = await Promise.all([
+      InvestorSupportTicket.find().sort({ createdAt: -1 }).lean(),
+      readDashboard()
+    ]);
+    const investorsById = new Map(
+      (dashboard?.users || []).map((user) => [Number(user.id), user])
+    );
+    const requests = tickets.map(({ userId, ...ticket }) => {
+      const investor = investorsById.get(Number(userId));
+      return {
+        id: String(ticket._id),
+        subject: ticket.subject,
+        category: ticket.category,
+        message: ticket.message,
+        status: ticket.status,
+        submittedAt: ticket.createdAt,
+        investor: {
+          fullName: investor?.fullName || `Investor ${userId}`,
+          email: investor?.email || "",
+          investorId: investor?.investorId || ""
+        }
+      };
+    });
+    return res.json({ requests });
+  } catch (error) {
+    console.error("Unable to load investor support requests for staff:", error);
+    return res.status(500).json({ message: "Unable to load investor support requests." });
   }
 });
 
@@ -654,6 +1476,11 @@ app.patch("/api/users/registration-details", async (req, res) => {
   if (typeof email !== "string" || !email.trim() || (!nomineeInfo && !bankInfo)) {
     return res.status(400).json({ message: "Registration details are incomplete" });
   }
+  if (nomineeInfo && ["UserName", "UserNumber", "Relationship"].some((field) =>
+    typeof nomineeInfo[field] !== "string" || !nomineeInfo[field].trim()
+  )) {
+    return res.status(400).json({ message: "Complete all nominee details before saving" });
+  }
 
   try {
     const data = await readDashboard();
@@ -663,9 +1490,9 @@ app.patch("/api/users/registration-details", async (req, res) => {
     if (nomineeInfo) {
       user.nomineeDetails = {
         ...(user.nomineeDetails || {}),
-        UserName: nomineeInfo.UserName || "",
-        UserNumber: nomineeInfo.UserNumber || "",
-        Relationship: nomineeInfo.Relationship || ""
+        UserName: nomineeInfo.UserName.trim(),
+        UserNumber: nomineeInfo.UserNumber.trim(),
+        Relationship: nomineeInfo.Relationship.trim()
       };
     }
     if (bankInfo) {
@@ -690,6 +1517,13 @@ app.patch("/api/users/registration-details", async (req, res) => {
 
 app.patch("/api/users/kyc", async (req, res) => {
   const { email, kycDetails } = req.body || {};
+  const facePhotoKeys = ["front", "left", "right"];
+  const validFacePhotos = facePhotoKeys.every((key) => {
+    const photo = kycDetails?.facePhotos?.[key];
+    return photo && typeof photo.url === "string" &&
+      /^\/api\/kyc\/face-photo\/[0-9a-f-]{36}\.(jpg|jpeg|png|webp)$/i.test(photo.url) &&
+      typeof photo.capturedAt === "string";
+  });
   const requiredKycFields = [
     "pancardnumber",
     "aadhaarnumber",
@@ -699,7 +1533,8 @@ app.patch("/api/users/kyc", async (req, res) => {
     "selfiephoto"
   ];
   if (typeof email !== "string" || !email.trim() || !kycDetails ||
-    requiredKycFields.some((field) => typeof kycDetails[field] !== "string" || !kycDetails[field].trim())) {
+    requiredKycFields.some((field) => typeof kycDetails[field] !== "string" || !kycDetails[field].trim()) ||
+    !validFacePhotos) {
     return res.status(400).json({ message: "Complete all KYC details and document uploads" });
   }
 
@@ -710,6 +1545,18 @@ app.patch("/api/users/kyc", async (req, res) => {
 
     user.kycDetails = Object.fromEntries(requiredKycFields.map((field) => [field, kycDetails[field].trim()]));
     user.kycStatus = "Pending for Approval";
+    await KycApproval.findOneAndUpdate(
+      { userId: user.id },
+      {
+        email: user.email,
+        facePhotos: Object.fromEntries(facePhotoKeys.map((key) => [key, {
+          url: kycDetails.facePhotos[key].url,
+          capturedAt: kycDetails.facePhotos[key].capturedAt
+        }])),
+        status: user.kycStatus
+      },
+      { upsert: true, new: true, runValidators: true, setDefaultsOnInsert: true }
+    );
     await saveDashboard(data);
     return res.json(user);
   } catch (error) {
@@ -734,9 +1581,15 @@ app.patch("/api/users/:id/kyc-status", async (req, res) => {
     if (!user.kycDetails || requiredKycDocuments.some((field) => !user.kycDetails[field])) {
       return res.status(400).json({ message: "User has not submitted all KYC documents" });
     }
+    if (kycStatus === "Approved" && ["UserName", "UserNumber", "Relationship"].some((field) =>
+      typeof user.nomineeDetails?.[field] !== "string" || !user.nomineeDetails[field].trim()
+    )) {
+      return res.status(400).json({ message: "User has not submitted all nominee details" });
+    }
 
     user.kycStatus = kycStatus;
     await saveDashboard(data);
+    await KycApproval.updateOne({ userId: user.id }, { $set: { status: kycStatus } });
     return res.json(user);
   } catch (error) {
     console.error(error);

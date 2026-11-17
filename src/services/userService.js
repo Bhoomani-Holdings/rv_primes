@@ -1,4 +1,5 @@
-const API_URL = "http://localhost:5000/api";
+const API_ORIGIN = "http://localhost:5000";
+const API_URL = `${API_ORIGIN}/api`;
 
 export const getUsers = async () => {
   const response = await fetch(`${API_URL}/users`);
@@ -84,5 +85,32 @@ export const updateUserKycStatus = async (userId, kycStatus) => {
   });
   const result = await response.json();
   if (!response.ok) throw new Error(result.message || "Unable to update KYC status");
+  return result;
+};
+
+// ---- KYC face photos (front / left / right) ----
+// The backend returns a relative path such as /api/kyc/face-photo/<id>.jpg; this makes it a full address.
+export const faceImageUrl = (path) => {
+  if (!path) return "";
+  return /^(https?:|blob:|data:)/.test(path) ? path : `${API_ORIGIN}${path}`;
+};
+
+export const uploadFacePhoto = async (blob) => {
+  const body = new FormData();
+  body.append("photo", blob, "face.jpg");
+  const response = await fetch(`${API_URL}/kyc/face-photo`, { method: "POST", body });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(result.message || "Unable to upload the photo");
+  return result;
+};
+
+export const saveReviewerFacePhoto = async (userId, angle, photo) => {
+  const response = await fetch(`${API_URL}/users/${userId}/face-photos/${angle}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(photo)
+  });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(result.message || "Unable to save the face photo");
   return result;
 };

@@ -23,6 +23,24 @@
   font-weight: 600;
 }
 
+.sidebar-close,
+.sidebar-backdrop {
+  display: none;
+}
+
+.sidebar-close {
+  margin-left: auto;
+  padding: 6px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  font-size: 20px;
+  line-height: 1;
+}
+
 .menu-item {
   min-height: 48px;
   padding: 0 18px;
@@ -55,6 +73,11 @@
   font-size: 18px;
 }
 
+.menu-icon svg {
+  display: inline-block;
+  vertical-align: middle;
+}
+
 .notification-count {
   margin-left: auto;
   width: 21px;
@@ -64,6 +87,10 @@
   display: grid;
   place-items: center;
   font-size: 11px;
+}
+
+.notification-count {
+  color: #fff;
 }
 
 .logout {

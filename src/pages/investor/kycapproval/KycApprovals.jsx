@@ -11,16 +11,29 @@ const getStatusClass = (status) => {
   return "pending";
 };
 
+const hasCompleteNomineeDetails = (details) =>
+  ["UserName", "UserNumber", "Relationship"].every(
+    (field) => typeof details?.[field] === "string" && details[field].trim()
+  );
+
 export default function InvestorKycApprovals() {
   const [investor, setInvestor] = useState(null);
   const [formStep, setFormStep] = useState("kyc");
+  const [isEditingKyc, setIsEditingKyc] = useState(false);
 
   useEffect(() => {
     try {
       const savedInvestor = sessionStorage.getItem("investorSession");
-      setInvestor(savedInvestor ? JSON.parse(savedInvestor) : null);
+      const currentInvestor = savedInvestor ? JSON.parse(savedInvestor) : null;
+      setInvestor(currentInvestor);
+      if (currentInvestor?.kycDetails?.uploadpancard) {
+        setFormStep(hasCompleteNomineeDetails(currentInvestor.nomineeDetails) ? "complete" : "nominee");
+      } else {
+        setFormStep("kyc");
+      }
     } catch {
       setInvestor(null);
+      setFormStep("kyc");
     }
   }, []);
 
@@ -42,7 +55,9 @@ export default function InvestorKycApprovals() {
             <p className="investor-kyc-message">
               {statusClass === "approved" && "Your KYC documents have been approved."}
               {statusClass === "rejected" && "Your KYC documents were rejected. Please contact support for assistance."}
-              {statusClass === "pending" && "Your KYC documents are waiting for review."}
+              {statusClass === "pending" && investor?.kycDetails?.uploadpancard && !hasCompleteNomineeDetails(investor.nomineeDetails)
+                ? "Add your nominee details to complete your KYC submission."
+                : statusClass === "pending" && "Your KYC documents are waiting for review."}
               {statusClass === "not-submitted" && "You have not submitted your KYC documents yet."}
             </p>
           </>
@@ -50,11 +65,12 @@ export default function InvestorKycApprovals() {
           <p className="investor-kyc-message">Please sign in to view your KYC approval status.</p>
         )}
       </section>
-      {investor && statusClass === "not-submitted" && formStep === "kyc" && (
+      {investor && formStep === "kyc" && (statusClass === "not-submitted" || isEditingKyc) && (
         <KycDetails
           investorMode
           onInvestorKycSubmitted={(updatedInvestor) => {
             setInvestor(updatedInvestor);
+            setIsEditingKyc(false);
             setFormStep("nominee");
           }}
         />
@@ -62,6 +78,10 @@ export default function InvestorKycApprovals() {
       {investor && formStep === "nominee" && (
         <NomineeInfo
           investorMode
+          onCancel={() => {
+            setIsEditingKyc(true);
+            setFormStep("kyc");
+          }}
           onInvestorNomineeSubmitted={(updatedInvestor) => {
             setInvestor(updatedInvestor);
             setFormStep("complete");
