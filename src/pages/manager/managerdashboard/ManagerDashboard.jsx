@@ -17,6 +17,8 @@ import UserDetailsPage from "../../admin/Users/UserDetails";
 import KycReviewPage from "../../admin/KycReview/KycReview";
 import KycInvestorDetailsPage from "../../admin/KycReview/KycInvestorDetails";
 import InvestorSupportRequests from "../../admin/Support/InvestorSupportRequests";
+import StaffNotifications from "../../../components/StaffNotifications/StaffNotifications";
+import useStaffNotifications from "../../../hooks/useStaffNotifications";
 import { FiMessageCircle } from "react-icons/fi";
 import "./manager.css";
 
@@ -47,9 +49,10 @@ export default function ManagerDashboard() {
     try { return JSON.parse(sessionStorage.getItem("employeeSession") || "null"); }
     catch { return null; }
   }, []);
+  const staffNotifications = useStaffNotifications(session);
   const managerPath = location.pathname.replace(/^\/manager\/?/, "").split("/").filter(Boolean);
   const section = managerPath[0] || "dashboard";
-  const skipDashboardLoad = section === "support";
+  const skipDashboardLoad = ["support", "notifications"].includes(section);
   const projectId = section === "projects" && managerPath[1] !== "new" ? managerPath[1] : undefined;
   const projectMode = section === "projects" ? (managerPath[1] === "new" ? "create" : projectId ? "edit" : "list") : "list";
   const employeeMode = section !== "employees" ? "list" : managerPath[1] === "new" ? "create" : managerPath[1] ? "detail" : "list";
@@ -124,9 +127,14 @@ export default function ManagerDashboard() {
 
   return (
     <div className="manager-layout">
-      <Sidebar activePage={activePage} onNavigate={goTo} onLogout={logout} menuItems={managerNavigationItems} brand="Bhoomani Holdings" />
+      <Sidebar activePage={activePage} onNavigate={goTo} onLogout={logout} menuItems={managerNavigationItems} brand="Bhoomani Holdings" notificationCount={staffNotifications.unreadCount} />
       <div className="manager-main">
-        <Header user={{ ...session, profilePicture: data.employees.find((item) => String(item.id) === String(session.id))?.profilePicture || session.profilePicture }} />
+        <Header
+          user={{ ...session, profilePicture: data.employees.find((item) => String(item.id) === String(session.id))?.profilePicture || session.profilePicture }}
+          role="manager"
+          notificationCount={staffNotifications.unreadCount}
+          onNotificationsClick={() => navigate("/manager/notifications")}
+        />
         <main className="manager-content">
         {loading ? <div className="manager-message" role="status">Loading manager data…</div> : error ? (
           <div className="manager-message manager-error" role="alert"><p>{error}</p><button onClick={loadData}>Try again</button></div>
@@ -136,7 +144,7 @@ export default function ManagerDashboard() {
           section === "kyc-approvals" ? kycUserId ? <KycInvestorDetailsPage userId={kycUserId} basePath="/manager/kyc-approvals" /> : <KycReviewPage basePath="/manager/kyc-approvals" /> :
           section === "careers" ? careerId ? <CareerApplicantsPage careerId={careerId} basePath="/manager/careers" /> : <CareersPage basePath="/manager/careers" /> :
           section === "support" ? <InvestorSupportRequests staffRole="manager" /> :
-          section === "notifications" ? <div className="manager-message">Notification details are not available yet.</div> :
+          section === "notifications" ? <StaffNotifications {...staffNotifications} onMarkAllRead={staffNotifications.markAllRead} /> :
           section === "profile" ? <ProfileSection employee={data.employees.find((item) => String(item.id) === String(session.id)) || session} onSave={handleProfileSave} onPictureUpdated={(profilePicture) => {
             setData((current) => ({ ...current, employees: current.employees.map((item) => String(item.id) === String(session.id) ? { ...item, profilePicture } : item) }));
             sessionStorage.setItem("employeeSession", JSON.stringify({ ...session, profilePicture }));

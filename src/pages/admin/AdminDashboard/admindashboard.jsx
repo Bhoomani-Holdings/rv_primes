@@ -24,6 +24,8 @@ import CareersPage from "../Careers/Careers";
 import CareerApplicantsPage from "../Careers/CareerApplicants";
 import AdminSettingsPage from "../Settings/AdminSettings";
 import InvestorSupportRequests from "../Support/InvestorSupportRequests";
+import StaffNotifications from "../../../components/StaffNotifications/StaffNotifications";
+import useStaffNotifications from "../../../hooks/useStaffNotifications";
 
 import "./admindashboard.css";
 
@@ -39,11 +41,12 @@ function AdminDashboard({ initialPage = "Dashboard" }) {
   const navigate = useNavigate();
   const { userId, employeeId } = useParams();
   const [adminSession, setAdminSession] = useState(readAdminSession);
+  const staffNotifications = useStaffNotifications(adminSession);
   const isAuthenticatedAdmin = adminSession?.userRole === "admin" && Boolean(adminSession.accessToken);
   const [adminAuthStatus, setAdminAuthStatus] = useState(() => isAuthenticatedAdmin ? "checking" : "unauthenticated");
   const isProjectEditor = initialPage === "Add Project" || initialPage === "Edit Project";
   const isKycInvestorDetails = initialPage === "KYC Investor Details";
-  const skipDashboardLoad = isProjectEditor || isKycInvestorDetails || initialPage === "Career Applicants" || initialPage === "Add Employee" || initialPage === "Employee Details" || initialPage === "Support";
+  const skipDashboardLoad = isProjectEditor || isKycInvestorDetails || initialPage === "Career Applicants" || initialPage === "Add Employee" || initialPage === "Employee Details" || initialPage === "Support" || initialPage === "Notifications";
   const [dashboard, setDashboard] = useState(null);
   const [loading, setLoading] = useState(!skipDashboardLoad);
   const [error, setError] = useState("");
@@ -148,10 +151,11 @@ function AdminDashboard({ initialPage = "Dashboard" }) {
     <div className="admin-layout">
 
       <Sidebar
+        notificationCount={staffNotifications.unreadCount}
         activePage={activePage === "User Details" ? "Users" : activePage === "KYC Investor Details" ? "KYC Approvals" : activePage === "Add Employee" || activePage === "Employee Details" ? "Employees" : activePage}
         onLogout={handleLogout}
         onNavigate={(page) => {
-          if (["Dashboard", "Projects", "Units", "Pricing Management", "Users", "Employees", "Careers", "KYC Approvals", "Settings", "Support"].includes(page)) {
+          if (["Dashboard", "Projects", "Units", "Pricing Management", "Users", "Employees", "Careers", "KYC Approvals", "Settings", "Support", "Notifications"].includes(page)) {
             setActivePage(page);
             if (page === "Dashboard") navigate(ROUTES.ADMIN_DASHBOARD);
             if (page === "Projects") navigate(ROUTES.ADMIN_PROJECTS);
@@ -161,13 +165,18 @@ function AdminDashboard({ initialPage = "Dashboard" }) {
             if (page === "KYC Approvals") navigate(ROUTES.ADMIN_KYC_APPROVALS);
             if (page === "Settings") navigate(ROUTES.ADMIN_SETTINGS);
             if (page === "Support") navigate(ROUTES.ADMIN_SUPPORT);
+            if (page === "Notifications") navigate(ROUTES.ADMIN_NOTIFICATIONS);
           }
         }}
       />
 
       <main className="main-content">
 
-        <Header user={adminSession} />
+        <Header
+          user={adminSession}
+          notificationCount={staffNotifications.unreadCount}
+          onNotificationsClick={() => navigate(ROUTES.ADMIN_NOTIFICATIONS)}
+        />
 
         {activePage === "Users" ? (
           <UsersPage />
@@ -191,6 +200,8 @@ function AdminDashboard({ initialPage = "Dashboard" }) {
           <AdminSettingsPage />
         ) : activePage === "Support" ? (
           <InvestorSupportRequests staffRole="admin" />
+        ) : activePage === "Notifications" ? (
+          <StaffNotifications {...staffNotifications} onMarkAllRead={staffNotifications.markAllRead} />
         ) : activePage === "Projects" ? (
           <ProjectsPage
             mode="list"

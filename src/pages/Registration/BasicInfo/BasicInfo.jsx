@@ -10,6 +10,7 @@ import { Select } from "../../../components/forms/Select/Select.jsx";
 import TextArea from "../../../components/forms/TextArea/TextArea.jsx";
 import { useCountries } from "../../../hooks/useCountries.js";
 import { useStates } from "../../../hooks/useStates.js";
+import { getStates } from "../../../api/statesApi.js";
 import { checkUserEmail, createUser } from "../../../services/userService.js";
 import { ROUTES } from "../../../routes/routesPath.js";
 import { resetRegistration } from "../../../store/slices/RegistartionSlice.js";
@@ -106,10 +107,19 @@ export default function BasicInfo() {
       ? savedBasicInfo.mobileNumber.slice(savedCountryCode.length + 1)
       : savedBasicInfo[field.name] || field.value || ""
   })));
-  const [addressData, setAddressData] = useState(() => addressInfoConfig.map((field) => ({
-    ...field,
-    value: savedAddressInfo[field.name] || field.value || ""
-  })));
+  const [addressData, setAddressData] = useState(() => {
+    const initialData = addressInfoConfig.map((field) => ({
+      ...field,
+      value: savedAddressInfo[field.name] || field.value || ""
+    }));
+    const initialCountry = initialData.find((field) => field.name === "country")?.value;
+    const initialStates = getStates(initialCountry).map((state) => state.name);
+    return initialData.map((field) =>
+      field.name === "state" && field.value && !initialStates.includes(field.value)
+        ? { ...field, value: "" }
+        : field
+    );
+  });
   const country = addressData.find((field) => field.name === "country")?.value || "";
   const { states } = useStates(country);
 
@@ -119,18 +129,24 @@ export default function BasicInfo() {
     return () => window.clearTimeout(redirectTimer);
   }, [showSuccessPopup, navigate]);
 
-  useEffect(() => {
-    if (states.length === 0) return;
-    setAddressData((current) => current.map((field) =>
-      field.name === "state" && !states.includes(field.value)
-        ? { ...field, value: states[0] }
-        : field
-    ));
-  }, [states]);
-
   const handlePrev = () => navigate(ROUTES.HOME);
   const handleBasicChange = (event) => validateField(event, formData, setFormData);
-  const handleAddressChange = (event) => validateField(event, addressData, setAddressData);
+  const handleDateOfBirthChange = (event) => {
+    const { value } = event.target;
+    setFormData((current) => current.map((field) => field.name === "dateofbirth"
+      ? { ...field, value, error: "" }
+      : field));
+  };
+  const handleAddressChange = (event) => {
+    const isCountryChange = event.target.name === "country";
+    validateField(event, addressData, (updatedData) => setAddressData(
+      isCountryChange
+        ? updatedData.map((field) => field.name === "state"
+          ? { ...field, value: "", error: "" }
+          : field)
+        : updatedData
+    ));
+  };
 
   const focusRegistrationField = (fieldName) => {
     if (!fieldName) return;
@@ -221,6 +237,24 @@ export default function BasicInfo() {
         <div className={styles.sectionHeader}>Basic Details</div>
         <div className={styles.basicGrid}>
           {formData.map((item) => {
+            if (item.name === "dateofbirth") {
+              return (
+                <div className="input-group" key={item.name}>
+                  <label htmlFor={item.name}>
+                    {item.label}<span>*</span>
+                  </label>
+                  <input
+                    id={item.name}
+                    name={item.name}
+                    type="date"
+                    value={item.value}
+                    onChange={handleDateOfBirthChange}
+                    required
+                  />
+                  {item.error && <span className="error-text" role="alert">{item.error}</span>}
+                </div>
+              );
+            }
             if (item.name === "mobileNumber") {
               return (
                 <div className={styles.mobileField} key={item.name}>
@@ -262,6 +296,17 @@ export default function BasicInfo() {
             };
             if (item.type === "textarea") {
               return <TextArea key={item.name} {...updatedItem} onChange={handleAddressChange} />;
+            }
+            if (item.name === "state" && country && states.length === 0) {
+              return (
+                <Input
+                  key={item.name}
+                  {...updatedItem}
+                  type="text"
+                  placeholder="Enter state, province, or region"
+                  handleChange={handleAddressChange}
+                />
+              );
             }
             if (item.type === "select") {
               return <Select key={item.name} {...updatedItem} handleChange={handleAddressChange} />;

@@ -5,6 +5,20 @@ import { getUsers, updateUserApprovalStatus } from "../../../services/userServic
 import "./userDetails.css";
 
 const showValue = (value) => value || "Not provided";
+const formatBasicApproval = (approval, status) => {
+  if (!approval?.approvedAt) {
+    return ["approved", "accept"].includes(String(status || "").toLowerCase())
+      ? "Approved; approver details not recorded"
+      : "Not approved";
+  }
+  const approver = approval.role === "admin"
+    ? "admin"
+    : `${approval.name || "Manager"}${approval.employeeId != null ? ` (Employee ID: ${approval.employeeId})` : ""}`;
+  const approvedAt = new Date(approval.approvedAt);
+  const timestamp = Number.isNaN(approvedAt.getTime()) ? "" : approvedAt.toLocaleString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+  return `Approved by ${approver}${timestamp ? ` on ${timestamp}` : ""}`;
+};
+const formatKycApproval = (approval, status) => formatBasicApproval(approval, status);
 const getApprovalStatusClass = (status) => {
   const normalizedStatus = String(status || "").toLowerCase();
   if (normalizedStatus === "approved") return "is-approved";
@@ -18,7 +32,7 @@ function DetailSection({ title, fields }) {
       <h2>{title}</h2>
       <dl>
         {fields.map(([label, value]) => (
-          <div className="user-detail-field" key={label}>
+          <div className={`user-detail-field${label.endsWith("Approved By") ? " user-detail-field-approval" : ""}`} key={label}>
             <dt>{label}</dt>
             <dd>{showValue(value)}</dd>
           </div>
@@ -35,6 +49,7 @@ export default function UserDetails({ userId, basePath = ROUTES.ADMIN_USERS } = 
   const [error, setError] = useState("");
   const [statusError, setStatusError] = useState("");
   const [savingStatus, setSavingStatus] = useState(false);
+  const [pendingApprovalStatus, setPendingApprovalStatus] = useState("");
 
   const changeApprovalStatus = async (approvalStatus) => {
     setSavingStatus(true);
@@ -43,8 +58,10 @@ export default function UserDetails({ userId, basePath = ROUTES.ADMIN_USERS } = 
       const updatedUser = await updateUserApprovalStatus(userId, approvalStatus);
       setUser(updatedUser);
       navigate(basePath);
+      return true;
     } catch (updateError) {
       setStatusError(updateError.message || "Unable to update approval status");
+      return false;
     } finally {
       setSavingStatus(false);
     }
@@ -99,7 +116,8 @@ export default function UserDetails({ userId, basePath = ROUTES.ADMIN_USERS } = 
           ["Email", user.email],
           ["Mobile Number", user.mobileNumber],
           ["Date of Birth", user.dateOfBirth],
-          ["Gender", user.gender]
+          ["Gender", user.gender],
+          ["Basic Details Approved By", formatBasicApproval(user.basicDetailsApproval, user.approvalStatus)]
         ]}
       />
 
@@ -112,6 +130,16 @@ export default function UserDetails({ userId, basePath = ROUTES.ADMIN_USERS } = 
           ["State", user.state],
           ["Country", user.country],
           ["Pincode", user.pincode]
+        ]}
+      />
+
+      <DetailSection
+        title="KYC Details"
+        fields={[
+          ["PAN number", user.kycDetails?.pancardnumber],
+          ["Aadhaar number", user.kycDetails?.aadhaarnumber],
+          ["KYC status", user.kycStatus || "Not submitted"],
+          ["KYC Details Approved By", formatKycApproval(user.kycApproval, user.kycStatus)]
         ]}
       />
 
@@ -143,12 +171,11 @@ export default function UserDetails({ userId, basePath = ROUTES.ADMIN_USERS } = 
         )}
       </section>
       <div className="user-approval-actions">
-        {statusError && <p className="user-details-error" role="alert">{statusError}</p>}
         <button
           className="user-approval-button user-approval-button-reject"
           type="button"
           disabled={savingStatus}
-          onClick={() => changeApprovalStatus("Rejected")}
+          onClick={() => setPendingApprovalStatus("Rejected")}
         >
           Reject
         </button>
@@ -156,11 +183,49 @@ export default function UserDetails({ userId, basePath = ROUTES.ADMIN_USERS } = 
           className="user-approval-button user-approval-button-approve"
           type="button"
           disabled={savingStatus}
-          onClick={() => changeApprovalStatus("Approved")}
+          onClick={() => setPendingApprovalStatus("Approved")}
         >
           Approve
         </button>
       </div>
+      {pendingApprovalStatus && (
+        <div
+          className="user-approval-confirm-backdrop"
+          role="presentation"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget && !savingStatus) setPendingApprovalStatus("");
+          }}
+        >
+          <section
+            className="user-approval-confirm-dialog"
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="user-approval-confirm-title"
+            aria-describedby="user-approval-confirm-message"
+          >
+            <h2 id="user-approval-confirm-title">Confirm {pendingApprovalStatus}</h2>
+            <p id="user-approval-confirm-message">
+              Are you sure you want to {pendingApprovalStatus.toLowerCase()} {user.fullName || "this investor"}'s basic details?
+            </p>
+            {statusError && <p className="user-details-error" role="alert">{statusError}</p>}
+            <div className="user-approval-confirm-actions">
+              <button type="button" className="user-approval-confirm-cancel" disabled={savingStatus} onClick={() => setPendingApprovalStatus("")}>Cancel</button>
+              <button
+                type="button"
+                className={`user-approval-confirm-submit ${pendingApprovalStatus === "Rejected" ? "is-reject" : "is-approve"}`}
+                disabled={savingStatus}
+                onClick={async () => {
+                  const status = pendingApprovalStatus;
+                  const updated = await changeApprovalStatus(status);
+                  if (updated) setPendingApprovalStatus("");
+                }}
+              >
+                {savingStatus ? "Saving..." : `Yes, ${pendingApprovalStatus}`}
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
     </section>
   );
 }

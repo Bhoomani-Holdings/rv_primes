@@ -59,14 +59,14 @@
 
 .mobileField {
     display: flex;
-    align-items: flex-end;
+    align-items: flex-start;
     gap: 10px;
     min-width: 0;
 }
 
 .countryCodeLabel {
     display: flex;
-    flex: 0 0 205px;
+    flex: 0 0 clamp(130px, 35%, 205px);
     flex-direction: column;
     color: #222;
     font-size: 16px;

@@ -73,7 +73,8 @@ const kycApprovalSchema = new mongoose.Schema({
   userId: { type: Number, required: true, unique: true },
   email: { type: String, required: true, lowercase: true, trim: true },
   facePhotos: { type: mongoose.Schema.Types.Mixed, required: true },
-  status: { type: String, default: "Pending for Approval" }
+  status: { type: String, default: "Pending for Approval" },
+  approvalDetails: { type: mongoose.Schema.Types.Mixed, default: null }
 }, { collection: "kycapprovals", timestamps: true, versionKey: false });
 const KycApproval = mongoose.model("KycApproval", kycApprovalSchema);
 const investorSessionSchema = new mongoose.Schema({
@@ -132,6 +133,15 @@ const investorNotificationSchema = new mongoose.Schema({
 }, { collection: "investornotifications", timestamps: true, versionKey: false });
 investorNotificationSchema.index({ userId: 1, createdAt: -1 });
 const InvestorNotification = mongoose.model("InvestorNotification", investorNotificationSchema);
+const staffNotificationSchema = new mongoose.Schema({
+  recipientRole: { type: String, required: true, enum: ["admin", "manager", "employee"] },
+  recipientId: { type: String, required: true, trim: true },
+  title: { type: String, required: true, trim: true, maxlength: 160 },
+  message: { type: String, required: true, trim: true, maxlength: 1000 },
+  readAt: { type: Date, default: null }
+}, { collection: "staffnotifications", timestamps: true, versionKey: false });
+staffNotificationSchema.index({ recipientRole: 1, recipientId: 1, createdAt: -1 });
+const StaffNotification = mongoose.model("StaffNotification", staffNotificationSchema);
 const investorSupportTicketSchema = new mongoose.Schema({
   userId: { type: Number, required: true },
   subject: { type: String, required: true, trim: true, maxlength: 120 },
@@ -271,6 +281,7 @@ const ensureInvestorCollections = async () => {
     InvestorHolding,
     InvestorWithdrawal,
     InvestorNotification,
+    StaffNotification,
     InvestorSupportTicket
   ]) {
     try {
@@ -435,7 +446,44 @@ const parseProjectUpload = (req, res, next) => {
 
 app.get("/api/dashboard", async (req, res) => {
   try {
-    res.json(await readDashboard());
+    const [data, holdings, earnings] = await Promise.all([
+      readDashboard(),
+      InvestorHolding.find().select("investedAmount").lean(),
+      InvestorLedgerEntry.find({ type: "Earning" }).select("amount status").lean()
+    ]);
+    const projects = Array.isArray(data?.projects) ? data.projects : [];
+    const users = Array.isArray(data?.users) ? data.users : [];
+    const totalUnits = projects.reduce((total, project) => total + (Number(project.totalUnits) || 0), 0);
+    const totalSales = holdings.reduce((total, holding) => total + (Number(holding.investedAmount) || 0), 0);
+    const totalRevenue = earnings
+      .filter((entry) => entry.status === "Completed")
+      .reduce((total, entry) => total + (Number(entry.amount) || 0), 0);
+    const pendingRevenue = earnings
+      .filter((entry) => entry.status === "Pending")
+      .reduce((total, entry) => total + (Number(entry.amount) || 0), 0);
+    const kycApprovals = { pending: 0, approved: 0, rejected: 0 };
+    const requiredKycDocuments = ["uploadpancard", "uploadaadhaar", "uploadaddressproof", "selfiephoto"];
+    users.forEach((user) => {
+      if (!user.kycDetails || requiredKycDocuments.some((field) => !user.kycDetails[field])) return;
+      const status = String(user.kycStatus || "Pending for Approval").toLowerCase();
+      if (status === "approved" || status === "accept") kycApprovals.approved += 1;
+      else if (status === "rejected" || status === "reject") kycApprovals.rejected += 1;
+      else kycApprovals.pending += 1;
+    });
+
+    res.json({
+      ...data,
+      stats: {
+        ...(data?.stats || {}),
+        totalProjects: projects.length,
+        totalUnits,
+        totalInvestors: users.length,
+        totalSales,
+        totalRevenue
+      },
+      kycApprovals,
+      revenueOverview: { totalRevenue, pendingRevenue }
+    });
   } catch (error) {
     console.error(error);
 
@@ -989,6 +1037,38 @@ app.get("/api/staff/session", requireStaff("admin", "manager", "employee"), (req
   return res.json({ userRole: req.staff.userRole });
 });
 
+app.get("/api/staff/notifications", requireStaff("admin", "manager", "employee"), async (req, res) => {
+  try {
+    const recipientId = req.staff.userRole === "admin" ? req.staff.email : String(req.staff.id);
+    const notifications = await StaffNotification.find({
+      recipientRole: req.staff.userRole,
+      recipientId
+    }).sort({ createdAt: -1 }).lean();
+    return res.json({
+      unreadCount: notifications.filter((notification) => !notification.readAt).length,
+      notifications
+    });
+  } catch (error) {
+    console.error("Unable to load staff notifications:", error);
+    return res.status(500).json({ message: "Unable to load notifications." });
+  }
+});
+
+app.patch("/api/staff/notifications/read-all", requireStaff("admin", "manager", "employee"), async (req, res) => {
+  try {
+    const recipientId = req.staff.userRole === "admin" ? req.staff.email : String(req.staff.id);
+    const result = await StaffNotification.updateMany({
+      recipientRole: req.staff.userRole,
+      recipientId,
+      readAt: null
+    }, { $set: { readAt: new Date() } });
+    return res.json({ updated: result.modifiedCount });
+  } catch (error) {
+    console.error("Unable to mark staff notifications as read:", error);
+    return res.status(500).json({ message: "Unable to update notifications." });
+  }
+});
+
 app.get("/api/users/check-email", async (req, res) => {
   const email = typeof req.query.email === "string" ? req.query.email.trim().toLowerCase() : "";
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -1039,16 +1119,19 @@ app.get("/api/kyc/face-photo/:filename", (req, res) => {
 app.get("/api/users", async (req, res) => {
   try {
     const data = await readDashboard();
-    const approvals = await KycApproval.find().select("userId facePhotos").lean();
+    const approvals = await KycApproval.find().select("userId facePhotos approvalDetails").lean();
     const facePhotosByUserId = new Map(approvals.map((approval) => [approval.userId, approval.facePhotos]));
+    const approvalDetailsByUserId = new Map(approvals.map((approval) => [approval.userId, approval.approvalDetails]));
     const newestFirst = [...(data.users || [])]
       .sort((a, b) => Number(b.id) - Number(a.id))
       .map((user) => {
         const facePhotos = facePhotosByUserId.get(Number(user.id));
-        if (!facePhotos) return user;
+        const approvalDetails = approvalDetailsByUserId.get(Number(user.id));
+        if (!facePhotos && !approvalDetails) return user;
         return {
           ...user,
-          kycDetails: { ...(user.kycDetails || {}), facePhotos }
+          ...(user.kycApproval ? {} : approvalDetails ? { kycApproval: approvalDetails } : {}),
+          ...(facePhotos ? { kycDetails: { ...(user.kycDetails || {}), facePhotos } } : {})
         };
       });
     res.json(newestFirst);
@@ -1451,7 +1534,7 @@ app.post("/api/users", async (req, res) => {
   }
 });
 
-app.patch("/api/users/:id/status", async (req, res) => {
+app.patch("/api/users/:id/status", requireStaff("admin", "manager"), async (req, res) => {
   const allowedStatuses = ["Pending for Approval", "Rejected", "Approved"];
   if (!allowedStatuses.includes(req.body.approvalStatus)) {
     return res.status(400).json({ message: "Invalid user approval status" });
@@ -1463,6 +1546,16 @@ app.patch("/api/users/:id/status", async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not found" });
 
     user.approvalStatus = req.body.approvalStatus;
+    if (req.body.approvalStatus === "Approved") {
+      user.basicDetailsApproval = {
+        role: req.staff.userRole,
+        name: req.staff.userRole === "admin" ? "Admin" : req.staff.fullName,
+        employeeId: req.staff.userRole === "manager" ? req.staff.id : null,
+        approvedAt: new Date().toISOString()
+      };
+    } else {
+      user.basicDetailsApproval = null;
+    }
     await saveDashboard(data);
     return res.json(user);
   } catch (error) {
@@ -1545,6 +1638,7 @@ app.patch("/api/users/kyc", async (req, res) => {
 
     user.kycDetails = Object.fromEntries(requiredKycFields.map((field) => [field, kycDetails[field].trim()]));
     user.kycStatus = "Pending for Approval";
+    user.kycApproval = null;
     await KycApproval.findOneAndUpdate(
       { userId: user.id },
       {
@@ -1553,7 +1647,8 @@ app.patch("/api/users/kyc", async (req, res) => {
           url: kycDetails.facePhotos[key].url,
           capturedAt: kycDetails.facePhotos[key].capturedAt
         }])),
-        status: user.kycStatus
+        status: user.kycStatus,
+        approvalDetails: null
       },
       { upsert: true, new: true, runValidators: true, setDefaultsOnInsert: true }
     );
@@ -1565,7 +1660,7 @@ app.patch("/api/users/kyc", async (req, res) => {
   }
 });
 
-app.patch("/api/users/:id/kyc-status", async (req, res) => {
+app.patch("/api/users/:id/kyc-status", requireStaff("admin", "manager"), async (req, res) => {
   const legacyStatusMap = { Accept: "Approved", Reject: "Rejected" };
   const kycStatus = legacyStatusMap[req.body.kycStatus] || req.body.kycStatus;
   const allowedStatuses = ["Pending for Approval", "Approved", "Rejected"];
@@ -1588,8 +1683,20 @@ app.patch("/api/users/:id/kyc-status", async (req, res) => {
     }
 
     user.kycStatus = kycStatus;
+    if (kycStatus === "Approved") {
+      user.kycApproval = {
+        role: req.staff.userRole,
+        name: req.staff.userRole === "admin" ? "Admin" : req.staff.fullName,
+        employeeId: req.staff.userRole === "manager" ? req.staff.id : null,
+        approvedAt: new Date().toISOString()
+      };
+    } else {
+      user.kycApproval = null;
+    }
     await saveDashboard(data);
-    await KycApproval.updateOne({ userId: user.id }, { $set: { status: kycStatus } });
+    await KycApproval.updateOne({ userId: user.id }, {
+      $set: { status: kycStatus, approvalDetails: user.kycApproval }
+    });
     return res.json(user);
   } catch (error) {
     console.error(error);
@@ -1699,7 +1806,7 @@ app.patch("/api/projects/:id", async (req, res) => {
   }
 });
 
-app.post("/api/projects", parseProjectUpload, async (req, res) => {
+app.post("/api/projects", requireStaff("admin", "manager"), parseProjectUpload, async (req, res) => {
   let projectDetails;
   try {
     projectDetails = JSON.parse(req.body.project || "{}");
@@ -1807,6 +1914,31 @@ app.post("/api/projects", parseProjectUpload, async (req, res) => {
     data.stats.totalProjects += 1;
     data.stats.totalUnits += total;
     await saveDashboard(data);
+
+    try {
+      const title = "New project added";
+      const message = `${project.name} has been added.`;
+      const activeEmployees = await Employee.find({ status: "Active" }).select("id userRole").lean();
+      const adminEmail = String(process.env.ADMIN_EMAIL || "").trim().toLowerCase();
+      const staffRecipients = [
+        ...(adminEmail ? [{ recipientRole: "admin", recipientId: adminEmail }] : []),
+        ...activeEmployees
+          .filter((employee) => ["manager", "employee"].includes(employee.userRole))
+          .map((employee) => ({ recipientRole: employee.userRole, recipientId: String(employee.id) }))
+      ];
+      const staffNotifications = staffRecipients.map((recipient) => ({ ...recipient, title, message }));
+      const investorNotifications = (data.users || []).map((user) => ({
+        userId: Number(user.id),
+        title,
+        message
+      }));
+      await Promise.all([
+        staffNotifications.length ? StaffNotification.insertMany(staffNotifications) : Promise.resolve(),
+        investorNotifications.length ? InvestorNotification.insertMany(investorNotifications) : Promise.resolve()
+      ]);
+    } catch (notificationError) {
+      console.error("Project was added, but notifications could not be sent:", notificationError);
+    }
 
     res.status(201).json({
       project,

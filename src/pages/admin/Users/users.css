@@ -39,11 +39,42 @@
 }
 
 .user-approval-status {
+  position: relative;
   display: inline-block;
   padding: 5px 9px;
   border-radius: 20px;
   font-size: 12px;
   white-space: nowrap;
+}
+
+.user-approval-status.has-approver-tooltip {
+  cursor: help;
+}
+
+.users-approver-tooltip {
+  position: absolute;
+  z-index: 20;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  display: none;
+  width: max-content;
+  max-width: min(320px, 80vw);
+  padding: 8px 10px;
+  border: 1px solid #b8d0f7;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 4px 14px rgba(21, 90, 199, 0.16);
+  color: #155ac7;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: normal;
+  transform: translateX(-50%);
+}
+
+.user-approval-status.has-approver-tooltip:hover .users-approver-tooltip,
+.user-approval-status.has-approver-tooltip:focus .users-approver-tooltip {
+  display: block;
 }
 
 .user-approval-status.is-pending {

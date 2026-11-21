@@ -1,0 +1,54 @@
+.universal-search {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  width: min(430px, 38vw);
+  min-width: 210px;
+  height: 40px;
+  margin: 0;
+  transform: translateX(-50%);
+  border: 1px solid #d8e0eb;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #64748b;
+}
+
+.universal-search:focus-within {
+  border-color: #2563eb;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgb(37 99 235 / 12%);
+}
+
+.universal-search-icon { flex: 0 0 auto; margin-left: 12px; font-size: 17px; }
+.universal-search input {
+  width: 100%; min-width: 0; height: 100%; padding: 0 10px;
+  border: 0; outline: 0; background: transparent; color: #172b3a;
+  font: inherit; font-size: 13px;
+}
+.universal-search input::-webkit-search-cancel-button { display: none; }
+.universal-search-clear { display: grid; flex: 0 0 auto; place-items: center; margin-right: 8px; padding: 3px; border: 0; background: transparent; color: #64748b; cursor: pointer; font-size: 16px; }
+.universal-search-results {
+  position: absolute; z-index: 1000; top: calc(100% + 8px); left: 0; right: 0;
+  max-height: 380px; overflow-y: auto; padding: 6px;
+  border: 1px solid #dbe3ee; border-radius: 12px; background: #fff;
+  box-shadow: 0 12px 32px rgb(15 23 42 / 16%);
+}
+.universal-search-result { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 11px; border: 0; border-radius: 8px; background: transparent; color: #172b3a; text-align: left; cursor: pointer; }
+.universal-search-result:hover, .universal-search-result.is-active { background: #eff6ff; }
+.universal-search-result span { display: grid; gap: 3px; min-width: 0; }
+.universal-search-result strong { overflow: hidden; font-size: 13px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.universal-search-result small { overflow: hidden; color: #64748b; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.universal-search-result em { flex: 0 0 auto; color: #2563eb; font-size: 10px; font-style: normal; }
+.universal-search-empty { padding: 16px 12px; color: #64748b; font-size: 13px; }
+
+@media (max-width: 900px) {
+  .universal-search { width: min(330px, 34vw); min-width: 170px; }
+}
+@media (max-width: 600px) {
+  .universal-search { position: static; left: auto; width: auto; min-width: 0; height: 36px; flex: 1 1 130px; margin: 0 8px; transform: none; }
+  .universal-search input { padding: 0 6px; font-size: 12px; }
+  .universal-search input::placeholder { color: transparent; }
+  .universal-search-results { width: min(360px, calc(100vw - 24px)); left: auto; right: -74px; }
+}

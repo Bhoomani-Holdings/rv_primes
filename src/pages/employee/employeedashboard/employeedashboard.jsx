@@ -26,6 +26,9 @@ import UserDetailsPage from "../../admin/Users/UserDetails";
 import KycReviewPage from "../../admin/KycReview/KycReview";
 import KycInvestorDetailsPage from "../../admin/KycReview/KycInvestorDetails";
 import InvestorSupportRequests from "../../admin/Support/InvestorSupportRequests";
+import StaffNotifications from "../../../components/StaffNotifications/StaffNotifications";
+import UniversalSearch from "../../../components/UniversalSearch/UniversalSearch";
+import useStaffNotifications from "../../../hooks/useStaffNotifications";
 import "./employeedashboard.css";
 
 const navigationItems = [
@@ -73,6 +76,7 @@ export default function EmployeeDashboard() {
   const [dashboardError, setDashboardError] = useState("");
   const [reloadKey, setReloadKey] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const staffNotifications = useStaffNotifications(employee);
 
   const employeePath = location.pathname.replace(/^\/employee\/dashboard\/?/, "").split("/").filter(Boolean);
   const section = employeePath[0] || "dashboard";
@@ -81,9 +85,6 @@ export default function EmployeeDashboard() {
   const isProfile = section === "profile";
   const isDashboardDataPage = ["users", "kyc-approvals", "profile", "notifications", "support", "tasks", "projects", "reports"].includes(section);
   const activeSection = section === "customers" ? "users" : section;
-  const pageTitle = section === "dashboard"
-    ? "Employee Dashboard"
-    : navigationItems.find((item) => item.section === activeSection)?.label || "Employee Dashboard";
 
   useEffect(() => {
     try {
@@ -216,6 +217,11 @@ export default function EmployeeDashboard() {
             >
               {item.icon}
               <span>{item.label}</span>
+              {item.section === "notifications" && staffNotifications.unreadCount > 0 && (
+                <span className="employee-dashboard-notification-count">
+                  {staffNotifications.unreadCount > 99 ? "99+" : staffNotifications.unreadCount}
+                </span>
+              )}
             </button>
           ))}
           <button className="employee-dashboard-logout" type="button" onClick={handleLogout}>
@@ -243,11 +249,22 @@ export default function EmployeeDashboard() {
           >
             <FiMenu aria-hidden="true" />
           </button>
-          <h1>{pageTitle}</h1>
-          <button className="employee-dashboard-user" type="button" onClick={() => goTo("profile")}>
-            <span>Welcome, {employee.fullName || "Employee"}</span>
-            <strong>{getInitials(employee.fullName)}</strong>
-          </button>
+          <UniversalSearch role="employee" />
+          <div className="employee-dashboard-header-actions">
+            <button className="employee-dashboard-user" type="button" onClick={() => goTo("profile")}>
+              <span>Welcome, {employee.fullName || "Employee"}</span>
+              <strong>{getInitials(employee.fullName)}</strong>
+            </button>
+            <button
+              className="employee-dashboard-notification-bell"
+              type="button"
+              onClick={() => goTo("notifications")}
+              aria-label={staffNotifications.unreadCount > 0 ? `Notifications, ${staffNotifications.unreadCount} unread` : "Notifications"}
+            >
+              <FiBell aria-hidden="true" />
+              {staffNotifications.unreadCount > 0 && <span>{staffNotifications.unreadCount > 99 ? "99+" : staffNotifications.unreadCount}</span>}
+            </button>
+          </div>
         </header>
         <main className={`employee-dashboard-content${isDashboardDataPage ? " employee-dashboard-content--section" : ""}`}>
           {section === "dashboard" ? dashboardContent :
@@ -289,7 +306,7 @@ export default function EmployeeDashboard() {
               ? <div className="employee-dashboard-state" role="status">Loading report data…</div>
               : <ReportsOverview data={dashboardData} /> :
           section === "tasks" ? <EmptySection title="Tasks" message="Task information is not available in the connected backend." /> :
-          section === "notifications" ? <EmptySection title="Notifications" message="There are no employee notifications to display." /> :
+          section === "notifications" ? <StaffNotifications {...staffNotifications} onMarkAllRead={staffNotifications.markAllRead} /> :
           null}
         </main>
       </div>

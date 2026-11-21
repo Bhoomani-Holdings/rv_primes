@@ -16,13 +16,28 @@ const documentFields = [
 const hasSubmittedKycDocuments = (details) =>
   Boolean(details) && documentFields.every(([field]) => Boolean(details[field]));
 
+const formatBasicApproval = (approval, status) => {
+  if (!approval?.approvedAt) {
+    return ["approved", "accept"].includes(String(status || "").toLowerCase())
+      ? "Approved; approver details not recorded"
+      : "Not approved";
+  }
+  const approver = approval.role === "admin"
+    ? "admin"
+    : `${approval.name || "Manager"}${approval.employeeId != null ? ` (Employee ID: ${approval.employeeId})` : ""}`;
+  const approvedAt = new Date(approval.approvedAt);
+  const timestamp = Number.isNaN(approvedAt.getTime()) ? "" : approvedAt.toLocaleString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+  return `Approved by ${approver}${timestamp ? ` on ${timestamp}` : ""}`;
+};
+const formatKycApproval = (approval, status) => formatBasicApproval(approval, status);
+
 function DetailsSection({ title, fields }) {
   return (
     <section className="kyc-investor-section">
       <h2>{title}</h2>
       <dl>
         {fields.map(([label, value]) => (
-          <div className="kyc-investor-field" key={label}>
+          <div className={`kyc-investor-field${label.endsWith("Approved By") ? " kyc-investor-field-approval" : ""}`} key={label}>
             <dt>{label}</dt>
             <dd>{value || "Not provided"}</dd>
           </div>
@@ -125,7 +140,8 @@ export default function KycInvestorDetails({ userId, basePath = ROUTES.ADMIN_KYC
           ["Email", user.email],
           ["Mobile number", user.mobileNumber],
           ["Date of birth", user.dateOfBirth],
-          ["Gender", user.gender]
+          ["Gender", user.gender],
+          ["Basic Details Approved By", formatBasicApproval(user.basicDetailsApproval, user.approvalStatus)]
         ]}
       />
 
@@ -134,7 +150,8 @@ export default function KycInvestorDetails({ userId, basePath = ROUTES.ADMIN_KYC
         fields={[
           ["PAN number", kycDetails.pancardnumber],
           ["Aadhaar number", kycDetails.aadhaarnumber],
-          ["KYC status", status]
+          ["KYC status", status],
+          ["KYC Details Approved By", formatKycApproval(user.kycApproval, user.kycStatus)]
         ]}
       />
 

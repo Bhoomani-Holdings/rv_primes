@@ -34,9 +34,13 @@ export const createUser = async (basicInfo, addressInfo, credentials) => {
 };
 
 export const updateUserApprovalStatus = async (userId, approvalStatus) => {
+  const session = JSON.parse(sessionStorage.getItem("adminSession") || sessionStorage.getItem("employeeSession") || "null");
   const response = await fetch(`${API_URL}/users/${userId}/status`, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...(session?.accessToken ? { Authorization: `Bearer ${session.accessToken}` } : {})
+    },
     body: JSON.stringify({ approvalStatus })
   });
   const result = await response.json();
@@ -78,9 +82,13 @@ export const submitUserKyc = async (email, kycDetails) => {
 };
 
 export const updateUserKycStatus = async (userId, kycStatus) => {
+  const session = JSON.parse(sessionStorage.getItem("adminSession") || sessionStorage.getItem("employeeSession") || "null");
   const response = await fetch(`${API_URL}/users/${userId}/kyc-status`, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...(session?.accessToken ? { Authorization: `Bearer ${session.accessToken}` } : {})
+    },
     body: JSON.stringify({ kycStatus })
   });
   const result = await response.json();

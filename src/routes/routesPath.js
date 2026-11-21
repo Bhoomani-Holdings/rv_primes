@@ -56,6 +56,7 @@ export const ROUTES = {
     ADMIN_KYC_APPROVALS: "/admin/kyc-approvals",
     ADMIN_SETTINGS: "/admin/settings",
     ADMIN_SUPPORT: "/admin/support",
+    ADMIN_NOTIFICATIONS: "/admin/notifications",
 
     // Employee
     EMPLOYEE_LOGIN: "/employee/login",
