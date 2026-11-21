@@ -27,7 +27,7 @@
 }
 
 .kyc-review-card table {
-  min-width: 1150px;
+  min-width: 1000px;
 }
 
 .kyc-review-card td {
@@ -52,8 +52,7 @@
   min-width: 190px;
 }
 
-.kyc-review-card td:nth-child(3),
-.kyc-review-card td:nth-child(4) {
+.kyc-review-card td:nth-child(3) {
   min-width: 145px;
 }
 
@@ -85,6 +84,7 @@
 }
 
 .kyc-status-label {
+  position: relative;
   display: inline-block;
   padding: 5px 9px;
   border-radius: 20px;
@@ -110,6 +110,69 @@
 .kyc-status-label.is-neutral {
   background: #eef2f6;
   color: #647184;
+}
+
+.kyc-basic-approval-status {
+  position: relative;
+  display: inline-block;
+  padding: 5px 9px;
+  border-radius: 20px;
+  background: #eaf2ff;
+  color: #155ac7;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.kyc-basic-approval-status.is-approved {
+  background: #e8f7ee;
+  color: #16834a;
+}
+
+.kyc-basic-approval-status.has-approver-tooltip {
+  cursor: help;
+}
+
+.kyc-approver-tooltip {
+  position: absolute;
+  z-index: 20;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  display: none;
+  width: max-content;
+  max-width: min(320px, 80vw);
+  padding: 8px 10px;
+  border: 1px solid #b8d0f7;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 4px 14px rgba(21, 90, 199, 0.16);
+  color: #155ac7;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: normal;
+  transform: translateX(-50%);
+}
+
+.kyc-basic-approval-status.has-approver-tooltip:hover .kyc-approver-tooltip,
+.kyc-basic-approval-status.has-approver-tooltip:focus .kyc-approver-tooltip,
+.kyc-status-label.has-approver-tooltip:hover .kyc-approver-tooltip,
+.kyc-status-label.has-approver-tooltip:focus .kyc-approver-tooltip {
+  display: block;
+}
+
+.kyc-status-label.has-approver-tooltip {
+  cursor: help;
+}
+
+.kyc-basic-approval-status.is-rejected {
+  background: #fdecec;
+  color: #c93636;
+}
+
+.kyc-basic-approval-status.is-pending {
+  background: #fff5e6;
+  color: #9a6200;
 }
 
 .kyc-review-error {

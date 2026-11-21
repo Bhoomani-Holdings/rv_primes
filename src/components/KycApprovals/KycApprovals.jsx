@@ -1,20 +1,17 @@
 import "./KycApprovals.css";
 
-function KycApprovals({ data, onReview }) {
+function KycApprovals({ data = {}, onReview }) {
 
-  const total =
-    data.pending +
-    data.approved +
-    data.rejected;
+  const pending = Number(data.pending) || 0;
+  const approved = Number(data.approved) || 0;
+  const rejected = Number(data.rejected) || 0;
+  const total = pending + approved + rejected;
 
-  const pendingPercent =
-    (data.pending / total) * 100;
+  const pendingPercent = total ? (pending / total) * 100 : 0;
 
-  const approvedPercent =
-    (data.approved / total) * 100;
+  const approvedPercent = total ? (approved / total) * 100 : 0;
 
-  const rejectedPercent =
-    (data.rejected / total) * 100;
+  const rejectedPercent = total ? (rejected / total) * 100 : 0;
 
   return (
     <div className="dashboard-card kyc-card">
@@ -24,11 +21,11 @@ function KycApprovals({ data, onReview }) {
       <div
         className="donut"
         style={{
-          background: `conic-gradient(
+          background: total ? `conic-gradient(
             #2878e8 0 ${pendingPercent}%,
             #3db88a ${pendingPercent}% ${pendingPercent + approvedPercent}%,
             #e83232 ${pendingPercent + approvedPercent}% 100%
-          )`
+          )` : "conic-gradient(#eef2f6 0 100%)"
         }}
       >
         <div className="donut-center">
@@ -41,19 +38,19 @@ function KycApprovals({ data, onReview }) {
         <div>
           <span className="legend-dot pending"></span>
           Pending
-          <strong>{data.pending}</strong>
+          <strong>{pending}</strong>
         </div>
 
         <div>
           <span className="legend-dot approved"></span>
           Approved
-          <strong>{data.approved}</strong>
+          <strong>{approved}</strong>
         </div>
 
         <div>
           <span className="legend-dot rejected"></span>
           Rejected
-          <strong>{data.rejected}</strong>
+          <strong>{rejected}</strong>
         </div>
 
       </div>

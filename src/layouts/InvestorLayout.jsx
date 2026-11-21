@@ -42,9 +42,13 @@ export default function InvestorLayout() {
     const expireSession = () => navigate(ROUTES.LOGIN, { replace: true });
 
     if (investor?.accessToken) refreshNotificationCount();
+    const interval = window.setInterval(() => {
+      if (investor?.accessToken) refreshNotificationCount();
+    }, 20000);
     window.addEventListener('investor-notifications-updated', refreshNotificationCount);
     window.addEventListener('investor-session-expired', expireSession);
     return () => {
+      window.clearInterval(interval);
       window.removeEventListener('investor-notifications-updated', refreshNotificationCount);
       window.removeEventListener('investor-session-expired', expireSession);
     };
@@ -126,9 +130,11 @@ export default function InvestorLayout() {
     }
   };
 
-  const menuItems = investorMenuItems.map((item) => item.name === "Notifications"
-    ? { ...item, notification: notificationCount }
-    : item);
+  const menuItems = kycApproved
+    ? investorMenuItems.map((item) => item.name === "Notifications"
+      ? { ...item, notification: notificationCount }
+      : item)
+    : [];
 
   return (
     <div className="investor-layout">
@@ -144,9 +150,11 @@ export default function InvestorLayout() {
       <div className="investor-main">
         <TopHeader
           user={investor}
+          role="investor"
           notificationCount={notificationCount}
           mobileMenuOpen={isMobileMenuOpen}
           onMenuClick={() => setIsMobileMenuOpen((isOpen) => !isOpen)}
+          onNotificationsClick={() => navigate(ROUTES.INVESTOR_NOTIFICATIONS)}
         />
         <Outlet />
       </div>

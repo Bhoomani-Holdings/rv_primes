@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import addressConfig from "./addressinfoconfigurations.json";
 import { Input } from "../../../components/forms/Input/Input.jsx";
@@ -7,6 +7,7 @@ import TextArea from "../../../components/forms/TextArea/TextArea.jsx";
 import { validateForm } from "../../Registration/formvalidation.js";
 import { useCountries } from "../../../hooks/useCountries.js";
 import { useStates } from "../../../hooks/useStates.js";
+import { getStates } from "../../../api/statesApi.js";
 import { validateField } from "./addressInfoValidateField.js";
 import { useSelector, useDispatch } from "react-redux";
 import { saveAddressInfo } from '../../../store/slices/RegistartionSlice.js'
@@ -28,30 +29,33 @@ function AddressForm() {
 
 
   const [formData, setFormData] = useState(() => {
-    return addressConfig.map(field => ({
+    const initialData = addressConfig.map(field => ({
       ...field,
       value: savedData[field.name] || field.value || ""
-    }))
-  })
+    }));
+    const initialCountry = initialData.find((field) => field.name === "country")?.value;
+    const initialStates = getStates(initialCountry).map((state) => state.name);
+    return initialData.map((field) =>
+      field.name === "state" && field.value && !initialStates.includes(field.value)
+        ? { ...field, value: "" }
+        : field
+    );
+  });
   const country =
     formData.find((item) => item.name === "country")?.value;
   const countries = useCountries();
 
   const { states } = useStates(country);
-  useEffect(() => {
-    if (states.length > 0) {
-      setFormData((prev) =>
-        prev.map((field) =>
-          field.name === "state"
-            ? { ...field, value: states[0] }
-            : field
-        )
-      );
-    }
-  }, [states]);
 
   const handleChange = (event) => {
-    validateField(event, formData, setFormData);
+    const isCountryChange = event.target.name === "country";
+    validateField(event, formData, (updatedData) => setFormData(
+      isCountryChange
+        ? updatedData.map((field) => field.name === "state"
+          ? { ...field, value: "", error: "" }
+          : field)
+        : updatedData
+    ));
   };
 
   const handleNext = async () => {
@@ -105,6 +109,18 @@ function AddressForm() {
                   : item.name === "state"
                     ? states
                     : item.options || [];
+            }
+
+            if (item.name === "state" && country && states.length === 0) {
+              return (
+                <Input
+                  key={item.name}
+                  {...updatedItem}
+                  type="text"
+                  placeholder="Enter state, province, or region"
+                  handleChange={handleChange}
+                />
+              );
             }
 
             switch (item.type) {

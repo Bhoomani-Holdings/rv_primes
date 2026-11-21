@@ -138,8 +138,15 @@ export const createProject = async ({ project, photos, videos }) => {
   photos.forEach((photo) => formData.append("photos", photo));
   videos.forEach((video) => formData.append("videos", video));
 
+  let staffSession = null;
+  try {
+    staffSession = JSON.parse(sessionStorage.getItem("adminSession") || sessionStorage.getItem("employeeSession") || "null");
+  } catch {
+    staffSession = null;
+  }
   const response = await fetch(`${API_URL}/projects`, {
     method: "POST",
+    headers: staffSession?.accessToken ? { Authorization: `Bearer ${staffSession.accessToken}` } : {},
     body: formData
   });
 
@@ -147,6 +154,8 @@ export const createProject = async ({ project, photos, videos }) => {
   if (!response.ok) {
     throw new Error(result.message || "Failed to create project");
   }
+
+  window.dispatchEvent(new Event("staff-notifications-updated"));
 
   return result;
 };

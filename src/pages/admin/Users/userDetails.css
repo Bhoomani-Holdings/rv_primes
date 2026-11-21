@@ -110,6 +110,23 @@
   overflow-wrap: anywhere;
 }
 
+.user-detail-field-approval {
+  grid-column: 1 / -1;
+  padding-top: 12px;
+  border-top: 1px solid #e1e5eb;
+}
+
+.user-detail-field-approval dt {
+  color: #344054;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.user-detail-field-approval dd {
+  font-size: 17px;
+  font-weight: 600;
+}
+
 .user-details-content > .user-detail-section > a {
   color: #155ac7;
   font-size: 14px;
@@ -155,6 +172,75 @@
 
 .user-details-error {
   color: #b42318;
+}
+
+.user-approval-confirm-backdrop {
+  position: fixed;
+  z-index: 5000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(11, 21, 38, 0.55);
+}
+
+.user-approval-confirm-dialog {
+  width: min(100%, 440px);
+  padding: 24px;
+  border: 1px solid #e1e5eb;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 18px 50px rgba(11, 21, 38, 0.22);
+}
+
+.user-approval-confirm-dialog h2 {
+  margin: 0 0 10px;
+  color: #17212e;
+  font-size: 20px;
+}
+
+.user-approval-confirm-dialog p {
+  margin: 0;
+  color: #536174;
+  line-height: 1.5;
+}
+
+.user-approval-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.user-approval-confirm-actions button {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.user-approval-confirm-actions button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.user-approval-confirm-cancel {
+  border-color: #cbd3dd !important;
+  background: #fff;
+  color: #344054;
+}
+
+.user-approval-confirm-submit.is-approve {
+  background: #16834a;
+  color: #fff;
+}
+
+.user-approval-confirm-submit.is-reject {
+  background: #c93636;
+  color: #fff;
 }
 
 @media (max-width: 700px) {

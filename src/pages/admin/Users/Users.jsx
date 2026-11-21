@@ -11,6 +11,24 @@ const getApprovalStatusClass = (status) => {
   return "is-pending";
 };
 
+const formatApprovalTooltip = (approval, label) => {
+  if (!approval?.approvedAt) return `${label}: approver details unavailable`;
+  const approver = approval.role === "admin"
+    ? "admin"
+    : `${approval.name || "manager"}${approval.employeeId != null ? ` (Employee ID: ${approval.employeeId})` : ""}`;
+  const date = new Date(approval.approvedAt);
+  const timestamp = Number.isNaN(date.getTime())
+    ? ""
+    : date.toLocaleString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+  return `${label} by ${approver}${timestamp ? ` on ${timestamp}` : ""}`;
+};
+
+const normalizeKycStatus = (status) => {
+  if (status === "Accept") return "Approved";
+  if (status === "Reject") return "Rejected";
+  return status || "Not submitted";
+};
+
 export default function Users({ basePath = ROUTES.ADMIN_USERS } = {}) {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
@@ -64,6 +82,7 @@ export default function Users({ basePath = ROUTES.ADMIN_USERS } = {}) {
                   <th>Date of Birth</th>
                   <th>Gender</th>
                   <th>Approval Status</th>
+                  <th>KYC Approvals</th>
                 </tr>
               </thead>
               <tbody>
@@ -84,9 +103,37 @@ export default function Users({ basePath = ROUTES.ADMIN_USERS } = {}) {
                     <td>{user.dateOfBirth}</td>
                     <td>{user.gender}</td>
                     <td>
-                      <span className={`user-approval-status ${getApprovalStatusClass(user.approvalStatus)}`}>
-                        {user.approvalStatus || "Pending for Approval"}
-                      </span>
+                      {(() => {
+                        const isApproved = user.approvalStatus === "Approved";
+                        const tooltip = isApproved ? formatApprovalTooltip(user.basicDetailsApproval, "Basic details approved") : "";
+                        return (
+                          <span
+                            className={`user-approval-status ${getApprovalStatusClass(user.approvalStatus)}${isApproved ? " has-approver-tooltip" : ""}`}
+                            tabIndex={isApproved ? 0 : undefined}
+                            aria-label={tooltip || undefined}
+                          >
+                            {user.approvalStatus || "Pending for Approval"}
+                            {isApproved && <span className="users-approver-tooltip" role="tooltip">{tooltip}</span>}
+                          </span>
+                        );
+                      })()}
+                    </td>
+                    <td>
+                      {(() => {
+                        const kycStatus = normalizeKycStatus(user.kycStatus);
+                        const isApproved = kycStatus === "Approved";
+                        const tooltip = isApproved ? formatApprovalTooltip(user.kycApproval, "KYC approved") : undefined;
+                        return (
+                          <span
+                            className={`user-approval-status ${getApprovalStatusClass(kycStatus)}${isApproved ? " has-approver-tooltip" : ""}`}
+                            tabIndex={isApproved ? 0 : undefined}
+                            aria-label={tooltip || undefined}
+                          >
+                            {kycStatus}
+                            {isApproved && <span className="users-approver-tooltip" role="tooltip">{tooltip}</span>}
+                          </span>
+                        );
+                      })()}
                     </td>
                   </tr>
                 ))}

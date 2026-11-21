@@ -1,14 +1,18 @@
 .header {
+  position: relative;
   height: 76px;
   background: #ffffff;
   border-bottom: 1px solid #e5e8ed;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   padding: 0 24px;
 }
 
 .header-right {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
   gap: 18px;
@@ -51,19 +55,35 @@
   position: relative;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border: 0;
+  background: transparent;
   color: #172b3a;
+  cursor: pointer;
   font-size: 20px;
+}
+
+.bell:disabled {
+  cursor: default;
 }
 
 .bell-count {
   position: absolute;
-  top: 0;
-  right: -2px;
-  width: 7px;
-  height: 7px;
-  border: 1.5px solid #fff;
+  top: -5px;
+  right: -8px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border: 1px solid #fff;
   border-radius: 50%;
   background: #ef4444;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
 }
 
 .mobile-title {
@@ -77,9 +97,13 @@
     padding: 0 14px;
   }
 
+  .header .universal-search { position: static; transform: none; width: auto; flex: 1 1 130px; margin: 0 8px; }
+
   .header-right {
     gap: 12px;
   }
+
+  .header-brand { flex: 0 0 auto; }
 
   .mobile-title {
     display: block;

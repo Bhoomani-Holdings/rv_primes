@@ -285,6 +285,11 @@ function AppRoutes() {
           path="support"
           element={<AdminDashboard initialPage="Support" />}
         />
+
+        <Route
+          path="notifications"
+          element={<AdminDashboard initialPage="Notifications" />}
+        />
       </Route>
 
     </Routes>

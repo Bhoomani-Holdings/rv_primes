@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { FiBell, FiMenu, FiX } from "react-icons/fi";
+import UniversalSearch from "../UniversalSearch/UniversalSearch";
 import "./TopHeader.css";
 
-function TopHeader({ user, notificationCount = 0, mobileMenuOpen = false, onMenuClick }) {
+function TopHeader({ user, role = "admin", notificationCount = 0, mobileMenuOpen = false, onMenuClick, onNotificationsClick }) {
   const [profile, setProfile] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem("adminProfile") || "{}");
@@ -45,6 +46,8 @@ function TopHeader({ user, notificationCount = 0, mobileMenuOpen = false, onMenu
         <div className="mobile-title">RV Prime Assets</div>
       </div>
 
+      <UniversalSearch role={role} />
+
       <div className="header-right">
         <span className="welcome">
           Welcome, {name}
@@ -54,14 +57,16 @@ function TopHeader({ user, notificationCount = 0, mobileMenuOpen = false, onMenu
           {profilePicture ? <img src={`http://localhost:5000${profilePicture}`} alt={`${name}'s profile`} /> : initials}
         </div>
 
-        <span
+        <button
           className="bell"
-          role="img"
+          type="button"
+          onClick={onNotificationsClick}
+          disabled={!onNotificationsClick}
           aria-label={notificationCount > 0 ? `Notifications, ${notificationCount} unread` : "Notifications"}
         >
           <FiBell aria-hidden="true" />
-          {notificationCount > 0 && <span className="bell-count" aria-hidden="true" />}
-        </span>
+          {notificationCount > 0 && <span className="bell-count" aria-hidden="true">{notificationCount > 99 ? "99+" : notificationCount}</span>}
+        </button>
       </div>
     </header>
   );

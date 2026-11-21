@@ -18,7 +18,8 @@ function Sidebar({
   menuItems = adminItems,
   brand = "RV PRIME ASSETS",
   isMobileOpen = false,
-  onClose
+  onClose,
+  notificationCount
 }) {
   const isDefaultBrand = brand === "RV PRIME ASSETS";
   return (
@@ -51,15 +52,20 @@ function Sidebar({
           )}
         </div>
         <nav>
-          {menuItems.map((item) => (
-            <button key={item.name} type="button" className={`menu-item ${activePage === item.name ? "active" : ""}`} onClick={() => onNavigate(item.name)}>
-              <span className="menu-icon">
-                {item.name === "Notifications" ? <FiBell aria-hidden="true" /> : item.icon}
-              </span>
-              <span>{item.name}</span>
-              {Number(item.notification) > 0 && <span className="notification-count">{item.notification}</span>}
-            </button>
-          ))}
+          {menuItems.map((item) => {
+            const count = item.name === "Notifications" && notificationCount != null
+              ? notificationCount
+              : item.notification;
+            return (
+              <button key={item.name} type="button" className={`menu-item ${activePage === item.name ? "active" : ""}`} onClick={() => onNavigate(item.name)}>
+                <span className="menu-icon">
+                  {item.name === "Notifications" ? <FiBell aria-hidden="true" /> : item.icon}
+                </span>
+                <span>{item.name}</span>
+                {Number(count) > 0 && <span className="notification-count">{count}</span>}
+              </button>
+            );
+          })}
           <button type="button" className="menu-item logout" onClick={onLogout}>
             <span className="menu-icon">↪</span><span>Logout</span>
           </button>

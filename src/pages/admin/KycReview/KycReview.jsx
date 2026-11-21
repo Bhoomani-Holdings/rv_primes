@@ -14,6 +14,30 @@ const documentLinks = [
 const hasSubmittedKycDocuments = (details) =>
   Boolean(details) && documentLinks.every(([field]) => Boolean(details[field]));
 
+const formatBasicApprovalTooltip = (approval) => {
+  if (!approval?.approvedAt) return "Basic details approver information unavailable";
+  const approver = approval.role === "admin"
+    ? "admin"
+    : `${approval.name || "manager"}${approval.employeeId != null ? ` (Employee ID: ${approval.employeeId})` : ""}`;
+  const date = new Date(approval.approvedAt);
+  const timestamp = Number.isNaN(date.getTime())
+    ? ""
+    : date.toLocaleString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+  return `Basic details approved by ${approver}${timestamp ? ` on ${timestamp}` : ""}`;
+};
+
+const formatKycApprovalTooltip = (approval) => {
+  if (!approval?.approvedAt) return "KYC approver information unavailable";
+  const approver = approval.role === "admin"
+    ? "admin"
+    : `${approval.name || "manager"}${approval.employeeId != null ? ` (Employee ID: ${approval.employeeId})` : ""}`;
+  const date = new Date(approval.approvedAt);
+  const timestamp = Number.isNaN(date.getTime())
+    ? ""
+    : date.toLocaleString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+  return `KYC approved by ${approver}${timestamp ? ` on ${timestamp}` : ""}`;
+};
+
 export default function KycReview({ basePath = ROUTES.ADMIN_KYC_APPROVALS } = {}) {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
@@ -79,10 +103,9 @@ export default function KycReview({ basePath = ROUTES.ADMIN_KYC_APPROVALS } = {}
                   <th>Investor ID</th>
                   <th>Name</th>
                   <th>Email</th>
-                  <th>PAN Number</th>
-                  <th>Aadhaar Number</th>
                   <th>KYC Documents</th>
                   <th>KYC Status</th>
+                  <th>Approval Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -102,14 +125,39 @@ export default function KycReview({ basePath = ROUTES.ADMIN_KYC_APPROVALS } = {}
                       <td title="Double-click to view investor details">{user.investorId || "-"}</td>
                       <td><strong>{user.fullName || "-"}</strong></td>
                       <td>{user.email || "-"}</td>
-                      <td>{details?.pancardnumber || "-"}</td>
-                      <td>{details?.aadhaarnumber || "-"}</td>
                       <td>
                         {documentsSubmitted
                           ? <span className="kyc-documents-submitted">Submitted</span>
                           : <span className="kyc-review-secondary">Not submitted</span>}
                       </td>
-                      <td><span className={`kyc-status-label ${getKycStatusClass(user.kycStatus, documentsSubmitted)}`}>{getKycStatusLabel(user.kycStatus, documentsSubmitted)}</span></td>
+                      <td>
+                        <span
+                          className={`kyc-status-label ${getKycStatusClass(user.kycStatus, documentsSubmitted)}${getKycStatusLabel(user.kycStatus, documentsSubmitted) === "Approved" ? " has-approver-tooltip" : ""}`}
+                          tabIndex={getKycStatusLabel(user.kycStatus, documentsSubmitted) === "Approved" ? 0 : undefined}
+                          aria-label={getKycStatusLabel(user.kycStatus, documentsSubmitted) === "Approved" ? formatKycApprovalTooltip(user.kycApproval) : undefined}
+                        >
+                          {getKycStatusLabel(user.kycStatus, documentsSubmitted)}
+                          {getKycStatusLabel(user.kycStatus, documentsSubmitted) === "Approved" && (
+                            <span className="kyc-approver-tooltip" role="tooltip">
+                              {formatKycApprovalTooltip(user.kycApproval)}
+                            </span>
+                          )}
+                        </span>
+                      </td>
+                      <td>
+                        <span
+                          className={`kyc-basic-approval-status ${user.approvalStatus === "Approved" ? "is-approved" : user.approvalStatus === "Rejected" ? "is-rejected" : "is-pending"}${user.approvalStatus === "Approved" ? " has-approver-tooltip" : ""}`}
+                          tabIndex={user.approvalStatus === "Approved" ? 0 : undefined}
+                          aria-label={user.approvalStatus === "Approved" ? formatBasicApprovalTooltip(user.basicDetailsApproval) : undefined}
+                        >
+                          {user.approvalStatus || "Pending for Approval"}
+                          {user.approvalStatus === "Approved" && (
+                            <span className="kyc-approver-tooltip" role="tooltip">
+                              {formatBasicApprovalTooltip(user.basicDetailsApproval)}
+                            </span>
+                          )}
+                        </span>
+                      </td>
                     </tr>
                   );
                 })}

@@ -94,6 +94,23 @@
   overflow-wrap: anywhere;
 }
 
+.kyc-investor-field-approval {
+  grid-column: 1 / -1;
+  padding-top: 12px;
+  border-top: 1px solid #e1e5eb;
+}
+
+.kyc-investor-field-approval dt {
+  color: #344054;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.kyc-investor-field-approval dd {
+  font-size: 17px;
+  font-weight: 600;
+}
+
 .kyc-investor-section > a,
 .kyc-investor-documents a {
   color: #155ac7;

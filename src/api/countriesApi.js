@@ -1,21 +1,18 @@
-// api/CountryApi.js
+import { allCountries } from "country-region-data";
 
-import axios from "axios";
+const countryData = allCountries.map(([countryName, , regions = []]) => ({
+  countryName,
+  regions: regions.map(([name, shortCode]) => ({ name, shortCode }))
+}));
 
-export const getCountries = async () => {
+const countriesByName = new Map(
+  countryData.map((country) => [country.countryName.trim().toLocaleLowerCase(), country])
+);
 
-  try {
+export const getCountries = () =>
+  countryData.map(({ countryName }) => ({ country: countryName }));
 
-    const response = await axios.get(
-      "https://countriesnow.space/api/v0.1/countries"
-    );
-
-    return response.data?.data || [];
-
-  } catch (error) {
-
-    console.log(error);
-
-    return [];
-  }
+export const getCountryByName = (countryName) => {
+  if (!countryName) return undefined;
+  return countriesByName.get(countryName.trim().toLocaleLowerCase());
 };
