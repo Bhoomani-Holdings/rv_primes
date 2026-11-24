@@ -142,6 +142,25 @@ const staffNotificationSchema = new mongoose.Schema({
 }, { collection: "staffnotifications", timestamps: true, versionKey: false });
 staffNotificationSchema.index({ recipientRole: 1, recipientId: 1, createdAt: -1 });
 const StaffNotification = mongoose.model("StaffNotification", staffNotificationSchema);
+
+const notifyStaffNewInvestorBasicDetails = async () => {
+  const activeEmployees = await Employee.find({ status: "Active" }).select("id userRole").lean();
+  const adminEmail = String(process.env.ADMIN_EMAIL || "").trim().toLowerCase();
+  const recipients = [
+    ...(adminEmail ? [{ recipientRole: "admin", recipientId: adminEmail }] : []),
+    ...activeEmployees
+      .filter((employee) => ["manager", "employee"].includes(employee.userRole))
+      .map((employee) => ({ recipientRole: employee.userRole, recipientId: String(employee.id) }))
+  ];
+
+  if (!recipients.length) return;
+  await StaffNotification.insertMany(recipients.map((recipient) => ({
+    ...recipient,
+    title: "New Investor submitted basic details",
+    message: "New Investor has submitted basic details."
+  })));
+};
+
 const investorSupportTicketSchema = new mongoose.Schema({
   userId: { type: Number, required: true },
   subject: { type: String, required: true, trim: true, maxlength: 120 },
@@ -1526,6 +1545,11 @@ app.post("/api/users", async (req, res) => {
         return res.status(409).json({ message: "This email is already registered." });
       }
       throw error;
+    }
+    try {
+      await notifyStaffNewInvestorBasicDetails();
+    } catch (notificationError) {
+      console.error("Investor details were saved, but staff notifications could not be sent:", notificationError);
     }
     return res.status(201).json(user);
   } catch (error) {
